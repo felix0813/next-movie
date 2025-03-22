@@ -1,7 +1,42 @@
-import 'package:flutter/material.dart';
+import 'dart:io';
 
-void main() {
-  runApp(const MyApp());
+import 'package:flutter/material.dart';
+import 'package:next_movie/importer/local_importer_impl.dart';
+import 'package:next_movie/task/task_queue.dart';
+import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:provider/provider.dart';
+import 'objectbox/objectbox_provider.dart';
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+// 获取应用文档目录路径
+  Directory appDocDir = await getApplicationDocumentsDirectory();
+  String appDocPath = appDocDir.path;
+
+  // 创建文件夹
+  Directory posterFolder = Directory(join(appDocPath,"next_movie","poster"));
+  if (!await posterFolder.exists()) {
+    await posterFolder.create(recursive: true);
+    print('文件夹创建成功: ${posterFolder.path}');
+    await posterFolder.create();
+  } else {
+    print('文件夹已存在: ${posterFolder.path}');
+  }
+  // 初始化 ObjectBoxProvider
+  final objectBoxProvider = ObjectBoxProvider();
+  await objectBoxProvider.init();
+
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(value: objectBoxProvider),
+        ChangeNotifierProvider(create: (_) => TaskQueue()),
+        // 如果有其他 providers，可以在这里添加
+      ],
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -89,30 +124,17 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
+        child: ElevatedButton(
+          onPressed: () {
+            var importer = LocalImporterImpl();
+            importer.getVideos().then((value) {
+              print(value);
+              importer.makeMeta();
+              importer.setExtraData([], 0, "", []);
+              importer.storeMovie(context);
+            });
+          },
+          child: Text("选择视频文件"),
         ),
       ),
       floatingActionButton: FloatingActionButton(

@@ -4,4 +4,12 @@ class MovieHistory{
   late List<String> watchDate;   //watching date
   late bool completed;           //whether the movie is watched to the end
   late List<int> watchDuration;  //watching duration(in seconds)
+
+  MovieHistory({
+    this.id = 0,
+    this.lastProgress = 0,
+    this.watchDate = const [],
+    this.completed = false,
+    this.watchDuration = const [],
+  });
 }

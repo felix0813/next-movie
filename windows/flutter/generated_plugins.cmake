@@ -3,6 +3,9 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  fc_native_video_thumbnail
+  flutter_media_info
+  objectbox_flutter_libs
 )
 
 list(APPEND FLUTTER_FFI_PLUGIN_LIST
