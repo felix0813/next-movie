@@ -2,9 +2,11 @@
 import 'dart:async';
 import 'dart:collection';
 import 'package:flutter/material.dart';
+import 'package:logging/logging.dart';
 
 class TaskQueue with ChangeNotifier {
   static final TaskQueue _instance = TaskQueue._internal();
+  static final Logger _logger = Logger('TaskQueue');
 
   factory TaskQueue() {
     return _instance;
@@ -37,7 +39,7 @@ class TaskQueue with ChangeNotifier {
     try {
       await task.task();
     } catch (e) {
-      print('任务执行失败: $e');
+      _logger.severe('任务执行失败: $e');
     } finally {
       _runningTasks--;
       _processNextTask();

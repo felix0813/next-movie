@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:logging/logging.dart';
 import 'package:next_movie/importer/local_importer_impl.dart';
 import 'package:next_movie/task/task_queue.dart';
 import 'package:path/path.dart';
@@ -13,15 +14,16 @@ Future<void> main() async {
 // 获取应用文档目录路径
   Directory appDocDir = await getApplicationDocumentsDirectory();
   String appDocPath = appDocDir.path;
+  var logger= Logger('main');
 
   // 创建文件夹
   Directory posterFolder = Directory(join(appDocPath, "next_movie", "poster"));
   if (!await posterFolder.exists()) {
     await posterFolder.create(recursive: true);
-    print('文件夹创建成功: ${posterFolder.path}');
+    logger.info('文件夹创建成功: ${posterFolder.path}');
     await posterFolder.create();
   } else {
-    print('文件夹已存在: ${posterFolder.path}');
+    logger.info('文件夹已存在: ${posterFolder.path}');
   }
   // 初始化 ObjectBoxProvider
   final objectBoxProvider = ObjectBoxProvider();
@@ -91,6 +93,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+  static final _logger = Logger('_MyHomePageState');
   late LocalImporterImpl importer;
 
   void _incrementCounter() {
@@ -132,7 +135,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 Provider.of<ObjectBoxProvider>(context, listen: false),
                 taskQueue: Provider.of<TaskQueue>(context, listen: false));
             importer.getVideos().then((value) {
-              print(value);
+              _logger.info(value);
               importer.makeMeta();
               importer.setExtraData([], 0, "", []);
               importer.storeMovie();

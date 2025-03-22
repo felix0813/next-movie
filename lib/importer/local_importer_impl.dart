@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:fc_native_video_thumbnail/fc_native_video_thumbnail.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_media_info/flutter_media_info.dart';
+import 'package:logging/logging.dart';
 import 'package:next_movie/model/movie.dart';
 import 'package:next_movie/utils/time.dart';
 import 'package:path/path.dart';
@@ -13,6 +14,7 @@ import '../task/task_queue.dart';
 import 'importer.dart';
 
 class LocalImporterImpl extends Importer {
+  static final _logger = Logger('LocalImporterImpl');
   late List<Movie> videos;
   ObjectBoxProvider? objectBoxProvider;
   TaskQueue? taskQueue;
@@ -58,7 +60,7 @@ class LocalImporterImpl extends Importer {
           fileStat.modified.millisecondsSinceEpoch);
       movie.created = creationTime.toString();
     } catch (e) {
-      print("获取文件创建时间失败：$e");
+      _logger.severe("获取文件创建时间失败：$e");
     }
   }
 
@@ -97,7 +99,6 @@ class LocalImporterImpl extends Importer {
           try {
             String path = join((await getApplicationDocumentsDirectory()).path,
                 "next_movie", "poster", "$id.jpg");
-            print(path);
             final thumbnailGenerated = await plugin.getVideoThumbnail(
                 srcFile: video.path,
                 destFile: path,
@@ -106,15 +107,15 @@ class LocalImporterImpl extends Importer {
                 format: 'jpeg',
                 quality: 90);
             if (thumbnailGenerated) {
-              print('Thumbnail for ${video.title} generated');
+              _logger.info('Thumbnail for ${video.title} generated');
               video.cover = [path];
               box.put(video);
             } else {
-              print('Thumbnail for ${video.title} not generated');
+              _logger.warning('Thumbnail for ${video.title} not generated');
             }
           } catch (err) {
             // Handle platform errors.
-            print('Thumbnail for ${video.title} Error: $err');
+            _logger.severe('Thumbnail for ${video.title} Error: $err');
           }
         },
         id: 'thumbnail for $id: ${video.title}',
