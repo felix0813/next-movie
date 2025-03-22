@@ -15,7 +15,7 @@ Future<void> main() async {
   String appDocPath = appDocDir.path;
 
   // 创建文件夹
-  Directory posterFolder = Directory(join(appDocPath,"next_movie","poster"));
+  Directory posterFolder = Directory(join(appDocPath, "next_movie", "poster"));
   if (!await posterFolder.exists()) {
     await posterFolder.create(recursive: true);
     print('文件夹创建成功: ${posterFolder.path}');
@@ -91,6 +91,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+  late LocalImporterImpl importer;
 
   void _incrementCounter() {
     setState(() {
@@ -126,12 +127,15 @@ class _MyHomePageState extends State<MyHomePage> {
         // in the middle of the parent.
         child: ElevatedButton(
           onPressed: () {
-            var importer = LocalImporterImpl();
+            importer = LocalImporterImpl(
+                objectBoxProvider:
+                Provider.of<ObjectBoxProvider>(context, listen: false),
+                taskQueue: Provider.of<TaskQueue>(context, listen: false));
             importer.getVideos().then((value) {
               print(value);
               importer.makeMeta();
               importer.setExtraData([], 0, "", []);
-              importer.storeMovie(context);
+              importer.storeMovie();
             });
           },
           child: Text("选择视频文件"),

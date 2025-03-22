@@ -2,13 +2,11 @@ import 'dart:io';
 
 import 'package:fc_native_video_thumbnail/fc_native_video_thumbnail.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_media_info/flutter_media_info.dart';
 import 'package:next_movie/model/movie.dart';
 import 'package:next_movie/utils/time.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:provider/provider.dart';
 import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
 
 import '../objectbox/objectbox_provider.dart';
 import '../task/task_queue.dart';
@@ -16,6 +14,8 @@ import 'importer.dart';
 
 class LocalImporterImpl extends Importer {
   late List<Movie> videos;
+  ObjectBoxProvider? objectBoxProvider;
+  TaskQueue? taskQueue;
 
   @override
   int prepareData() {
@@ -82,20 +82,21 @@ class LocalImporterImpl extends Importer {
   }
 
   @override
-  int storeMovie(BuildContext context) {
-    // 获取 ObjectBoxProvider
-    final objectBoxProvider = Provider.of<ObjectBoxProvider>(context,listen: false);
-    final taskQueue = Provider.of<TaskQueue>(context,listen: false);
-    final box = objectBoxProvider.getBox<Movie>();
+  int storeMovie() {
+    if (objectBoxProvider == null || taskQueue == null) {
+      return 0;
+    }
+    final box = objectBoxProvider!.getBox<Movie>();
     int count = 0;
     for (var video in videos) {
-      int id=box.put(video);
+      int id = box.put(video);
       count++;
-      taskQueue.addTask(TaskItem(
+      taskQueue!.addTask(TaskItem(
         () async {
           final plugin = FcNativeVideoThumbnail();
           try {
-            String path=join((await getApplicationDocumentsDirectory()).path,"next_movie","poster","$id.jpg");
+            String path = join((await getApplicationDocumentsDirectory()).path,
+                "next_movie", "poster", "$id.jpg");
             print(path);
             final thumbnailGenerated = await plugin.getVideoThumbnail(
                 srcFile: video.path,
@@ -104,7 +105,13 @@ class LocalImporterImpl extends Importer {
                 height: 300,
                 format: 'jpeg',
                 quality: 90);
-            print('Thumbnail for ${video.title} generated');
+            if (thumbnailGenerated) {
+              print('Thumbnail for ${video.title} generated');
+              video.cover = [path];
+              box.put(video);
+            } else {
+              print('Thumbnail for ${video.title} not generated');
+            }
           } catch (err) {
             // Handle platform errors.
             print('Thumbnail for ${video.title} Error: $err');
@@ -121,5 +128,6 @@ class LocalImporterImpl extends Importer {
     // TODO: implement show
   }
 
-  LocalImporterImpl({this.videos = const []});
+  LocalImporterImpl(
+      {this.videos = const [], this.objectBoxProvider, this.taskQueue});
 }
