@@ -25,6 +25,12 @@ class ThumbnailTask {
   void run() {
     _taskQueue.addTask(TaskItem(
       () async {
+        if(_movieId==0){
+          if(_moviePath==''){
+            throw Exception("A movie path is invalid. Please check your final result.");
+          }
+          throw Exception("Movie title is duplicated, please check the movie with path: $_moviePath");
+        }
         final plugin = FcNativeVideoThumbnail();
         try {
           String path = join((await getApplicationDocumentsDirectory()).path,

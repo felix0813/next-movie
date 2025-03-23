@@ -75,7 +75,7 @@ class LocalImporterImpl extends Importer {
           .build()
           .find()
           .isNotEmpty) {
-        video.path == '';
+        video.title='';
         continue;
       }
       video.duration = getVideoDuration(video.path);
@@ -103,11 +103,11 @@ class LocalImporterImpl extends Importer {
     final box = objectBoxProvider.getBox<Movie>();
     int count = 0;
     for (var video in _videos) {
-      if (video.path == '') {
-        continue;
+      var id = 0;
+      if (video.path != ''&& video.title!='') {
+        id = box.put(video);
+        count++;
       }
-      int id = box.put(video);
-      count++;
       ThumbnailTask task = ThumbnailTask(
           movieId: id,
           moviePath: video.path,
