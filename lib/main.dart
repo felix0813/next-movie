@@ -124,10 +124,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 objectBoxProvider:
                 Provider.of<ObjectBoxProvider>(context, listen: false),
                 taskQueue: Provider.of<TaskQueue>(context, listen: false));
-            importer.getVideos().then((value) {
+            importer.getVideos().then((value) async {
               _logger.info(value);
-              importer.makeMeta();
-              importer.setExtraData([], 0, "", []);
+              await importer.makeMeta();
+              await importer.setExtraData([], 0, "", []);
               importer.storeMovie();
             });
           },

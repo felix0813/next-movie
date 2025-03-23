@@ -70,12 +70,8 @@ class LocalImporterImpl extends Importer {
         continue;
       }
       Box box = objectBoxProvider.getBox<Movie>();
-      if (box
-          .query(Movie_.title.equals(video.title))
-          .build()
-          .find()
-          .isNotEmpty) {
-        video.title='';
+      if (box.query(Movie_.title.equals(video.title)).build().count() > 0) {
+        video.title = '';
         continue;
       }
       video.duration = getVideoDuration(video.path);
@@ -104,7 +100,7 @@ class LocalImporterImpl extends Importer {
     int count = 0;
     for (var video in _videos) {
       var id = 0;
-      if (video.path != ''&& video.title!='') {
+      if (video.path != '' && video.title != '') {
         id = box.put(video);
         count++;
       }
