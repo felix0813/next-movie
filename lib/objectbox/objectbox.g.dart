@@ -14,81 +14,121 @@ import 'package:objectbox/internal.dart'
 import 'package:objectbox/objectbox.dart' as obx;
 import 'package:objectbox_flutter_libs/objectbox_flutter_libs.dart';
 
+import '../model/category.dart';
 import '../model/movie.dart';
 
 export 'package:objectbox/objectbox.dart'; // so that callers only have to import this file
 
 final _entities = <obx_int.ModelEntity>[
   obx_int.ModelEntity(
-      id: const obx_int.IdUid(1, 8529174496884316865),
+      id: const obx_int.IdUid(1, 8814025681664424375),
       name: 'Movie',
-      lastPropertyId: const obx_int.IdUid(13, 6168224067297831111),
+      lastPropertyId: const obx_int.IdUid(13, 4675245135213612837),
       flags: 0,
       properties: <obx_int.ModelProperty>[
         obx_int.ModelProperty(
-            id: const obx_int.IdUid(1, 1439809891253493469),
+            id: const obx_int.IdUid(1, 2522035886140798659),
             name: 'id',
             type: 6,
             flags: 1),
         obx_int.ModelProperty(
-            id: const obx_int.IdUid(2, 5596860716277786079),
+            id: const obx_int.IdUid(2, 5515622235946707349),
             name: 'title',
             type: 9,
             flags: 0),
         obx_int.ModelProperty(
-            id: const obx_int.IdUid(3, 8229445164523938569),
+            id: const obx_int.IdUid(3, 8448954999548393062),
             name: 'created',
             type: 9,
             flags: 0),
         obx_int.ModelProperty(
-            id: const obx_int.IdUid(4, 1004171901424612766),
+            id: const obx_int.IdUid(4, 8262918073199919378),
             name: 'recorded',
             type: 9,
             flags: 0),
         obx_int.ModelProperty(
-            id: const obx_int.IdUid(5, 6547540029359791828),
+            id: const obx_int.IdUid(5, 6778409811885438846),
             name: 'path',
             type: 9,
             flags: 0),
         obx_int.ModelProperty(
-            id: const obx_int.IdUid(6, 840761274945939046),
+            id: const obx_int.IdUid(6, 8121094807160341021),
             name: 'tags',
             type: 30,
             flags: 0),
         obx_int.ModelProperty(
-            id: const obx_int.IdUid(7, 2531575147060015655),
+            id: const obx_int.IdUid(7, 8625126872201567969),
             name: 'cover',
             type: 30,
             flags: 0),
         obx_int.ModelProperty(
-            id: const obx_int.IdUid(8, 1141510409712744169),
+            id: const obx_int.IdUid(8, 5283597398307069590),
             name: 'star',
             type: 6,
             flags: 0),
         obx_int.ModelProperty(
-            id: const obx_int.IdUid(9, 8222304670557168778),
+            id: const obx_int.IdUid(9, 831004750147165959),
             name: 'source',
             type: 9,
             flags: 0),
         obx_int.ModelProperty(
-            id: const obx_int.IdUid(10, 6111530157541794721),
+            id: const obx_int.IdUid(10, 5661540679577113422),
             name: 'comment',
             type: 30,
             flags: 0),
         obx_int.ModelProperty(
-            id: const obx_int.IdUid(11, 4811719168997105434),
+            id: const obx_int.IdUid(11, 2283577620703171586),
             name: 'duration',
             type: 6,
             flags: 0),
         obx_int.ModelProperty(
-            id: const obx_int.IdUid(12, 1649974688060034162),
+            id: const obx_int.IdUid(12, 1475078611242252187),
             name: 'like',
             type: 1,
             flags: 0),
         obx_int.ModelProperty(
-            id: const obx_int.IdUid(13, 6168224067297831111),
+            id: const obx_int.IdUid(13, 4675245135213612837),
             name: 'size',
             type: 6,
+            flags: 0)
+      ],
+      relations: <obx_int.ModelRelation>[],
+      backlinks: <obx_int.ModelBacklink>[]),
+  obx_int.ModelEntity(
+      id: const obx_int.IdUid(2, 5643815084047552370),
+      name: 'Category',
+      lastPropertyId: const obx_int.IdUid(8, 6985835578741610355),
+      flags: 0,
+      properties: <obx_int.ModelProperty>[
+        obx_int.ModelProperty(
+            id: const obx_int.IdUid(1, 8207010870440914971),
+            name: 'id',
+            type: 6,
+            flags: 1),
+        obx_int.ModelProperty(
+            id: const obx_int.IdUid(2, 7019395681395354069),
+            name: 'name',
+            type: 9,
+            flags: 0),
+        obx_int.ModelProperty(
+            id: const obx_int.IdUid(3, 1867845353882763649),
+            name: 'description',
+            type: 9,
+            flags: 0),
+        obx_int.ModelProperty(
+            id: const obx_int.IdUid(4, 4569150546869758524),
+            name: 'created',
+            type: 9,
+            flags: 0),
+        obx_int.ModelProperty(
+            id: const obx_int.IdUid(7, 1757268088159858535),
+            name: 'star',
+            type: 6,
+            flags: 0),
+        obx_int.ModelProperty(
+            id: const obx_int.IdUid(8, 6985835578741610355),
+            name: 'movies',
+            type: 27,
             flags: 0)
       ],
       relations: <obx_int.ModelRelation>[],
@@ -130,13 +170,13 @@ Future<obx.Store> openStore(
 obx_int.ModelDefinition getObjectBoxModel() {
   final model = obx_int.ModelInfo(
       entities: _entities,
-      lastEntityId: const obx_int.IdUid(1, 8529174496884316865),
+      lastEntityId: const obx_int.IdUid(2, 5643815084047552370),
       lastIndexId: const obx_int.IdUid(0, 0),
       lastRelationId: const obx_int.IdUid(0, 0),
       lastSequenceId: const obx_int.IdUid(0, 0),
       retiredEntityUids: const [],
       retiredIndexUids: const [],
-      retiredPropertyUids: const [],
+      retiredPropertyUids: const [776296702019407036, 7428010160570827782],
       retiredRelationUids: const [],
       modelVersion: 5,
       modelVersionParserMinimum: 5,
@@ -189,6 +229,12 @@ obx_int.ModelDefinition getObjectBoxModel() {
           final rootOffset = buffer.derefObject(0);
           final idParam =
               const fb.Int64Reader().vTableGet(buffer, rootOffset, 4, 0);
+          final sourceParam = const fb.StringReader(asciiOptimization: true)
+              .vTableGetNullable(buffer, rootOffset, 20);
+          final starParam =
+              const fb.Int64Reader().vTableGetNullable(buffer, rootOffset, 18);
+          final createdParam = const fb.StringReader(asciiOptimization: true)
+              .vTableGetNullable(buffer, rootOffset, 8);
           final titleParam = const fb.StringReader(asciiOptimization: true)
               .vTableGet(buffer, rootOffset, 6, '');
           final pathParam = const fb.StringReader(asciiOptimization: true)
@@ -213,6 +259,9 @@ obx_int.ModelDefinition getObjectBoxModel() {
               const fb.Int64Reader().vTableGet(buffer, rootOffset, 28, 0);
           final object = Movie(
               id: idParam,
+              source: sourceParam,
+              star: starParam,
+              created: createdParam,
               title: titleParam,
               path: pathParam,
               tags: tagsParam,
@@ -221,14 +270,58 @@ obx_int.ModelDefinition getObjectBoxModel() {
               duration: durationParam,
               like: likeParam,
               size: sizeParam)
-            ..created = const fb.StringReader(asciiOptimization: true)
-                .vTableGetNullable(buffer, rootOffset, 8)
             ..recorded = const fb.StringReader(asciiOptimization: true)
-                .vTableGetNullable(buffer, rootOffset, 10)
-            ..star =
-                const fb.Int64Reader().vTableGetNullable(buffer, rootOffset, 18)
-            ..source = const fb.StringReader(asciiOptimization: true)
-                .vTableGetNullable(buffer, rootOffset, 20);
+                .vTableGetNullable(buffer, rootOffset, 10);
+
+          return object;
+        }),
+    Category: obx_int.EntityDefinition<Category>(
+        model: _entities[1],
+        toOneRelations: (Category object) => [],
+        toManyRelations: (Category object) => {},
+        getId: (Category object) => object.id,
+        setId: (Category object, int id) {
+          object.id = id;
+        },
+        objectToFB: (Category object, fb.Builder fbb) {
+          final nameOffset = fbb.writeString(object.name);
+          final descriptionOffset = object.description == null
+              ? null
+              : fbb.writeString(object.description!);
+          final createdOffset = fbb.writeString(object.created);
+          final moviesOffset = fbb.writeListInt64(object.movies);
+          fbb.startTable(9);
+          fbb.addInt64(0, object.id);
+          fbb.addOffset(1, nameOffset);
+          fbb.addOffset(2, descriptionOffset);
+          fbb.addOffset(3, createdOffset);
+          fbb.addInt64(6, object.star);
+          fbb.addOffset(7, moviesOffset);
+          fbb.finish(fbb.endTable());
+          return object.id;
+        },
+        objectFromFB: (obx.Store store, ByteData fbData) {
+          final buffer = fb.BufferContext(fbData);
+          final rootOffset = buffer.derefObject(0);
+          final idParam =
+              const fb.Int64Reader().vTableGet(buffer, rootOffset, 4, 0);
+          final nameParam = const fb.StringReader(asciiOptimization: true)
+              .vTableGet(buffer, rootOffset, 6, '');
+          final descriptionParam =
+              const fb.StringReader(asciiOptimization: true)
+                  .vTableGetNullable(buffer, rootOffset, 8);
+          final moviesParam =
+              const fb.ListReader<int>(fb.Int64Reader(), lazy: false)
+                  .vTableGet(buffer, rootOffset, 18, []);
+          final object = Category(
+              id: idParam,
+              name: nameParam,
+              description: descriptionParam,
+              movies: moviesParam)
+            ..created = const fb.StringReader(asciiOptimization: true)
+                .vTableGet(buffer, rootOffset, 10, '')
+            ..star = const fb.Int64Reader()
+                .vTableGetNullable(buffer, rootOffset, 16);
 
           return object;
         })
@@ -289,4 +382,31 @@ class Movie_ {
   /// See [Movie.size].
   static final size =
       obx.QueryIntegerProperty<Movie>(_entities[0].properties[12]);
+}
+
+/// [Category] entity fields to define ObjectBox queries.
+class Category_ {
+  /// See [Category.id].
+  static final id =
+      obx.QueryIntegerProperty<Category>(_entities[1].properties[0]);
+
+  /// See [Category.name].
+  static final name =
+      obx.QueryStringProperty<Category>(_entities[1].properties[1]);
+
+  /// See [Category.description].
+  static final description =
+      obx.QueryStringProperty<Category>(_entities[1].properties[2]);
+
+  /// See [Category.created].
+  static final created =
+      obx.QueryStringProperty<Category>(_entities[1].properties[3]);
+
+  /// See [Category.star].
+  static final star =
+      obx.QueryIntegerProperty<Category>(_entities[1].properties[4]);
+
+  /// See [Category.movies].
+  static final movies =
+      obx.QueryIntegerVectorProperty<Category>(_entities[1].properties[5]);
 }

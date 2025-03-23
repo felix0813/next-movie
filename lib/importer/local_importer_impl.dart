@@ -1,13 +1,11 @@
 import 'dart:io';
 
-import 'package:fc_native_video_thumbnail/fc_native_video_thumbnail.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_media_info/flutter_media_info.dart';
 import 'package:logging/logging.dart';
 import 'package:next_movie/model/movie.dart';
+import 'package:next_movie/movie_service/thumbnail_task.dart';
 import 'package:next_movie/utils/time.dart';
-import 'package:path/path.dart';
-import 'package:path_provider/path_provider.dart';
 
 import '../objectbox/objectbox_provider.dart';
 import '../task/task_queue.dart';
@@ -15,7 +13,7 @@ import 'importer.dart';
 
 class LocalImporterImpl extends Importer {
   static final _logger = Logger('LocalImporterImpl');
-  late List<Movie> videos;
+  late List<Movie> _videos;
   ObjectBoxProvider? objectBoxProvider;
   TaskQueue? taskQueue;
 
@@ -29,11 +27,11 @@ class LocalImporterImpl extends Importer {
     var result = await FilePicker.platform
         .pickFiles(allowMultiple: true, type: FileType.video);
     if (result != null) {
-      videos = result.files
+      _videos = result.files
           .map((e) => Movie(title: e.name, path: e.path ?? '', size: e.size))
           .toList();
     }
-    return videos;
+    return _videos;
   }
 
   int getVideoDuration(String path) {
@@ -66,8 +64,12 @@ class LocalImporterImpl extends Importer {
 
   @override
   Future<void> makeMeta() async {
-    for (var video in videos) {
+    for (var video in _videos) {
+      if (video.path == '') {
+        continue;
+      }
       video.duration = getVideoDuration(video.path);
+      video.recorded = DateTime.now().toLocal().toString().split(".")[0];
       await getVideoCreatedTime(video);
     }
   }
@@ -75,7 +77,7 @@ class LocalImporterImpl extends Importer {
   @override
   Future<void> setExtraData(
       List<String> tags, int rate, String source, List<String> comments) async {
-    for (var video in videos) {
+    for (var video in _videos) {
       video.tags = tags;
       video.star = rate;
       video.source = source;
@@ -90,36 +92,14 @@ class LocalImporterImpl extends Importer {
     }
     final box = objectBoxProvider!.getBox<Movie>();
     int count = 0;
-    for (var video in videos) {
+    for (var video in _videos) {
+      if (video.path == '') {
+        continue;
+      }
       int id = box.put(video);
       count++;
-      taskQueue!.addTask(TaskItem(
-        () async {
-          final plugin = FcNativeVideoThumbnail();
-          try {
-            String path = join((await getApplicationDocumentsDirectory()).path,
-                "next_movie", "poster", "$id.jpg");
-            final thumbnailGenerated = await plugin.getVideoThumbnail(
-                srcFile: video.path,
-                destFile: path,
-                width: 300,
-                height: 300,
-                format: 'jpeg',
-                quality: 90);
-            if (thumbnailGenerated) {
-              _logger.info('Thumbnail for ${video.title} generated');
-              video.cover = [path];
-              box.put(video);
-            } else {
-              _logger.warning('Thumbnail for ${video.title} not generated');
-            }
-          } catch (err) {
-            // Handle platform errors.
-            _logger.severe('Thumbnail for ${video.title} Error: $err');
-          }
-        },
-        id: 'thumbnail for $id: ${video.title}',
-      ));
+      ThumbnailTask task=ThumbnailTask(movieId: id, moviePath: video.path, taskQueue: taskQueue!, objectBoxProvider: objectBoxProvider!);
+      task.run();
     }
     return count;
   }
@@ -130,5 +110,5 @@ class LocalImporterImpl extends Importer {
   }
 
   LocalImporterImpl(
-      {this.videos = const [], this.objectBoxProvider, this.taskQueue});
+      {List<Movie> videos = const [], this.objectBoxProvider, this.taskQueue}) : _videos = videos;
 }
