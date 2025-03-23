@@ -8,7 +8,7 @@ import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 
-import 'movie_service/importer/local_importer_impl.dart';
+import 'package:next_movie/service/movie_service/importer/local_importer_impl.dart';
 import 'provider/objectbox_provider.dart';
 
 

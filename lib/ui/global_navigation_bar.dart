@@ -1,13 +1,13 @@
-// global_navigation_bar.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tdesign_flutter/tdesign_flutter.dart';
 
 import '../task/task_queue.dart';
 
-class GlobalNavigationBar extends StatelessWidget implements PreferredSizeWidget {
+class GlobalNavigationBar extends StatelessWidget
+    implements PreferredSizeWidget {
   final String title;
-  const GlobalNavigationBar({super.key,required this.title});
+  const GlobalNavigationBar({super.key, required this.title});
 
   @override
   Widget build(BuildContext context) {
@@ -39,10 +39,6 @@ class GlobalNavigationBar extends StatelessWidget implements PreferredSizeWidget
                     child: TDBadge(
                       TDBadgeType.redPoint,
                       count: errorCount.toString(),
-                      // 可选：自定义红点的样式
-                      // 例如，隐藏数字，只显示红点
-                      // showBadge: false, // 如果需要完全隐藏数字，可以设置为 false
-                      // 但通常红点会显示数字
                     ),
                   ),
               ],
@@ -54,7 +50,8 @@ class GlobalNavigationBar extends StatelessWidget implements PreferredSizeWidget
   }
 
   // 显示任务状态对话框
-  Future<void> _showTaskStatusDialog(BuildContext context, TaskQueue taskQueue) async {
+  Future<void> _showTaskStatusDialog(
+      BuildContext context, TaskQueue taskQueue) async {
     await showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -100,7 +97,8 @@ class GlobalNavigationBar extends StatelessWidget implements PreferredSizeWidget
   }
 
   // 显示错误详情对话框并清除错误
-  Future<void> _showErrorDialog(BuildContext context, TaskQueue taskQueue) async {
+  Future<void> _showErrorDialog(
+      BuildContext context, TaskQueue taskQueue) async {
     final errors = taskQueue.errors;
 
     await showDialog(
@@ -115,7 +113,8 @@ class GlobalNavigationBar extends StatelessWidget implements PreferredSizeWidget
                 const Text('暂无错误')
               else
                 Column(
-                  children: errors.map((e) => _buildErrorItem(context, e)).toList(),
+                  children:
+                      errors.map((e) => _buildErrorItem(context, e)).toList(),
                 ),
             ],
           ),

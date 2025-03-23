@@ -2,7 +2,7 @@ import 'package:next_movie/model/category.dart';
 
 import 'package:next_movie/provider/objectbox_provider.dart';
 
-import '../objectbox/objectbox.g.dart';
+import 'package:next_movie/objectbox/objectbox.g.dart';
 
 class CategoryCreator {
   late final ObjectBoxProvider? objectBoxProvider;

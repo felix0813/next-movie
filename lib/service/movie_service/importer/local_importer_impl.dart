@@ -4,7 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter_media_info/flutter_media_info.dart';
 import 'package:logging/logging.dart';
 import 'package:next_movie/model/movie.dart';
-import 'package:next_movie/movie_service/thumbnail_task.dart';
+import 'package:next_movie/service/movie_service/thumbnail_task.dart';
 import 'package:next_movie/utils/time.dart';
 
 import 'package:next_movie/provider/objectbox_provider.dart';
