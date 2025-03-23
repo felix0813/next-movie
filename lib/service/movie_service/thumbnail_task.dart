@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:fc_native_video_thumbnail/fc_native_video_thumbnail.dart';
 import 'package:logging/logging.dart';
 import 'package:next_movie/model/movie.dart';
@@ -7,12 +9,12 @@ import 'package:path_provider/path_provider.dart';
 
 import 'package:next_movie/provider/objectbox_provider.dart';
 
-class ThumbnailTask {
+class AddThumbnailTask {
   late final int _movieId;
   late final String _moviePath;
   late final TaskQueue _taskQueue;
   late final ObjectBoxProvider _objectBoxProvider;
-  ThumbnailTask({
+  AddThumbnailTask({
     required int movieId,
     required String moviePath,
     required TaskQueue taskQueue,
@@ -21,15 +23,17 @@ class ThumbnailTask {
         _moviePath = moviePath,
         _movieId = movieId,
         _taskQueue = taskQueue;
-  static final _logger = Logger('ThumbnailTask');
+  static final _logger = Logger('AddThumbnailTask');
   void run() {
     _taskQueue.addTask(TaskItem(
       () async {
-        if(_movieId==0){
-          if(_moviePath==''){
-            throw Exception("A movie path is invalid. Please check your final result.");
+        if (_movieId == 0) {
+          if (_moviePath == '') {
+            throw Exception(
+                "A movie path is invalid. Please check your final result.");
           }
-          throw Exception("Movie title is duplicated, please check the movie with path: $_moviePath");
+          throw Exception(
+              "Movie title is duplicated, please check the movie with path: $_moviePath");
         }
         final plugin = FcNativeVideoThumbnail();
         try {
@@ -56,10 +60,49 @@ class ThumbnailTask {
             _logger.warning('Thumbnail for $_movieId not generated');
           }
         } catch (err) {
-          throw(Exception('Thumbnail for $_movieId Error: $err'));
+          throw (Exception('Thumbnail for $_movieId Error: $err'));
         }
       },
-      id: 'thumbnail for $_movieId ',
+      id: 'generate thumbnail for $_movieId ',
+    ));
+  }
+}
+
+class DeleteThumbnailTask {
+  late final int _movieId;
+  late final TaskQueue _taskQueue;
+  DeleteThumbnailTask({
+    required int movieId,
+    required TaskQueue taskQueue,
+  })  : _movieId = movieId,
+        _taskQueue = taskQueue;
+  static final _logger = Logger('DeleteThumbnailTask');
+  void run() {
+    _taskQueue.addTask(TaskItem(
+      () async {
+        if(_movieId==0){
+          throw Exception("Delete movie error: Database fail to remove movie");
+        }
+        try {
+          String filePath = join(
+              (await getApplicationDocumentsDirectory()).path,
+              "next_movie",
+              "poster",
+              "$_movieId.jpg");
+          File file = File(filePath);
+          // 检查文件是否存在
+          if (file.existsSync()) {
+            // 删除文件
+            file.deleteSync();
+            _logger.info('Thumbnail is deleted: $_movieId');
+          } else {
+            _logger.info('Thumbnail does not exist: $_movieId');
+          }
+        } catch (err) {
+          throw (Exception('Remove thumbnail for $_movieId Error: $err'));
+        }
+      },
+      id: 'remove thumbnail for $_movieId ',
     ));
   }
 }

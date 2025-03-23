@@ -104,7 +104,7 @@ class LocalImporterImpl extends Importer {
         id = box.put(video);
         count++;
       }
-      ThumbnailTask task = ThumbnailTask(
+      AddThumbnailTask task = AddThumbnailTask(
           movieId: id,
           moviePath: video.path,
           taskQueue: taskQueue!,
