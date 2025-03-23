@@ -7,8 +7,8 @@ import 'package:next_movie/model/movie.dart';
 import 'package:next_movie/movie_service/thumbnail_task.dart';
 import 'package:next_movie/utils/time.dart';
 
-import '../objectbox/objectbox_provider.dart';
-import '../task/task_queue.dart';
+import 'package:next_movie/provider/objectbox_provider.dart';
+import 'package:next_movie/task/task_queue.dart';
 import 'importer.dart';
 
 class LocalImporterImpl extends Importer {

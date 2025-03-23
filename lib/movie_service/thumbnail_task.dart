@@ -5,7 +5,7 @@ import 'package:next_movie/task/task_queue.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
-import '../objectbox/objectbox_provider.dart';
+import 'package:next_movie/provider/objectbox_provider.dart';
 
 class ThumbnailTask {
   late final int _movieId;

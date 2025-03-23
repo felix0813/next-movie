@@ -1,7 +1,8 @@
 // lib/object_box_provider.dart
 import 'package:flutter/material.dart';
-import 'objectbox.dart';
-import 'objectbox.g.dart'; // 根据需要引入实体类
+
+import 'package:next_movie/objectbox/objectbox.dart';
+import 'package:next_movie/objectbox/objectbox.g.dart'; // 根据需要引入实体类
 
 class ObjectBoxProvider with ChangeNotifier {
   ObjectBox? _objectBox;

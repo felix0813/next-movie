@@ -2,12 +2,13 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
-import 'package:next_movie/importer/local_importer_impl.dart';
 import 'package:next_movie/task/task_queue.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
-import 'objectbox/objectbox_provider.dart';
+
+import 'movie_service/importer/local_importer_impl.dart';
+import 'provider/objectbox_provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

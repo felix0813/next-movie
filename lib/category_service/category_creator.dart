@@ -1,6 +1,6 @@
 import 'package:next_movie/model/category.dart';
 
-import '../objectbox/objectbox_provider.dart';
+import 'package:next_movie/provider/objectbox_provider.dart';
 
 class CategoryCreator {
   late final ObjectBoxProvider? objectBoxProvider;
@@ -11,6 +11,7 @@ class CategoryCreator {
   }
 
   bool create() {
+    //todo 检测重名
     if (_category.name.isEmpty) {
       throw Exception("Category name cannot be empty");
     }
