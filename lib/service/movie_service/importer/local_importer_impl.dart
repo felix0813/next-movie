@@ -26,7 +26,7 @@ class LocalImporterImpl extends Importer {
   @override
   Future<List<Movie>> getVideos() async {
     var result = await FilePicker.platform
-        .pickFiles(allowMultiple: true, type: FileType.video);
+        .pickFiles(allowMultiple: true, type: FileType.video,lockParentWindow: true);
     if (result != null) {
       _videos = result.files
           .map((e) => Movie(title: e.name, path: e.path ?? '', size: e.size))
@@ -81,8 +81,8 @@ class LocalImporterImpl extends Importer {
   }
 
   @override
-  Future<void> setExtraData(
-      List<String> tags, int rate, String source, List<String> comments) async {
+  void setExtraData(
+      List<String> tags, int? rate, String? source, List<String> comments) async {
     for (var video in _videos) {
       video.tags = tags;
       video.star = rate;

@@ -2,15 +2,16 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
+import 'package:next_movie/service/movie_service/movie_service.dart';
 import 'package:next_movie/task/task_queue.dart';
 import 'package:next_movie/ui/global_navigation_bar.dart';
+import 'package:next_movie/ui/movie_extra_meta_form.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 
 import 'package:next_movie/service/movie_service/importer/local_importer_impl.dart';
 import 'provider/objectbox_provider.dart';
-
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,7 +25,7 @@ Future<void> main() async {
 // 获取应用文档目录路径
   Directory appDocDir = await getApplicationDocumentsDirectory();
   String appDocPath = appDocDir.path;
-  var logger= Logger('main');
+  var logger = Logger('main');
 
   // 创建文件夹
   Directory posterFolder = Directory(join(appDocPath, "next_movie", "poster"));
@@ -105,6 +106,15 @@ class _MyHomePageState extends State<MyHomePage> {
   static final _logger = Logger('_MyHomePageState');
   late LocalImporterImpl importer;
 
+  Future<MovieExtraMeta?> getExtraMetaForm(BuildContext context) {
+    return showModalBottomSheet<MovieExtraMeta>(
+      context: context,
+      builder: (context) {
+        return MovieExtraMetaForm();
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
@@ -114,22 +124,19 @@ class _MyHomePageState extends State<MyHomePage> {
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
     return Scaffold(
-      appBar:GlobalNavigationBar( title: "首页",),
+      appBar: GlobalNavigationBar(
+        title: "首页",
+      ),
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
         child: ElevatedButton(
-          onPressed: () {
-            importer = LocalImporterImpl(
+          onPressed: () async {
+            final movieService = MovieService(
                 objectBoxProvider:
-                Provider.of<ObjectBoxProvider>(context, listen: false),
+                    Provider.of<ObjectBoxProvider>(context, listen: false),
                 taskQueue: Provider.of<TaskQueue>(context, listen: false));
-            importer.getVideos().then((value) async {
-              _logger.info(value);
-              await importer.makeMeta();
-              await importer.setExtraData([], 0, "", []);
-              importer.storeMovie();
-            });
+            movieService.importMovie(getExtraMetaForm, context);
           },
           child: Text("选择视频文件"),
         ),
