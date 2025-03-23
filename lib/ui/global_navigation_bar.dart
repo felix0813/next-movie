@@ -1,0 +1,174 @@
+// global_navigation_bar.dart
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:tdesign_flutter/tdesign_flutter.dart';
+
+import '../task/task_queue.dart';
+
+class GlobalNavigationBar extends StatelessWidget implements PreferredSizeWidget {
+  final String title;
+  const GlobalNavigationBar({super.key,required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      title: Text(title),
+      elevation: 0,
+      actions: [
+        Consumer<TaskQueue>(
+          builder: (context, taskQueue, child) {
+            final errorCount = taskQueue.errorCount;
+
+            return Stack(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.notifications),
+                  tooltip: '查看任务状态',
+                  onPressed: () {
+                    if (errorCount > 0) {
+                      _showErrorDialog(context, taskQueue);
+                    } else {
+                      _showTaskStatusDialog(context, taskQueue);
+                    }
+                  },
+                ),
+                if (errorCount > 0)
+                  Positioned(
+                    top: 0,
+                    right: 0,
+                    child: TDBadge(
+                      TDBadgeType.redPoint,
+                      count: errorCount.toString(),
+                      // 可选：自定义红点的样式
+                      // 例如，隐藏数字，只显示红点
+                      // showBadge: false, // 如果需要完全隐藏数字，可以设置为 false
+                      // 但通常红点会显示数字
+                    ),
+                  ),
+              ],
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  // 显示任务状态对话框
+  Future<void> _showTaskStatusDialog(BuildContext context, TaskQueue taskQueue) async {
+    await showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('任务状态'),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(TDIcons.loading),
+                title: Text('运行中任务: ${taskQueue.runningTasks}'),
+              ),
+              ListTile(
+                leading: const Icon(Icons.queue),
+                title: Text('队列任务: ${taskQueue.queueLength}'),
+              ),
+              if (taskQueue.queueLength > 0)
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: taskQueue.queueLength,
+                  itemBuilder: (context, index) {
+                    final task = taskQueue.tasks.elementAt(index);
+                    return ListTile(
+                      title: Text('任务 ${index + 1} (ID: ${task.id})'),
+                      subtitle: task.task is Future<void>
+                          ? null
+                          : Text('详情: ${task.task.toString()}'), // 根据需要显示更多任务信息
+                    );
+                  },
+                ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('关闭'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // 显示错误详情对话框并清除错误
+  Future<void> _showErrorDialog(BuildContext context, TaskQueue taskQueue) async {
+    final errors = taskQueue.errors;
+
+    await showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('错误详情'),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (errors.isEmpty)
+                const Text('暂无错误')
+              else
+                Column(
+                  children: errors.map((e) => _buildErrorItem(context, e)).toList(),
+                ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              taskQueue.clearErrors();
+              Navigator.of(ctx).pop(); // 关闭对话框
+            },
+            child: const Text('清除所有错误'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(), // 仅关闭对话框
+            child: const Text('关闭'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// 构建单个错误项
+  Widget _buildErrorItem(BuildContext context, TaskError error) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: ListTile(
+        leading: const Icon(Icons.error_outline, color: Colors.red),
+        title: Text('任务 ${error.task.id} 失败'),
+        subtitle: Text(error.error),
+        trailing: IconButton(
+          icon: const Icon(Icons.refresh, color: Colors.blue),
+          onPressed: () async {
+            try {
+              await error.retry();
+              // 重试成功后，可以选择不立即清除，但通常需要重新检查任务状态
+              // 这里可以选择不自动清除，而是让用户再次查看状态
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('任务 ${error.task.id} 重试成功')),
+              );
+            } catch (e) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('重试任务 ${error.task.id} 失败: $e')),
+              );
+            }
+          },
+        ),
+      ),
+    );
+  }
+
+  @override
+  Size get preferredSize => const Size.fromHeight(60);
+}
+
+/// 自定义 Badge 小部件（如果需要自定义样式，可以扩展此部分）
+// 这里我们使用 TDesign 的 TDBadge，已经满足需求

@@ -50,8 +50,7 @@ class ThumbnailTask {
             _logger.warning('Thumbnail for $_movieId not generated');
           }
         } catch (err) {
-          // Handle platform errors.
-          _logger.severe('Thumbnail for $_movieId Error: $err');
+          throw(Exception('Thumbnail for $_movieId Error: $err'));
         }
       },
       id: 'thumbnail for $_movieId ',

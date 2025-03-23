@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:next_movie/task/task_queue.dart';
+import 'package:next_movie/ui/global_navigation_bar.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
@@ -10,8 +11,16 @@ import 'package:provider/provider.dart';
 import 'movie_service/importer/local_importer_impl.dart';
 import 'provider/objectbox_provider.dart';
 
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // 设置根日志器的级别为ALL，表示记录所有级别的日志
+  Logger.root.level = Level.ALL;
+
+  // 监听日志记录事件，并通过print函数输出日志信息
+  Logger.root.onRecord.listen((record) {
+    print('${record.level.name}: ${record.time}: ${record.message}');
+  });
 // 获取应用文档目录路径
   Directory appDocDir = await getApplicationDocumentsDirectory();
   String appDocPath = appDocDir.path;
@@ -105,15 +114,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
     return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
+      appBar:GlobalNavigationBar( title: "首页",),
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
