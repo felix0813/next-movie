@@ -9,8 +9,8 @@ import 'package:next_movie/task/task_queue.dart';
 import 'importer/local_importer_impl.dart';
 
 class MovieService {
-  late ObjectBoxProvider _objectBoxProvider;
-  TaskQueue? _taskQueue;
+  late final ObjectBoxProvider _objectBoxProvider;
+  final TaskQueue? _taskQueue;
   MovieService(
       {required ObjectBoxProvider objectBoxProvider, TaskQueue? taskQueue})
       : _objectBoxProvider = objectBoxProvider,
@@ -23,7 +23,7 @@ class MovieService {
     Box<Movie> box = _objectBoxProvider.getBox<Movie>();
     for (int id in ids) {
       int tmp = box.remove(id) ? id : 0;
-      DeleteThumbnailTask(movieId: tmp, taskQueue: _taskQueue!).run();
+      DeleteThumbnailTask(movieId: tmp, taskQueue: _taskQueue).run();
     }
   }
 

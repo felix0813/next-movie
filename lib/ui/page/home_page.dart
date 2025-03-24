@@ -1,62 +1,122 @@
 import 'package:flutter/material.dart';
-import 'package:logging/logging.dart';
-import 'package:provider/provider.dart';
-
-import '../../provider/objectbox_provider.dart';
-import '../../service/movie_service/importer/local_importer_impl.dart';
-import '../../service/movie_service/movie_service.dart';
-import '../../task/task_queue.dart';
+import 'package:next_movie/ui/home_content_row.dart';
 import '../global_navigation_bar.dart';
-import '../movie_extra_meta_form.dart';
+import 'dart:math';
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  HomePageState createState() => HomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  static final _logger = Logger('_MyHomePageState');
-  late LocalImporterImpl importer;
-
-  Future<MovieExtraMeta?> getExtraMetaForm(BuildContext context) {
-    return showModalBottomSheet<MovieExtraMeta>(
-      context: context,
-      builder: (context) {
-        return MovieExtraMetaForm();
-      },
-    );
-  }
-  // all videos,all categories ,like
-  // recent add,
-  // recent watch
-  // to watch
+class HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: GlobalNavigationBar(
-        title: "首页",
-      ),
-      body: Center(
-        child: ElevatedButton(
-          onPressed: () async {
-            final movieService = MovieService(
-                objectBoxProvider:
-                Provider.of<ObjectBoxProvider>(context, listen: false),
-                taskQueue: Provider.of<TaskQueue>(context, listen: false));
-            movieService.importMovie(getExtraMetaForm, context);
-          },
-          child: Text("选择视频文件"),
+        appBar: GlobalNavigationBar(
+          title: "NextMovie",
         ),
+        body: SingleChildScrollView(
+            padding: EdgeInsets.only(left: 25),
+            child: Column(children: [
+              // 头部导航栏
+              _buildHeaderRow(),
+              HomeContentRow(title: "Like", itemCount: 20)
+            ])));
+  }
+
+  // 构建头部导航行
+  Widget _buildHeaderRow() {
+    double singleWidth = min(320, (MediaQuery.of(context).size.width - 35) / 2);
+    double singleHeight = singleWidth * 9 / 16;
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 20.0),
+      child: Row(
+        // 设置水平方向起始对齐
+        spacing: 10,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          // 左侧视频入口 - 使用弹性布局适配不同宽度
+          Expanded(
+            flex: 0, // 占据50%可用宽度
+            child: GestureDetector(
+              onTap: () {
+                //todo
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                child: Stack(
+                  children: [
+                    // 背景图使用占位符，实际使用时替换为真实图片
+                    Container(
+                      width: singleWidth,
+                      height: singleHeight,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10.0),
+                          image: DecorationImage(
+                            fit: BoxFit.cover,
+                            image: NetworkImage(
+                              'https://picsum.photos/300/150?random=1',
+                            ),
+                          )),
+                    ),
+                    // 半透明蒙层
+                    Container(
+                      width: singleWidth,
+                      height: singleHeight,
+                      decoration: BoxDecoration(
+                        color: Colors.black.withValues(alpha: 0.5),
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      padding: const EdgeInsets.all(12.0),
+                      alignment: Alignment.center,
+                      child: Text(
+                        'Movie',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 18.0,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+
+          // 右侧分类入口 - 保持相同比例
+          SizedBox(
+            width: singleWidth,
+            height: singleHeight,
+            child: GestureDetector(
+              onTap: () {
+                //todo
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.blue,
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                height: 150,
+                padding: const EdgeInsets.all(12.0),
+                alignment: Alignment.center,
+                child: Text(
+                  'Category',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: null,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }

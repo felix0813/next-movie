@@ -6,10 +6,10 @@ class MovieExtraMetaForm extends StatefulWidget {
   const MovieExtraMetaForm({super.key});
 
   @override
-  _MovieExtraMetaFormState createState() => _MovieExtraMetaFormState();
+  MovieExtraMetaFormState createState() => MovieExtraMetaFormState();
 }
 
-class _MovieExtraMetaFormState extends State<MovieExtraMetaForm> {
+class MovieExtraMetaFormState extends State<MovieExtraMetaForm> {
   final _formKey = GlobalKey<FormState>();
   final _tagsController = TextEditingController();
   final _commentsController = TextEditingController();
