@@ -11,6 +11,7 @@ import 'package:next_movie/provider/objectbox_provider.dart';
 import 'package:next_movie/task/task_queue.dart';
 import 'package:next_movie/objectbox/objectbox.g.dart';
 import 'importer.dart';
+import 'package:media_info/media_info.dart' as m;
 
 class LocalImporterImpl extends Importer {
   static final _logger = Logger('LocalImporterImpl');
@@ -35,9 +36,19 @@ class LocalImporterImpl extends Importer {
     return _videos;
   }
 
-  int getVideoDuration(String path) {
+  Future<int> getVideoDuration(String path) async {
     if (Platform.isIOS || Platform.isAndroid) {
-      return 0;
+      try{
+        final  mf=m.MediaInfo();
+        final result=await mf.getMediaInfo(path);
+        int duration=result["durationMs"];
+        return duration;
+      }
+      catch(e){
+        _logger.severe("Get duration of $path fail:$e");
+        return 0;
+      }
+      
     } else {
       final mi = Mediainfo();
       mi.quickLoad(path);
@@ -51,10 +62,7 @@ class LocalImporterImpl extends Importer {
   Future<void> getVideoCreatedTime(Movie movie) async {
     try {
       File file = File(movie.path);
-      // 获取文件的FileStat信息
       FileStat fileStat = await file.stat();
-
-      // 格式化并打印创建(最后修改)时间
       DateTime creationTime = DateTime.fromMillisecondsSinceEpoch(
           fileStat.modified.millisecondsSinceEpoch);
       movie.created = creationTime.toString();
@@ -74,7 +82,7 @@ class LocalImporterImpl extends Importer {
         video.title = '';
         continue;
       }
-      video.duration = getVideoDuration(video.path);
+      video.duration = await getVideoDuration(video.path);
       video.recorded = DateTime.now().toLocal().toString().split(".")[0];
       await getVideoCreatedTime(video);
     }
