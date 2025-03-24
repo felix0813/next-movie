@@ -117,7 +117,7 @@ class HomeContentRowState extends State<HomeContentRow> {
                       _scrollLeft(itemWidth);
                     }
                         : null,
-                    tooltip: '向左滚动',
+                    tooltip: 'scroll left',
                   ),
                   IconButton(
                     icon: const Icon(TDIcons.arrow_right),
@@ -126,7 +126,7 @@ class HomeContentRowState extends State<HomeContentRow> {
                       _scrollRight(itemWidth);
                     }
                         : null,
-                    tooltip: '向右滚动',
+                    tooltip: 'scroll right',
                   ),
                 ],
               ),

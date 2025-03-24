@@ -35,12 +35,12 @@ class MovieService {
     }
     LocalImporterImpl importer = LocalImporterImpl(
         objectBoxProvider: _objectBoxProvider, taskQueue: _taskQueue);
-    final result=await importer.getVideos();
-    if(result.isEmpty){
+    final result = await importer.getVideos();
+    if (result.isEmpty) {
       return;
     }
     await importer.makeMeta();
-    if(!context.mounted){
+    if (!context.mounted) {
       return;
     }
     final meta = await getExtraMeta(context);
@@ -49,6 +49,22 @@ class MovieService {
     }
     importer.setExtraData(meta.tags, meta.rate, meta.source, meta.comments);
     importer.storeMovie();
+  }
+
+  List<Movie> getRecentAddMovie() {
+    return [];
+  }
+
+  List<Movie> getFavoriteMovie() {
+    return [];
+  }
+
+  List<Movie> getToWatchMovie() {
+    return [];
+  }
+
+  List<Movie> getRecentWatchMovie() {
+    return [];
   }
 }
 

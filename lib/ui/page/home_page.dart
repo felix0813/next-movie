@@ -18,11 +18,14 @@ class HomePageState extends State<HomePage> {
           title: "NextMovie",
         ),
         body: SingleChildScrollView(
-            padding: EdgeInsets.only(left: 25),
+            padding: EdgeInsets.only(left: 25,bottom: MediaQuery.of(context).size.height*0.1),
             child: Column(children: [
               // 头部导航栏
               _buildHeaderRow(),
-              HomeContentRow(title: "Like", itemCount: 20)
+              HomeContentRow(title: "Like", itemCount: 20),
+              HomeContentRow(title: "History", itemCount: 20),
+              HomeContentRow(title: "New", itemCount: 20),
+              HomeContentRow(title: "ToWatch", itemCount: 20),
             ])));
   }
 

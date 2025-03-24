@@ -5,22 +5,22 @@ import 'package:logging/logging.dart';
 import 'package:next_movie/task/task_queue.dart';
 import 'package:next_movie/ui/page/home_page.dart';
 import 'package:path/path.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 
+import 'app_path.dart';
 import 'provider/objectbox_provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // 设置根日志器的级别为ALL，表示记录所有级别的日志
   Logger.root.level = Level.ALL;
-
+  await AppPaths.instance.initialize(); // 初始化路径
   // 监听日志记录事件，并通过print函数输出日志信息
   Logger.root.onRecord.listen((record) {
     print('${record.level.name}: ${record.time}: ${record.message}');
   });
 // 获取应用文档目录路径
-  Directory appDocDir = await getApplicationDocumentsDirectory();
+  Directory appDocDir = Directory(AppPaths.instance.appDocumentsDir);
   String appDocPath = appDocDir.path;
   var logger = Logger('main');
 

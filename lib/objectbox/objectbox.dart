@@ -1,7 +1,7 @@
 // object_box.dart
 import 'dart:async';
+import 'package:next_movie/app_path.dart';
 import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
 
 import 'objectbox.g.dart';
 
@@ -26,8 +26,8 @@ class ObjectBox {
   /// Lazily creates the ObjectBox instance.
   static Future<ObjectBox> _create() async {
     try {
-      final docsDir = await getApplicationDocumentsDirectory();
-      final storePath = p.join(docsDir.path,"next_movie", "obx-next-movie");
+      final docsDir = AppPaths.instance.appDocumentsDir;
+      final storePath = p.join(docsDir,"next_movie", "obx-next-movie");
       final store = await openStore(directory: storePath);
       _instance = ObjectBox._internal(store);
       return _instance!;

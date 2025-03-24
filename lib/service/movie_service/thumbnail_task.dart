@@ -2,10 +2,10 @@ import 'dart:io';
 
 import 'package:fc_native_video_thumbnail/fc_native_video_thumbnail.dart';
 import 'package:logging/logging.dart';
+import 'package:next_movie/app_path.dart';
 import 'package:next_movie/model/movie.dart';
 import 'package:next_movie/task/task_queue.dart';
 import 'package:path/path.dart';
-import 'package:path_provider/path_provider.dart';
 
 import 'package:next_movie/provider/objectbox_provider.dart';
 
@@ -37,7 +37,7 @@ class AddThumbnailTask {
         }
         final plugin = FcNativeVideoThumbnail();
         try {
-          String path = join((await getApplicationDocumentsDirectory()).path,
+          String path = join(AppPaths.instance.appDocumentsDir,
               "next_movie", "poster", "$_movieId.jpg");
           final thumbnailGenerated = await plugin.getVideoThumbnail(
               srcFile: _moviePath,
@@ -85,7 +85,7 @@ class DeleteThumbnailTask {
         }
         try {
           String filePath = join(
-              (await getApplicationDocumentsDirectory()).path,
+              AppPaths.instance.appDocumentsDir,
               "next_movie",
               "poster",
               "$_movieId.jpg");
