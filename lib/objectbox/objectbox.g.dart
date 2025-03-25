@@ -14,8 +14,8 @@ import 'package:objectbox/internal.dart'
 import 'package:objectbox/objectbox.dart' as obx;
 import 'package:objectbox_flutter_libs/objectbox_flutter_libs.dart';
 
-import 'package:next_movie/model/category.dart';
-import 'package:next_movie/model/movie.dart';
+import '../model/category.dart';
+import '../model/movie.dart';
 
 export 'package:objectbox/objectbox.dart'; // so that callers only have to import this file
 
@@ -23,7 +23,7 @@ final _entities = <obx_int.ModelEntity>[
   obx_int.ModelEntity(
       id: const obx_int.IdUid(1, 8814025681664424375),
       name: 'Movie',
-      lastPropertyId: const obx_int.IdUid(13, 4675245135213612837),
+      lastPropertyId: const obx_int.IdUid(16, 2718343184638004001),
       flags: 0,
       properties: <obx_int.ModelProperty>[
         obx_int.ModelProperty(
@@ -44,7 +44,7 @@ final _entities = <obx_int.ModelEntity>[
         obx_int.ModelProperty(
             id: const obx_int.IdUid(4, 8262918073199919378),
             name: 'recorded',
-            type: 9,
+            type: 10,
             flags: 0),
         obx_int.ModelProperty(
             id: const obx_int.IdUid(5, 6778409811885438846),
@@ -82,14 +82,19 @@ final _entities = <obx_int.ModelEntity>[
             type: 6,
             flags: 0),
         obx_int.ModelProperty(
-            id: const obx_int.IdUid(12, 1475078611242252187),
-            name: 'like',
-            type: 1,
-            flags: 0),
-        obx_int.ModelProperty(
             id: const obx_int.IdUid(13, 4675245135213612837),
             name: 'size',
             type: 6,
+            flags: 0),
+        obx_int.ModelProperty(
+            id: const obx_int.IdUid(15, 7010489784881065200),
+            name: 'likeDate',
+            type: 10,
+            flags: 0),
+        obx_int.ModelProperty(
+            id: const obx_int.IdUid(16, 2718343184638004001),
+            name: 'wishDate',
+            type: 10,
             flags: 0)
       ],
       relations: <obx_int.ModelRelation>[],
@@ -176,7 +181,12 @@ obx_int.ModelDefinition getObjectBoxModel() {
       lastSequenceId: const obx_int.IdUid(0, 0),
       retiredEntityUids: const [],
       retiredIndexUids: const [],
-      retiredPropertyUids: const [776296702019407036, 7428010160570827782],
+      retiredPropertyUids: const [
+        776296702019407036,
+        7428010160570827782,
+        1475078611242252187,
+        5964906792603094558
+      ],
       retiredRelationUids: const [],
       modelVersion: 5,
       modelVersionParserMinimum: 5,
@@ -195,9 +205,6 @@ obx_int.ModelDefinition getObjectBoxModel() {
           final titleOffset = fbb.writeString(object.title);
           final createdOffset =
               object.created == null ? null : fbb.writeString(object.created!);
-          final recordedOffset = object.recorded == null
-              ? null
-              : fbb.writeString(object.recorded!);
           final pathOffset = fbb.writeString(object.path);
           final tagsOffset = fbb.writeList(
               object.tags.map(fbb.writeString).toList(growable: false));
@@ -207,11 +214,11 @@ obx_int.ModelDefinition getObjectBoxModel() {
               object.source == null ? null : fbb.writeString(object.source!);
           final commentOffset = fbb.writeList(
               object.comment.map(fbb.writeString).toList(growable: false));
-          fbb.startTable(14);
+          fbb.startTable(17);
           fbb.addInt64(0, object.id);
           fbb.addOffset(1, titleOffset);
           fbb.addOffset(2, createdOffset);
-          fbb.addOffset(3, recordedOffset);
+          fbb.addInt64(3, object.recorded?.millisecondsSinceEpoch);
           fbb.addOffset(4, pathOffset);
           fbb.addOffset(5, tagsOffset);
           fbb.addOffset(6, coverOffset);
@@ -219,26 +226,31 @@ obx_int.ModelDefinition getObjectBoxModel() {
           fbb.addOffset(8, sourceOffset);
           fbb.addOffset(9, commentOffset);
           fbb.addInt64(10, object.duration);
-          fbb.addBool(11, object.like);
           fbb.addInt64(12, object.size);
+          fbb.addInt64(14, object.likeDate?.millisecondsSinceEpoch);
+          fbb.addInt64(15, object.wishDate?.millisecondsSinceEpoch);
           fbb.finish(fbb.endTable());
           return object.id;
         },
         objectFromFB: (obx.Store store, ByteData fbData) {
           final buffer = fb.BufferContext(fbData);
           final rootOffset = buffer.derefObject(0);
+          final recordedValue =
+              const fb.Int64Reader().vTableGetNullable(buffer, rootOffset, 10);
+          final likeDateValue =
+              const fb.Int64Reader().vTableGetNullable(buffer, rootOffset, 32);
+          final wishDateValue =
+              const fb.Int64Reader().vTableGetNullable(buffer, rootOffset, 34);
           final idParam =
               const fb.Int64Reader().vTableGet(buffer, rootOffset, 4, 0);
-          final sourceParam = const fb.StringReader(asciiOptimization: true)
-              .vTableGetNullable(buffer, rootOffset, 20);
-          final starParam =
-              const fb.Int64Reader().vTableGetNullable(buffer, rootOffset, 18);
-          final createdParam = const fb.StringReader(asciiOptimization: true)
-              .vTableGetNullable(buffer, rootOffset, 8);
           final titleParam = const fb.StringReader(asciiOptimization: true)
               .vTableGet(buffer, rootOffset, 6, '');
           final pathParam = const fb.StringReader(asciiOptimization: true)
               .vTableGet(buffer, rootOffset, 12, '');
+          final durationParam =
+              const fb.Int64Reader().vTableGet(buffer, rootOffset, 24, 0);
+          final sizeParam =
+              const fb.Int64Reader().vTableGet(buffer, rootOffset, 28, 0);
           final tagsParam = const fb.ListReader<String>(
                   fb.StringReader(asciiOptimization: true),
                   lazy: false)
@@ -251,27 +263,35 @@ obx_int.ModelDefinition getObjectBoxModel() {
                   fb.StringReader(asciiOptimization: true),
                   lazy: false)
               .vTableGet(buffer, rootOffset, 22, []);
-          final durationParam =
-              const fb.Int64Reader().vTableGet(buffer, rootOffset, 24, 0);
-          final likeParam =
-              const fb.BoolReader().vTableGet(buffer, rootOffset, 26, false);
-          final sizeParam =
-              const fb.Int64Reader().vTableGet(buffer, rootOffset, 28, 0);
+          final sourceParam = const fb.StringReader(asciiOptimization: true)
+              .vTableGetNullable(buffer, rootOffset, 20);
+          final starParam =
+              const fb.Int64Reader().vTableGetNullable(buffer, rootOffset, 18);
+          final createdParam = const fb.StringReader(asciiOptimization: true)
+              .vTableGetNullable(buffer, rootOffset, 8);
+          final likeDateParam = likeDateValue == null
+              ? null
+              : DateTime.fromMillisecondsSinceEpoch(likeDateValue);
+          final wishDateParam = wishDateValue == null
+              ? null
+              : DateTime.fromMillisecondsSinceEpoch(wishDateValue);
           final object = Movie(
               id: idParam,
-              source: sourceParam,
-              star: starParam,
-              created: createdParam,
               title: titleParam,
               path: pathParam,
+              duration: durationParam,
+              size: sizeParam,
               tags: tagsParam,
               cover: coverParam,
               comment: commentParam,
-              duration: durationParam,
-              like: likeParam,
-              size: sizeParam)
-            ..recorded = const fb.StringReader(asciiOptimization: true)
-                .vTableGetNullable(buffer, rootOffset, 10);
+              source: sourceParam,
+              star: starParam,
+              created: createdParam,
+              likeDate: likeDateParam,
+              wishDate: wishDateParam)
+            ..recorded = recordedValue == null
+                ? null
+                : DateTime.fromMillisecondsSinceEpoch(recordedValue);
 
           return object;
         }),
@@ -307,19 +327,20 @@ obx_int.ModelDefinition getObjectBoxModel() {
               const fb.Int64Reader().vTableGet(buffer, rootOffset, 4, 0);
           final nameParam = const fb.StringReader(asciiOptimization: true)
               .vTableGet(buffer, rootOffset, 6, '');
-          final descriptionParam =
-              const fb.StringReader(asciiOptimization: true)
-                  .vTableGetNullable(buffer, rootOffset, 8);
+          final createdParam = const fb.StringReader(asciiOptimization: true)
+              .vTableGet(buffer, rootOffset, 10, '');
           final moviesParam =
               const fb.ListReader<int>(fb.Int64Reader(), lazy: false)
                   .vTableGet(buffer, rootOffset, 18, []);
+          final descriptionParam =
+              const fb.StringReader(asciiOptimization: true)
+                  .vTableGetNullable(buffer, rootOffset, 8);
           final object = Category(
               id: idParam,
               name: nameParam,
-              description: descriptionParam,
-              movies: moviesParam)
-            ..created = const fb.StringReader(asciiOptimization: true)
-                .vTableGet(buffer, rootOffset, 10, '')
+              created: createdParam,
+              movies: moviesParam,
+              description: descriptionParam)
             ..star = const fb.Int64Reader()
                 .vTableGetNullable(buffer, rootOffset, 16);
 
@@ -345,7 +366,7 @@ class Movie_ {
 
   /// See [Movie.recorded].
   static final recorded =
-      obx.QueryStringProperty<Movie>(_entities[0].properties[3]);
+      obx.QueryDateProperty<Movie>(_entities[0].properties[3]);
 
   /// See [Movie.path].
   static final path =
@@ -375,13 +396,17 @@ class Movie_ {
   static final duration =
       obx.QueryIntegerProperty<Movie>(_entities[0].properties[10]);
 
-  /// See [Movie.like].
-  static final like =
-      obx.QueryBooleanProperty<Movie>(_entities[0].properties[11]);
-
   /// See [Movie.size].
   static final size =
-      obx.QueryIntegerProperty<Movie>(_entities[0].properties[12]);
+      obx.QueryIntegerProperty<Movie>(_entities[0].properties[11]);
+
+  /// See [Movie.likeDate].
+  static final likeDate =
+      obx.QueryDateProperty<Movie>(_entities[0].properties[12]);
+
+  /// See [Movie.wishDate].
+  static final wishDate =
+      obx.QueryDateProperty<Movie>(_entities[0].properties[13]);
 }
 
 /// [Category] entity fields to define ObjectBox queries.

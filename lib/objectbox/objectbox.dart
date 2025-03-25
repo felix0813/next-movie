@@ -1,60 +1,48 @@
-// object_box.dart
 import 'dart:async';
-import 'package:next_movie/app_path.dart';
+import 'dart:io';
 import 'package:path/path.dart' as p;
-
+import 'package:next_movie/app_path.dart';
 import 'objectbox.g.dart';
 
-/// ObjectBox instance singleton
 class ObjectBox {
-  /// The Store of this app.
   late final Store store;
+  static ObjectBox? _instance; // ✅ 正确声明静态实例变量
+   final _initCompleter = Completer<void>();
 
-  /// Private constructor to prevent direct instantiation.
-  ObjectBox._internal(this.store);
-
-  /// Singleton instance of ObjectBox.
-  static Future<ObjectBox>? _futureInstance;
-  static ObjectBox? _instance;
-
-  /// Initialize the ObjectBox instance asynchronously.
-  /// Call this in your `main()` function before running the app.
-  static Future<void> init() async {
-    _futureInstance ??= _create();
+  // 私有构造函数
+  ObjectBox._internal(this.store) {
+    _initCompleter.complete();
   }
 
-  /// Lazily creates the ObjectBox instance.
-  static Future<ObjectBox> _create() async {
-    try {
-      final docsDir = AppPaths.instance.appDocumentsDir;
-      final storePath = p.join(docsDir,"next_movie", "obx-next-movie");
-      final store = await openStore(directory: storePath);
-      _instance = ObjectBox._internal(store);
-      return _instance!;
-    } catch (e) {
-      // Log the error or handle it as needed
-      throw Exception('Failed to initialize ObjectBox: $e');
-    }
-  }
-
-  /// Provides a globally accessible getter for the Store.
-  Store get storeInstance => store;
-
-  /// Global accessor to the singleton instance.
-  /// This will throw an error if called before `init()` has completed.
-  static ObjectBox get instance {
-    if (_instance == null) {
-      throw Exception('ObjectBox has not been initialized. Call ObjectBox.init() first.');
-    }
+  /// 初始化ObjectBox（单例模式）
+  static Future<ObjectBox> initialize() async {
+    await _ensureInitialization();
     return _instance!;
   }
 
-  /// Asynchronously gets the singleton instance.
-  /// This method ensures that the instance is initialized before returning it.
-  static Future<ObjectBox> getInstance() async {
-    if (_futureInstance == null) {
-      await init();
-    }
-    return _futureInstance!;
+  /// 确保初始化完成（线程安全）
+  static Future<void> _ensureInitialization() async {
+      if (_instance == null) { // 双重检查防止重复初始化
+        final dir = await _createDirectory();
+        final store = await openStore(directory: dir.path);
+        _instance = ObjectBox._internal(store); // ✅ 正确赋值静态实例
+      }
   }
+
+  /// 创建存储目录（如果不存在）
+   static Future<Directory> _createDirectory() async {
+    final docsDir = AppPaths.instance.appDocumentsDir;
+    final fullPath = p.join(docsDir, 'next_movie', 'obx-next-movie');
+    final dir = Directory(fullPath);
+    if (!dir.existsSync()) {
+      await dir.create(recursive: true);
+    }
+    return dir;
+  }
+
+  /// 获取全局实例（初始化后访问）
+  static ObjectBox get instance => _instance!;
+
+  /// 类型安全的Box获取
+  static Box<T> getBox<T>() => _instance!.store.box<T>();
 }

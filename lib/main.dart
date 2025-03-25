@@ -2,13 +2,13 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
+import 'package:next_movie/objectbox/objectbox.dart';
 import 'package:next_movie/task/task_queue.dart';
 import 'package:next_movie/ui/page/home_page.dart';
 import 'package:path/path.dart';
 import 'package:provider/provider.dart';
 
 import 'app_path.dart';
-import 'provider/objectbox_provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,13 +34,11 @@ Future<void> main() async {
     logger.info('文件夹已存在: ${posterFolder.path}');
   }
   // 初始化 ObjectBoxProvider
-  final objectBoxProvider = ObjectBoxProvider();
-  await objectBoxProvider.init();
+  await ObjectBox.initialize();
 
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider.value(value: objectBoxProvider),
         ChangeNotifierProvider(create: (_) => TaskQueue()),
         // 如果有其他 providers，可以在这里添加
       ],
@@ -80,4 +78,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-

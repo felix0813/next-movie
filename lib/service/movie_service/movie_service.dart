@@ -1,29 +1,36 @@
 import 'package:flutter/cupertino.dart';
-import 'package:next_movie/provider/objectbox_provider.dart';
 
 import 'package:next_movie/model/movie.dart';
-import 'package:next_movie/objectbox/objectbox.g.dart';
+import 'package:next_movie/service/movie_service/error_task.dart';
 import 'package:next_movie/service/movie_service/thumbnail_task.dart';
 import 'package:next_movie/task/task_queue.dart';
 
+import 'package:next_movie/repository/movie_repository.dart';
 import 'importer/local_importer_impl.dart';
 
 class MovieService {
-  late final ObjectBoxProvider _objectBoxProvider;
-  final TaskQueue? _taskQueue;
-  MovieService(
-      {required ObjectBoxProvider objectBoxProvider, TaskQueue? taskQueue})
-      : _objectBoxProvider = objectBoxProvider,
-        _taskQueue = taskQueue;
-  void deleteMovie(List<int> ids) {
+  final _repository = MovieRepository();
+
+  late final TaskQueue? _taskQueue;
+
+  void deleteMovieAndThumbnail(List<int> ids) {
     if (_taskQueue == null) {
       throw Exception("Task queue is not initialized");
     }
-    //删除电影
-    Box<Movie> box = _objectBoxProvider.getBox<Movie>();
-    for (int id in ids) {
-      int tmp = box.remove(id) ? id : 0;
-      DeleteThumbnailTask(movieId: tmp, taskQueue: _taskQueue).run();
+    final fail = _repository.deleteMovie(ids);
+    for (var id in fail) {
+      ids.remove(id);
+      Movie? movie = _repository.getMovieById(id);
+      if (movie != null) {
+        ErrorTask(
+                message: "Fail to delete movie of path: ${movie.path}",
+                taskQueue: _taskQueue,
+                taskId: 'delete movie error: ${movie.path}')
+            .run();
+      }
+    }
+    for (var id in ids) {
+      DeleteThumbnailTask(movieId: id, taskQueue: _taskQueue).run();
     }
   }
 
@@ -33,8 +40,7 @@ class MovieService {
     if (_taskQueue == null) {
       throw Exception("Task queue is not initialized");
     }
-    LocalImporterImpl importer = LocalImporterImpl(
-        objectBoxProvider: _objectBoxProvider, taskQueue: _taskQueue);
+    LocalImporterImpl importer = LocalImporterImpl(taskQueue: _taskQueue);
     final result = await importer.getVideos();
     if (result.isEmpty) {
       return;
@@ -51,17 +57,11 @@ class MovieService {
     importer.storeMovie();
   }
 
-  List<Movie> getRecentAddMovie() {
-    return [];
-  }
+  List<Movie> getRecentAddMovie() => _repository.getRecentAddMovie();
 
-  List<Movie> getFavoriteMovie() {
-    return [];
-  }
+  List<Movie> getFavoriteMovie() => _repository.getFavoriteMovie();
 
-  List<Movie> getToWatchMovie() {
-    return [];
-  }
+  List<Movie> getToWatchMovie() => _repository.getToWatchMovie();
 
   List<Movie> getRecentWatchMovie() {
     return [];

@@ -8,7 +8,6 @@ class Movie {
   late int id;
   late String title;
   late int duration; //movie duration(in seconds)
-  late bool like; //like or not
   late int size; //file size(in bytes)
   late String path; //file path
   late List<String> tags;
@@ -18,7 +17,9 @@ class Movie {
   int? star; //rating
   String? source; //source of the movie
   String? created; //file created time
-  String? recorded; //time when the movie was recorded
+  DateTime? recorded; //time when the movie was recorded
+  DateTime? likeDate; //like or not
+  DateTime? wishDate; //to watch
 
 
   Movie({
@@ -26,7 +27,6 @@ class Movie {
     required this.title,
     required this.path,
     this.duration = 0,
-    this.like = false,
     this.size = 0,
     this.tags = const [],
     this.cover = const [], // 假设 MovieHistory 有一个无参构造函数
@@ -34,6 +34,8 @@ class Movie {
     this.source,
     this.star,
     this.created,
+    this.likeDate,
+    this.wishDate
   });
 
   @override

@@ -7,20 +7,17 @@ import 'package:next_movie/model/movie.dart';
 import 'package:next_movie/task/task_queue.dart';
 import 'package:path/path.dart';
 
-import 'package:next_movie/provider/objectbox_provider.dart';
+import 'package:next_movie/objectbox/objectbox.dart';
 
 class AddThumbnailTask {
   late final int _movieId;
   late final String _moviePath;
   late final TaskQueue _taskQueue;
-  late final ObjectBoxProvider _objectBoxProvider;
   AddThumbnailTask({
     required int movieId,
     required String moviePath,
     required TaskQueue taskQueue,
-    required ObjectBoxProvider objectBoxProvider,
-  })  : _objectBoxProvider = objectBoxProvider,
-        _moviePath = moviePath,
+  })  : _moviePath = moviePath,
         _movieId = movieId,
         _taskQueue = taskQueue;
   static final _logger = Logger('AddThumbnailTask');
@@ -37,8 +34,8 @@ class AddThumbnailTask {
         }
         final plugin = FcNativeVideoThumbnail();
         try {
-          String path = join(AppPaths.instance.appDocumentsDir,
-              "next_movie", "poster", "$_movieId.jpg");
+          String path = join(AppPaths.instance.appDocumentsDir, "next_movie",
+              "poster", "$_movieId.jpg");
           final thumbnailGenerated = await plugin.getVideoThumbnail(
               srcFile: _moviePath,
               destFile: path,
@@ -48,7 +45,7 @@ class AddThumbnailTask {
               quality: 90);
           if (thumbnailGenerated) {
             _logger.info('Thumbnail for $_movieId generated');
-            final box = _objectBoxProvider.getBox<Movie>();
+            final box = ObjectBox.getBox<Movie>();
             final movie = box.get(_movieId);
             if (movie == null) {
               _logger.warning('Movie $_movieId not found');
@@ -80,15 +77,12 @@ class DeleteThumbnailTask {
   void run() {
     _taskQueue.addTask(TaskItem(
       () async {
-        if(_movieId==0){
+        if (_movieId == 0) {
           throw Exception("Delete movie error: Database fail to remove movie");
         }
         try {
-          String filePath = join(
-              AppPaths.instance.appDocumentsDir,
-              "next_movie",
-              "poster",
-              "$_movieId.jpg");
+          String filePath = join(AppPaths.instance.appDocumentsDir,
+              "next_movie", "poster", "$_movieId.jpg");
           File file = File(filePath);
           // 检查文件是否存在
           if (file.existsSync()) {

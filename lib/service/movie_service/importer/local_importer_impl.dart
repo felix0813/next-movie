@@ -7,16 +7,16 @@ import 'package:next_movie/model/movie.dart';
 import 'package:next_movie/service/movie_service/thumbnail_task.dart';
 import 'package:next_movie/utils/time.dart';
 
-import 'package:next_movie/provider/objectbox_provider.dart';
 import 'package:next_movie/task/task_queue.dart';
 import 'package:next_movie/objectbox/objectbox.g.dart';
+import 'package:next_movie/objectbox/objectbox.dart';
 import 'importer.dart';
 import 'package:media_info/media_info.dart' as m;
 
 class LocalImporterImpl extends Importer {
   static final _logger = Logger('LocalImporterImpl');
   late List<Movie> _videos;
-  ObjectBoxProvider objectBoxProvider;
+  final box=ObjectBox.getBox<Movie>();
   TaskQueue? taskQueue;
 
   @override
@@ -77,13 +77,12 @@ class LocalImporterImpl extends Importer {
       if (video.path == '') {
         continue;
       }
-      Box box = objectBoxProvider.getBox<Movie>();
       if (box.query(Movie_.title.equals(video.title)).build().count() > 0) {
         video.title = '';
         continue;
       }
       video.duration = await getVideoDuration(video.path);
-      video.recorded = DateTime.now().toLocal().toString().split(".")[0];
+      video.recorded = DateTime.now().toLocal();
       await getVideoCreatedTime(video);
     }
   }
@@ -104,7 +103,6 @@ class LocalImporterImpl extends Importer {
     if (taskQueue == null) {
       return 0;
     }
-    final box = objectBoxProvider.getBox<Movie>();
     int count = 0;
     for (var video in _videos) {
       var id = 0;
@@ -116,7 +114,7 @@ class LocalImporterImpl extends Importer {
           movieId: id,
           moviePath: video.path,
           taskQueue: taskQueue!,
-          objectBoxProvider: objectBoxProvider);
+          );
       task.run();
     }
     return count;
@@ -129,7 +127,6 @@ class LocalImporterImpl extends Importer {
 
   LocalImporterImpl(
       {List<Movie> videos = const [],
-      required this.objectBoxProvider,
       this.taskQueue})
       : _videos = videos;
 }
