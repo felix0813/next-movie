@@ -2,13 +2,15 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:next_movie/model/movie.dart';
 import 'package:next_movie/ui/video_card.dart';
 import 'package:tdesign_flutter/tdesign_flutter.dart';
 
 class HomeContentRow extends StatefulWidget {
   final String title;
   final int itemCount;
-  const HomeContentRow({super.key,required this.title,required this.itemCount});
+  const HomeContentRow(
+      {super.key, required this.title, required this.itemCount});
 
   @override
   HomeContentRowState createState() => HomeContentRowState();
@@ -77,19 +79,16 @@ class HomeContentRowState extends State<HomeContentRow> {
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
     double itemWidth =
-    max((MediaQuery.of(context).size.width - 20) / 5 - 20, 80);
+        max((MediaQuery.of(context).size.width - 20) / 5 - 20, 80);
     double itemHeight = itemWidth / 16 * 9;
     return Column(
       children: [
-
         // 标题栏容器（改为Row布局）
         Row(
-          mainAxisAlignment:
-          MainAxisAlignment.spaceBetween, // 关键：设置主轴对齐方式
+          mainAxisAlignment: MainAxisAlignment.spaceBetween, // 关键：设置主轴对齐方式
           children: [
             // 行首组件（左侧按钮）
             Padding(
@@ -114,8 +113,8 @@ class HomeContentRowState extends State<HomeContentRow> {
                     icon: const Icon(TDIcons.arrow_left),
                     onPressed: _showLeftButton
                         ? () {
-                      _scrollLeft(itemWidth);
-                    }
+                            _scrollLeft(itemWidth);
+                          }
                         : null,
                     tooltip: 'scroll left',
                   ),
@@ -123,8 +122,8 @@ class HomeContentRowState extends State<HomeContentRow> {
                     icon: const Icon(TDIcons.arrow_right),
                     onPressed: _showRightButton
                         ? () {
-                      _scrollRight(itemWidth);
-                    }
+                            _scrollRight(itemWidth);
+                          }
                         : null,
                     tooltip: 'scroll right',
                   ),
@@ -135,7 +134,7 @@ class HomeContentRowState extends State<HomeContentRow> {
         ),
         // 内容容器
         SizedBox(
-          height: itemHeight * 2 / 3, // 包含间距
+          height: itemHeight * 2 / 3 + 30, // 包含间距
           child: Row(
             children: [
               Expanded(
@@ -145,8 +144,12 @@ class HomeContentRowState extends State<HomeContentRow> {
                   scrollDirection: Axis.horizontal,
                   itemCount: widget.itemCount, // 确保足够多的item
                   itemBuilder: (context, index) => VideoCard(
-                    itemWidth: itemWidth * 2 / 3,
-                    itemHeight: itemHeight * 2 / 3,
+                    movie: Movie(
+                      star: 5,
+                        title: "longlonglonglonglonglonglonglonglongtitle",
+                        path: "/test/path.mp4"),
+                    itemWidth: itemWidth * 2 / 3 + 10,
+                    itemHeight: itemHeight * 2 / 3 + 30,
                     index: index,
                   ),
                 ),
