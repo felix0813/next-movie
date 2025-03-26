@@ -13,9 +13,10 @@ class CategoryService {
   bool create(String name, String description) {
     if (name.isEmpty) {
       ErrorTask(
-          taskId: "Add new category $name fail",
-          message: 'Category name cannot be empty',
-          taskQueue: _taskQueue!).run();
+              taskId: "Add new category $name fail",
+              message: 'Category name cannot be empty',
+              taskQueue: _taskQueue!)
+          .run();
     }
     final category = Category(
         name: name,
@@ -33,6 +34,18 @@ class CategoryService {
     final category = _repository.getCategoryById(id);
     if (category != null) {
       category.name = name;
+      return _repository.updateCategory(category) == id;
+    }
+    return false;
+  }
+
+  bool addMovies(int id, List<int> movies) {
+    final category = _repository.getCategoryById(id);
+    if (category != null) {
+      List<int> result = List.empty(growable: true);
+      result.addAll(category.movies);
+      result.addAll(movies);
+      category.movies = result;
       return _repository.updateCategory(category) == id;
     }
     return false;

@@ -6,7 +6,7 @@ class MovieRepository {
   final _movieBox = ObjectBox.getBox<Movie>();
 
   List<int> deleteMovie(List<int> ids) {
-    List<int> fail = List.empty();
+    List<int> fail = List.empty(growable: true);
     for (int id in ids) {
       if (!_movieBox.remove(id)) {
         fail.add(id);
