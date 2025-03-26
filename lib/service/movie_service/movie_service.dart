@@ -34,6 +34,60 @@ class MovieService {
     }
   }
 
+  bool like(int id, bool like) {
+    Movie? movie = _repository.getMovieById(id);
+    if (movie != null) {
+      movie.likeDate = like ? DateTime.now().toLocal() : null;
+      return _repository.storeMovie(movie) == id;
+    }
+    return false;
+  }
+
+  bool wish(int id, bool wish){
+    Movie? movie = _repository.getMovieById(id);
+    if (movie != null) {
+      movie.wishDate = wish ? DateTime.now().toLocal() : null;
+      return _repository.storeMovie(movie) == id;
+    }
+    return false;
+  }
+
+  bool star(int id,int stars){
+    Movie? movie = _repository.getMovieById(id);
+    if (movie != null) {
+      movie.star = stars;
+      return _repository.storeMovie(movie) == id;
+    }
+    return false;
+  }
+
+  bool addSource(int id,String source){
+    Movie? movie = _repository.getMovieById(id);
+    if (movie != null) {
+      movie.source = source;
+      return _repository.storeMovie(movie) == id;
+    }
+    return false;
+  }
+
+  bool updateTags(int id,List <String> tags){
+    Movie? movie = _repository.getMovieById(id);
+    if (movie != null) {
+      movie.tags = tags;
+      return _repository.storeMovie(movie) == id;
+    }
+    return false;
+  }
+
+  bool updateComments(int id,List <String> comments){
+    Movie? movie = _repository.getMovieById(id);
+    if (movie != null) {
+      movie.comment = comments;
+      return _repository.storeMovie(movie) == id;
+    }
+    return false;
+  }
+
   Future<void> importMovie(
       Future<MovieExtraMeta?> Function(BuildContext) getExtraMeta,
       BuildContext context) async {

@@ -45,4 +45,6 @@ class MovieRepository {
       .order(Movie_.recorded, flags: Order.descending)
       .build()
       .findFirst();
+
+  int storeMovie(Movie movie) => _movieBox.put(movie, mode: PutMode.update);
 }

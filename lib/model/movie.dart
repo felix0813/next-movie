@@ -1,24 +1,28 @@
 import 'package:objectbox/objectbox.dart';
 
-import 'movie_history.dart';
-
 @Entity()
 class Movie {
   @Id()
   late int id;
   late String title;
+  @Index()
   late int duration; //movie duration(in seconds)
   late int size; //file size(in bytes)
   late String path; //file path
   late List<String> tags;
   late List<String> cover; //cover image path
   late List<String> comment;
-  MovieHistory? history;
   int? star; //rating
   String? source; //source of the movie
   String? created; //file created time
+  @Index()
+  @Property(type: PropertyType.date)
   DateTime? recorded; //time when the movie was recorded
+  @Index()
+  @Property(type: PropertyType.date)
   DateTime? likeDate; //like or not
+  @Index()
+  @Property(type: PropertyType.date)
   DateTime? wishDate; //to watch
 
 
