@@ -11,7 +11,9 @@ import 'importer/local_importer_impl.dart';
 class MovieService {
   final _repository = MovieRepository();
 
-  late final TaskQueue? _taskQueue;
+  final TaskQueue? _taskQueue;
+
+  MovieService({TaskQueue? taskQueue}) : _taskQueue = taskQueue;
 
   void deleteMovieAndThumbnail(List<int> ids) {
     if (_taskQueue == null) {
@@ -43,7 +45,7 @@ class MovieService {
     return false;
   }
 
-  bool wish(int id, bool wish){
+  bool wish(int id, bool wish) {
     Movie? movie = _repository.getMovieById(id);
     if (movie != null) {
       movie.wishDate = wish ? DateTime.now().toLocal() : null;
@@ -52,7 +54,7 @@ class MovieService {
     return false;
   }
 
-  bool star(int id,int stars){
+  bool star(int id, int stars) {
     Movie? movie = _repository.getMovieById(id);
     if (movie != null) {
       movie.star = stars;
@@ -61,7 +63,7 @@ class MovieService {
     return false;
   }
 
-  bool addSource(int id,String source){
+  bool addSource(int id, String source) {
     Movie? movie = _repository.getMovieById(id);
     if (movie != null) {
       movie.source = source;
@@ -70,7 +72,7 @@ class MovieService {
     return false;
   }
 
-  bool updateTags(int id,List <String> tags){
+  bool updateTags(int id, List<String> tags) {
     Movie? movie = _repository.getMovieById(id);
     if (movie != null) {
       movie.tags = tags;
@@ -79,7 +81,7 @@ class MovieService {
     return false;
   }
 
-  bool updateComments(int id,List <String> comments){
+  bool updateComments(int id, List<String> comments) {
     Movie? movie = _repository.getMovieById(id);
     if (movie != null) {
       movie.comment = comments;

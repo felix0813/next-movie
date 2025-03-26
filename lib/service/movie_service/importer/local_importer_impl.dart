@@ -107,7 +107,7 @@ class LocalImporterImpl extends Importer {
     for (var video in _videos) {
       var id = 0;
       if (video.path != '' && video.title != '') {
-        id = box.put(video);
+        id = box.put(video,mode: PutMode.insert);
         count++;
       }
       AddThumbnailTask task = AddThumbnailTask(

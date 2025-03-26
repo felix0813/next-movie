@@ -6,7 +6,8 @@ class Category {
   @Id()
   late int id;
   late String name;
-  late String created;
+  @Property(type: PropertyType.date)
+  late DateTime created;
   late List<int> movies;
   int? star;
   String? description;
@@ -14,8 +15,8 @@ class Category {
 
   Category({
     this.id = 0,
-    this.name='',
-    this.created='',
+    required this.name,
+    required this.created,
     movies = const [],
     this.description,
   });

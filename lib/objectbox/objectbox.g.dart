@@ -45,7 +45,8 @@ final _entities = <obx_int.ModelEntity>[
             id: const obx_int.IdUid(4, 8262918073199919378),
             name: 'recorded',
             type: 10,
-            flags: 0),
+            flags: 8,
+            indexId: const obx_int.IdUid(2, 4172988536739682864)),
         obx_int.ModelProperty(
             id: const obx_int.IdUid(5, 6778409811885438846),
             name: 'path',
@@ -80,7 +81,8 @@ final _entities = <obx_int.ModelEntity>[
             id: const obx_int.IdUid(11, 2283577620703171586),
             name: 'duration',
             type: 6,
-            flags: 0),
+            flags: 8,
+            indexId: const obx_int.IdUid(1, 3968564734245637162)),
         obx_int.ModelProperty(
             id: const obx_int.IdUid(13, 4675245135213612837),
             name: 'size',
@@ -90,12 +92,14 @@ final _entities = <obx_int.ModelEntity>[
             id: const obx_int.IdUid(15, 7010489784881065200),
             name: 'likeDate',
             type: 10,
-            flags: 0),
+            flags: 8,
+            indexId: const obx_int.IdUid(3, 139136267593840787)),
         obx_int.ModelProperty(
             id: const obx_int.IdUid(16, 2718343184638004001),
             name: 'wishDate',
             type: 10,
-            flags: 0)
+            flags: 8,
+            indexId: const obx_int.IdUid(4, 5206353645984327553))
       ],
       relations: <obx_int.ModelRelation>[],
       backlinks: <obx_int.ModelBacklink>[]),
@@ -123,7 +127,7 @@ final _entities = <obx_int.ModelEntity>[
         obx_int.ModelProperty(
             id: const obx_int.IdUid(4, 4569150546869758524),
             name: 'created',
-            type: 9,
+            type: 10,
             flags: 0),
         obx_int.ModelProperty(
             id: const obx_int.IdUid(7, 1757268088159858535),
@@ -176,7 +180,7 @@ obx_int.ModelDefinition getObjectBoxModel() {
   final model = obx_int.ModelInfo(
       entities: _entities,
       lastEntityId: const obx_int.IdUid(2, 5643815084047552370),
-      lastIndexId: const obx_int.IdUid(0, 0),
+      lastIndexId: const obx_int.IdUid(4, 5206353645984327553),
       lastRelationId: const obx_int.IdUid(0, 0),
       lastSequenceId: const obx_int.IdUid(0, 0),
       retiredEntityUids: const [],
@@ -308,13 +312,12 @@ obx_int.ModelDefinition getObjectBoxModel() {
           final descriptionOffset = object.description == null
               ? null
               : fbb.writeString(object.description!);
-          final createdOffset = fbb.writeString(object.created);
           final moviesOffset = fbb.writeListInt64(object.movies);
           fbb.startTable(9);
           fbb.addInt64(0, object.id);
           fbb.addOffset(1, nameOffset);
           fbb.addOffset(2, descriptionOffset);
-          fbb.addOffset(3, createdOffset);
+          fbb.addInt64(3, object.created.millisecondsSinceEpoch);
           fbb.addInt64(6, object.star);
           fbb.addOffset(7, moviesOffset);
           fbb.finish(fbb.endTable());
@@ -327,8 +330,8 @@ obx_int.ModelDefinition getObjectBoxModel() {
               const fb.Int64Reader().vTableGet(buffer, rootOffset, 4, 0);
           final nameParam = const fb.StringReader(asciiOptimization: true)
               .vTableGet(buffer, rootOffset, 6, '');
-          final createdParam = const fb.StringReader(asciiOptimization: true)
-              .vTableGet(buffer, rootOffset, 10, '');
+          final createdParam = DateTime.fromMillisecondsSinceEpoch(
+              const fb.Int64Reader().vTableGet(buffer, rootOffset, 10, 0));
           final moviesParam =
               const fb.ListReader<int>(fb.Int64Reader(), lazy: false)
                   .vTableGet(buffer, rootOffset, 18, []);
@@ -425,7 +428,7 @@ class Category_ {
 
   /// See [Category.created].
   static final created =
-      obx.QueryStringProperty<Category>(_entities[1].properties[3]);
+      obx.QueryDateProperty<Category>(_entities[1].properties[3]);
 
   /// See [Category.star].
   static final star =
