@@ -8,7 +8,7 @@ import 'package:next_movie/ui/page/home_page.dart';
 import 'package:path/path.dart';
 import 'package:provider/provider.dart';
 
-import 'app_path.dart';
+import 'utils/app_path.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

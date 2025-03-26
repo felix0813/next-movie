@@ -15,7 +15,7 @@ class CategoryService {
       ErrorTask(
           taskId: "Add new category $name fail",
           message: 'Category name cannot be empty',
-          taskQueue: _taskQueue!);
+          taskQueue: _taskQueue!).run();
     }
     final category = Category(
         name: name,

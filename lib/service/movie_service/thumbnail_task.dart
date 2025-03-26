@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:fc_native_video_thumbnail/fc_native_video_thumbnail.dart';
 import 'package:logging/logging.dart';
-import 'package:next_movie/app_path.dart';
+import 'package:next_movie/utils/app_path.dart';
 import 'package:next_movie/model/movie.dart';
 import 'package:next_movie/task/task_queue.dart';
 import 'package:path/path.dart';

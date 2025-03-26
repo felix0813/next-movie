@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:path/path.dart' as p;
-import 'package:next_movie/app_path.dart';
+import 'package:next_movie/utils/app_path.dart';
 import 'objectbox.g.dart';
 
 class ObjectBox {
