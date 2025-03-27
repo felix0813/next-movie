@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:tdesign_flutter/tdesign_flutter.dart';
 
-import '../model/movie.dart';
+import 'package:next_movie/model/movie.dart';
 
 class VideoCard extends StatefulWidget {
   const VideoCard(

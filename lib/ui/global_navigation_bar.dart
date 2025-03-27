@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tdesign_flutter/tdesign_flutter.dart';
 
-import '../task/task_queue.dart';
+import 'package:next_movie/task/task_queue.dart';
 
 class GlobalNavigationBar extends StatelessWidget
     implements PreferredSizeWidget {

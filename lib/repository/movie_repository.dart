@@ -1,6 +1,6 @@
-import '../model/movie.dart';
-import '../objectbox/objectbox.dart';
-import '../objectbox/objectbox.g.dart';
+import 'package:next_movie/model/movie.dart';
+import 'package:next_movie/objectbox/objectbox.dart';
+import 'package:next_movie/objectbox/objectbox.g.dart';
 
 class MovieRepository {
   final _movieBox = ObjectBox.getBox<Movie>();

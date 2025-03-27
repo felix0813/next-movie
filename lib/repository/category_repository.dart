@@ -1,6 +1,6 @@
-import '../model/category.dart';
-import '../objectbox/objectbox.dart';
-import '../objectbox/objectbox.g.dart';
+import 'package:next_movie/model/category.dart';
+import 'package:next_movie/objectbox/objectbox.dart';
+import 'package:next_movie/objectbox/objectbox.g.dart';
 
 class CategoryRepository {
   final _box = ObjectBox.getBox<Category>();
