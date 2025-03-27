@@ -59,54 +59,57 @@ class HomePageState extends State<HomePage> {
           // 左侧视频入口 - 使用弹性布局适配不同宽度
           Expanded(
             flex: 0, // 占据50%可用宽度
-            child: GestureDetector(
-              onTap: () {
-                //todo
-              },
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-                child: Stack(
-                  children: [
-                    // 背景图使用占位符，实际使用时替换为真实图片
-                    Container(
-                      width: singleWidth,
-                      height: singleHeight,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10.0),
-                          color: Colors.blue,
-                          image: latestId != 0
-                              ? DecorationImage(
-                                  fit: BoxFit.cover,
-                                  image: FileImage(File(join(
-                                      AppPaths.instance.appDocumentsDir,
-                                      "next_movie",
-                                      "poster",
-                                      "${_movieService.getLatestMovieId()}.jpg"))),
-                                )
-                              : null),
-                    ),
-                    // 半透明蒙层
-                    Container(
-                      width: singleWidth,
-                      height: singleHeight,
-                      decoration: BoxDecoration(
-                        color: Colors.black.withValues(alpha: 0.5),
-                        borderRadius: BorderRadius.circular(10.0),
+            child: MouseRegion(
+              cursor: SystemMouseCursors.click,
+              child: GestureDetector(
+                onTap: () {
+                  //todo
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  child: Stack(
+                    children: [
+                      // 背景图使用占位符，实际使用时替换为真实图片
+                      Container(
+                        width: singleWidth,
+                        height: singleHeight,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10.0),
+                            color: Colors.blue,
+                            image: latestId != 0
+                                ? DecorationImage(
+                                    fit: BoxFit.cover,
+                                    image: FileImage(File(join(
+                                        AppPaths.instance.appDocumentsDir,
+                                        "next_movie",
+                                        "poster",
+                                        "${_movieService.getLatestMovieId()}.jpg"))),
+                                  )
+                                : null),
                       ),
-                      padding: const EdgeInsets.all(12.0),
-                      alignment: Alignment.center,
-                      child: Text(
-                        'Movie',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 18.0,
-                          fontWeight: FontWeight.w600,
+                      // 半透明蒙层
+                      Container(
+                        width: singleWidth,
+                        height: singleHeight,
+                        decoration: BoxDecoration(
+                          color: Colors.black.withValues(alpha: 0.5),
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        padding: const EdgeInsets.all(12.0),
+                        alignment: Alignment.center,
+                        child: Text(
+                          'Movie',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 18.0,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -114,31 +117,33 @@ class HomePageState extends State<HomePage> {
 
           // 右侧分类入口 - 保持相同比例
           SizedBox(
-            width: singleWidth,
-            height: singleHeight,
-            child: GestureDetector(
-              onTap: () {
-                //todo
-              },
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.blue,
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-                height: 150,
-                padding: const EdgeInsets.all(12.0),
-                alignment: Alignment.center,
-                child: Text(
-                  'Category',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 18.0,
-                    fontWeight: FontWeight.w600,
+              width: singleWidth,
+              height: singleHeight,
+              child: MouseRegion(
+                cursor: SystemMouseCursors.click,
+                child: GestureDetector(
+                  onTap: () {
+                    //todo
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.blue,
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    height: 150,
+                    padding: const EdgeInsets.all(12.0),
+                    alignment: Alignment.center,
+                    child: Text(
+                      'Category',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ),
-          ),
+              )),
         ],
       ),
     );
