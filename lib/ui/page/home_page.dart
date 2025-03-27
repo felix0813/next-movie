@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:next_movie/service/movie_service/movie_service.dart';
 import 'package:next_movie/ui/home_content_row.dart';
+import 'package:path/path.dart';
+import '../../utils/app_path.dart';
 import '../global_navigation_bar.dart';
 import 'dart:math';
 
@@ -12,7 +16,7 @@ class HomePage extends StatefulWidget {
 }
 
 class HomePageState extends State<HomePage> {
-  final _movieService=MovieService();
+  final _movieService = MovieService();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,19 +24,29 @@ class HomePageState extends State<HomePage> {
           title: "NextMovie",
         ),
         body: SingleChildScrollView(
-            padding: EdgeInsets.only(left: 25,bottom: MediaQuery.of(context).size.height*0.1),
+            padding: EdgeInsets.only(
+                left: 25, bottom: MediaQuery.of(context).size.height * 0.1),
             child: Column(children: [
               // 头部导航栏
-              _buildHeaderRow(),
-              HomeContentRow(title: "New",movies: _movieService.getRecentAddMovieInHome()),
-              HomeContentRow(title: "ToWatch", movies: _movieService.getToWatchMovieInHome()),
-              HomeContentRow(title: "Like", movies: _movieService.getFavoriteMovieInHome()),
-              HomeContentRow(title: "History", movies: _movieService.getRecentWatchMovie()),
+              _buildHeaderRow(context),
+              HomeContentRow(
+                  title: "New",
+                  movies: _movieService.getRecentAddMovieInHome()),
+              HomeContentRow(
+                  title: "ToWatch",
+                  movies: _movieService.getToWatchMovieInHome()),
+              HomeContentRow(
+                  title: "Like",
+                  movies: _movieService.getFavoriteMovieInHome()),
+              HomeContentRow(
+                  title: "History",
+                  movies: _movieService.getRecentWatchMovie()),
             ])));
   }
 
   // 构建头部导航行
-  Widget _buildHeaderRow() {
+  Widget _buildHeaderRow(BuildContext context) {
+    int latestId = _movieService.getLatestMovieId() ?? 0;
     double singleWidth = min(320, (MediaQuery.of(context).size.width - 35) / 2);
     double singleHeight = singleWidth * 9 / 16;
     return Padding(
@@ -61,12 +75,17 @@ class HomePageState extends State<HomePage> {
                       height: singleHeight,
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10.0),
-                          image: DecorationImage(
-                            fit: BoxFit.cover,
-                            image: NetworkImage(
-                              'https://picsum.photos/300/150?random=1',
-                            ),
-                          )),
+                          color: Colors.blue,
+                          image: latestId != 0
+                              ? DecorationImage(
+                                  fit: BoxFit.cover,
+                                  image: FileImage(File(join(
+                                      AppPaths.instance.appDocumentsDir,
+                                      "next_movie",
+                                      "poster",
+                                      "${_movieService.getLatestMovieId()}.jpg"))),
+                                )
+                              : null),
                     ),
                     // 半透明蒙层
                     Container(

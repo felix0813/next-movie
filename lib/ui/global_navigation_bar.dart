@@ -70,18 +70,18 @@ class GlobalNavigationBar extends StatelessWidget
     await showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('任务状态'),
+        title: const Text('Task Status'),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
                 leading: const Icon(TDIcons.loading),
-                title: Text('运行中任务: ${taskQueue.runningTasks}'),
+                title: Text('Running Task: ${taskQueue.runningTasks}'),
               ),
               ListTile(
                 leading: const Icon(Icons.queue),
-                title: Text('队列任务: ${taskQueue.queueLength}'),
+                title: Text('Waiting Task: ${taskQueue.queueLength}'),
               ),
               if (taskQueue.queueLength > 0)
                 ListView.builder(
@@ -91,10 +91,10 @@ class GlobalNavigationBar extends StatelessWidget
                   itemBuilder: (context, index) {
                     final task = taskQueue.tasks.elementAt(index);
                     return ListTile(
-                      title: Text('任务 ${index + 1} (ID: ${task.id})'),
+                      title: Text('Task ${index + 1} (ID: ${task.id})'),
                       subtitle: task.task is Future<void>
                           ? null
-                          : Text('详情: ${task.task.toString()}'), // 根据需要显示更多任务信息
+                          : Text('Detail: ${task.task.toString()}'), // 根据需要显示更多任务信息
                     );
                   },
                 ),
@@ -104,7 +104,7 @@ class GlobalNavigationBar extends StatelessWidget
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('关闭'),
+            child: const Text('Close'),
           ),
         ],
       ),
@@ -119,13 +119,13 @@ class GlobalNavigationBar extends StatelessWidget
     await showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('错误详情'),
+        title: const Text('Error Task'),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               if (errors.isEmpty)
-                const Text('暂无错误')
+                const Text('No error')
               else
                 Column(
                   children:
@@ -157,7 +157,7 @@ class GlobalNavigationBar extends StatelessWidget
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: ListTile(
         leading: const Icon(Icons.error_outline, color: Colors.red),
-        title: Text('任务 ${error.task.id} 失败'),
+        title: Text('Task ${error.task.id} fail'),
         subtitle: Text(error.error),
         trailing: IconButton(
           icon: const Icon(Icons.refresh, color: Colors.blue),
@@ -167,11 +167,11 @@ class GlobalNavigationBar extends StatelessWidget
               // 重试成功后，可以选择不立即清除，但通常需要重新检查任务状态
               // 这里可以选择不自动清除，而是让用户再次查看状态
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('任务 ${error.task.id} 重试成功')),
+                SnackBar(content: Text('Task ${error.task.id} succeed by retrying')),
               );
             } catch (e) {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('重试任务 ${error.task.id} 失败: $e')),
+                SnackBar(content: Text('Retry ${error.task.id} fail: $e')),
               );
             }
           },

@@ -128,6 +128,8 @@ class MovieService {
   List<int> getRecentWatchMovie() {
     return [];
   }
+
+  int? getLatestMovieId()=>_repository.getLatestMovie()?.id;
 }
 
 class MovieExtraMeta {
