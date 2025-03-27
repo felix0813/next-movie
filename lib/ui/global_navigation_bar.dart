@@ -1,20 +1,35 @@
 import 'package:flutter/material.dart';
+import 'package:next_movie/service/movie_service/movie_service.dart';
 import 'package:provider/provider.dart';
 import 'package:tdesign_flutter/tdesign_flutter.dart';
-
 import 'package:next_movie/task/task_queue.dart';
+import 'movie_extra_meta_form.dart';
 
 class GlobalNavigationBar extends StatelessWidget
     implements PreferredSizeWidget {
   final String title;
   const GlobalNavigationBar({super.key, required this.title});
-
+  Future<MovieExtraMeta?> getExtraMeta(BuildContext context) {
+    return showModalBottomSheet<MovieExtraMeta>(
+      context: context,
+      builder: (context) {
+        return MovieExtraMetaForm();
+      },
+    );
+  }
   @override
   Widget build(BuildContext context) {
     return AppBar(
       title: Text(title),
       elevation: 0,
       actions: [
+        IconButton(icon: Icon(TDIcons.folder_import),tooltip: 'import video', onPressed: () {
+          final movieService=MovieService(taskQueue: Provider.of<TaskQueue>(context, listen: false));
+          movieService.importMovie(getExtraMeta, context);
+        },),
+        IconButton(icon: Icon(TDIcons.file_import),tooltip: 'add category', onPressed: () {
+          //todo
+        },),
         Consumer<TaskQueue>(
           builder: (context, taskQueue, child) {
             final errorCount = taskQueue.errorCount;
@@ -23,7 +38,7 @@ class GlobalNavigationBar extends StatelessWidget
               children: [
                 IconButton(
                   icon: const Icon(Icons.notifications),
-                  tooltip: '查看任务状态',
+                  tooltip: 'show task status',
                   onPressed: () {
                     if (errorCount > 0) {
                       _showErrorDialog(context, taskQueue);
@@ -168,6 +183,3 @@ class GlobalNavigationBar extends StatelessWidget
   @override
   Size get preferredSize => const Size.fromHeight(60);
 }
-
-/// 自定义 Badge 小部件（如果需要自定义样式，可以扩展此部分）
-// 这里我们使用 TDesign 的 TDBadge，已经满足需求

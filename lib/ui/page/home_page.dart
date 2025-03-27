@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:next_movie/service/movie_service/movie_service.dart';
 import 'package:next_movie/ui/home_content_row.dart';
 import '../global_navigation_bar.dart';
 import 'dart:math';
@@ -11,6 +12,7 @@ class HomePage extends StatefulWidget {
 }
 
 class HomePageState extends State<HomePage> {
+  final _movieService=MovieService();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,10 +24,10 @@ class HomePageState extends State<HomePage> {
             child: Column(children: [
               // 头部导航栏
               _buildHeaderRow(),
-              HomeContentRow(title: "Like", itemCount: 20),
-              HomeContentRow(title: "History", itemCount: 20),
-              HomeContentRow(title: "New", itemCount: 20),
-              HomeContentRow(title: "ToWatch", itemCount: 20),
+              HomeContentRow(title: "Like", movies: _movieService.getFavoriteMovie()),
+              HomeContentRow(title: "History", movies: _movieService.getRecentWatchMovie()),
+              HomeContentRow(title: "New",movies: _movieService.getRecentAddMovie()),
+              HomeContentRow(title: "ToWatch", movies: _movieService.getToWatchMovie()),
             ])));
   }
 

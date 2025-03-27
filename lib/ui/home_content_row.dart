@@ -8,9 +8,9 @@ import 'package:tdesign_flutter/tdesign_flutter.dart';
 
 class HomeContentRow extends StatefulWidget {
   final String title;
-  final int itemCount;
+  final List<Movie> movies;
   const HomeContentRow(
-      {super.key, required this.title, required this.itemCount});
+      {super.key, required this.title, required this.movies});
 
   @override
   HomeContentRowState createState() => HomeContentRowState();
@@ -81,6 +81,9 @@ class HomeContentRowState extends State<HomeContentRow> {
 
   @override
   Widget build(BuildContext context) {
+    if(widget.movies.isEmpty){
+      return Container();
+    }
     double itemWidth =
         max((MediaQuery.of(context).size.width - 20) / 5 - 20, 80);
     double itemHeight = itemWidth / 16 * 9;
@@ -142,12 +145,9 @@ class HomeContentRowState extends State<HomeContentRow> {
                   controller: _scrollController,
                   physics: const ClampingScrollPhysics(),
                   scrollDirection: Axis.horizontal,
-                  itemCount: widget.itemCount, // 确保足够多的item
+                  itemCount: widget.movies.length, // 确保足够多的item
                   itemBuilder: (context, index) => VideoCard(
-                    movie: Movie(
-                      star: 5,
-                        title: "longlonglonglonglonglonglonglonglongtitle",
-                        path: "/test/path.mp4"),
+                    movie: widget.movies[index],
                     itemWidth: itemWidth * 2 / 3 + 10,
                     itemHeight: itemHeight * 2 / 3 + 30,
                     index: index,

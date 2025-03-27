@@ -1,6 +1,9 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:next_movie/utils/app_path.dart';
+import 'package:path/path.dart';
 import 'package:tdesign_flutter/tdesign_flutter.dart';
 
 import 'package:next_movie/model/movie.dart';
@@ -27,6 +30,15 @@ class VideoCardState extends State<VideoCard> {
   bool isWishHovered = false;
   bool isCoverHovered = false;
   bool isPlayHovered = false;
+
+  bool checkThumbnailExist()  {
+  final file=File(join(AppPaths.instance.appDocumentsDir,
+  "next_movie", "poster", "${widget.movie.id}.jpg"));
+
+  final result=file.existsSync();
+  print("${file.path} does ${result?"":"not"} exist");
+  return result;
+}
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -43,6 +55,7 @@ class VideoCardState extends State<VideoCard> {
                 children: [
                   Container(
                       height: widget.itemHeight - 30,
+                      width: widget.itemWidth,
                       padding: const EdgeInsets.symmetric(horizontal: 5),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
@@ -57,13 +70,33 @@ class VideoCardState extends State<VideoCard> {
                       ),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(10),
-                        child: Image.network(
-                          'https://picsum.photos/300/150?random=${widget.index}',
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, widget, error) {
-                            return const Icon(Icons.error, color: Colors.red);
-                          },
-                        ),
+                        child: checkThumbnailExist()
+                            ? Image.file(
+                                File(join(
+                                    AppPaths.instance.appDocumentsDir,
+                                    "next_movie",
+                                    "poster",
+                                    "${widget.movie.id}.jpg")),
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, widget, error) {
+                                  return const Icon(Icons.error,
+                                      color: Colors.red);
+                                },
+                              )
+                            : Stack(
+                                children: [
+                                  Container(
+                                    color: Colors.blue, // 蓝色背景
+                                  ),
+                                  Center(
+                                    child: Icon(
+                                      Icons.video_file,
+                                      size: 50,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ],
+                              ),
                       )),
                   Positioned(
                       top: 2,
@@ -115,7 +148,7 @@ class VideoCardState extends State<VideoCard> {
                                   child: Icon(
                                     size: min(40, widget.itemWidth / 5),
                                     TDIcons.play_circle,
-                                    color: isPlayHovered ? Colors.blue : null,
+                                    color: isPlayHovered ? Colors.blue : Colors.white70,
                                   ),
                                 ),
                                 onTap: () {
