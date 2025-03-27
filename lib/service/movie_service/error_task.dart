@@ -1,4 +1,3 @@
-
 import 'package:next_movie/task/task_queue.dart';
 
 class ErrorTask {
