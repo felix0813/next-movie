@@ -20,19 +20,37 @@ class MovieRepository {
             ..limit = 20)
           .find();
 
+  List<int> getRecentIds() => (_movieBox
+          .query(Movie_.likeDate.isNull().and(Movie_.wishDate.isNull()))
+          .order(Movie_.recorded, flags: Order.descending)
+          .build()
+        ..limit = 20)
+      .findIds();
+
   List<Movie> getFavoriteMovie() => (_movieBox
           .query(Movie_.likeDate.notNull())
           .order(Movie_.likeDate, flags: Order.descending)
           .build()
         ..limit = 20)
       .find();
-
+  List<int> getFavouriteIds() => (_movieBox
+          .query(Movie_.likeDate.notNull().and(Movie_.wishDate.isNull()))
+          .order(Movie_.likeDate, flags: Order.descending)
+          .build()
+        ..limit = 20)
+      .findIds();
   List<Movie> getToWatchMovie() => (_movieBox
           .query(Movie_.wishDate.notNull())
           .order(Movie_.wishDate, flags: Order.descending)
           .build()
         ..limit = 20)
       .find();
+  List<int> getToWatchMovieIds() => (_movieBox
+          .query(Movie_.wishDate.notNull())
+          .order(Movie_.wishDate, flags: Order.descending)
+          .build()
+        ..limit = 20)
+      .findIds();
 
   List<Movie> getRecentWatchMovie() {
     return [];

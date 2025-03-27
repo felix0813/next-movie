@@ -117,9 +117,15 @@ class MovieService {
 
   List<Movie> getFavoriteMovie() => _repository.getFavoriteMovie();
 
-  List<Movie> getToWatchMovie() => _repository.getToWatchMovie();
+  List<int> getRecentAddMovieInHome() => _repository.getRecentIds();
 
-  List<Movie> getRecentWatchMovie() {
+  List<int> getFavoriteMovieInHome() => _repository.getFavouriteIds();
+
+  List<int> getToWatchMovieInHome() => _repository.getToWatchMovieIds();
+
+  Movie? getMovieById(int id)=>_repository.getMovieById(id);
+
+  List<int> getRecentWatchMovie() {
     return [];
   }
 }

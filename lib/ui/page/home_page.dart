@@ -24,10 +24,10 @@ class HomePageState extends State<HomePage> {
             child: Column(children: [
               // 头部导航栏
               _buildHeaderRow(),
-              HomeContentRow(title: "Like", movies: _movieService.getFavoriteMovie()),
+              HomeContentRow(title: "New",movies: _movieService.getRecentAddMovieInHome()),
+              HomeContentRow(title: "ToWatch", movies: _movieService.getToWatchMovieInHome()),
+              HomeContentRow(title: "Like", movies: _movieService.getFavoriteMovieInHome()),
               HomeContentRow(title: "History", movies: _movieService.getRecentWatchMovie()),
-              HomeContentRow(title: "New",movies: _movieService.getRecentAddMovie()),
-              HomeContentRow(title: "ToWatch", movies: _movieService.getToWatchMovie()),
             ])));
   }
 

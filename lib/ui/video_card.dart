@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:next_movie/service/movie_service/movie_service.dart';
 import 'package:next_movie/utils/app_path.dart';
 import 'package:path/path.dart';
 import 'package:tdesign_flutter/tdesign_flutter.dart';
@@ -12,14 +13,12 @@ import 'package:url_launcher/url_launcher.dart';
 class VideoCard extends StatefulWidget {
   const VideoCard(
       {super.key,
-      required this.index,
       required this.itemWidth,
       required this.itemHeight,
-      required this.movie});
-  final int index;
+      required this.movieId});
   final double itemWidth;
   final double itemHeight;
-  final Movie movie;
+  final int movieId;
   @override
   VideoCardState createState() => VideoCardState();
 }
@@ -31,16 +30,40 @@ class VideoCardState extends State<VideoCard> {
   bool isWishHovered = false;
   bool isCoverHovered = false;
   bool isPlayHovered = false;
+  bool like = false;
+  bool wish = false;
+  int? star;
+  final _service = MovieService();
+  String path = "";
+  String title = "";
 
-  bool checkThumbnailExist()  {
-  final file=File(join(AppPaths.instance.appDocumentsDir,
-  "next_movie", "poster", "${widget.movie.id}.jpg"));
+  @override
+  void initState() {
+    Movie? m = _service.getMovieById(widget.movieId);
+    if (m == null) {
+      return;
+    } else {
+      setState(() {
+        like = m.likeDate != null;
+        wish = m.wishDate != null;
+        path = m.path;
+        star = m.star;
+        title = m.title;
+      });
+    }
+    super.initState();
+  }
 
-  final result=file.existsSync();
-  return result;
-}
+  bool checkThumbnailExist() {
+    final file = File(join(AppPaths.instance.appDocumentsDir, "next_movie",
+        "poster", "${widget.movieId}.jpg"));
+
+    final result = file.existsSync();
+    return result;
+  }
+
   Future<void> _launchVideo(BuildContext context) async {
-    final uri = Uri.file(widget.movie.path);
+    final uri = Uri.file(path);
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri);
     } else {
@@ -49,6 +72,7 @@ class VideoCardState extends State<VideoCard> {
       );
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -86,7 +110,7 @@ class VideoCardState extends State<VideoCard> {
                                     AppPaths.instance.appDocumentsDir,
                                     "next_movie",
                                     "poster",
-                                    "${widget.movie.id}.jpg")),
+                                    "${widget.movieId}.jpg")),
                                 fit: BoxFit.cover,
                                 errorBuilder: (context, widget, error) {
                                   return const Icon(Icons.error,
@@ -112,9 +136,7 @@ class VideoCardState extends State<VideoCard> {
                       top: 2,
                       right: 10,
                       child: Text(
-                        widget.movie.star == null
-                            ? ""
-                            : "${widget.movie.star}.0",
+                        star == null ? "" : "$star.0",
                         style: TextStyle(
                             color: Colors.pink,
                             fontSize:
@@ -158,7 +180,9 @@ class VideoCardState extends State<VideoCard> {
                                   child: Icon(
                                     size: min(40, widget.itemWidth / 5),
                                     TDIcons.play_circle,
-                                    color: isPlayHovered ? Colors.blue : Colors.white70,
+                                    color: isPlayHovered
+                                        ? Colors.blue
+                                        : Colors.white70,
                                   ),
                                 ),
                                 onTap: () {
@@ -180,7 +204,12 @@ class VideoCardState extends State<VideoCard> {
                                       setState(() => isHeartHovered = false),
                                   child: GestureDetector(
                                       onTap: () {
-                                        //todo
+                                        if (_service.like(
+                                            widget.movieId, !like)) {
+                                          setState(() {
+                                            like = !like;
+                                          });
+                                        }
                                       },
                                       child: Container(
                                           decoration: BoxDecoration(
@@ -192,11 +221,9 @@ class VideoCardState extends State<VideoCard> {
                                           ),
                                           child: Icon(
                                             TDIcons.heart,
-                                            color:
-                                                widget.movie.likeDate != null ||
-                                                        isHeartHovered
-                                                    ? Colors.pink
-                                                    : Colors.white70,
+                                            color: like || isHeartHovered
+                                                ? Colors.pink
+                                                : Colors.white70,
                                             size: min(20, widget.itemWidth / 5),
                                           )))),
                               MouseRegion(
@@ -207,7 +234,12 @@ class VideoCardState extends State<VideoCard> {
                                       setState(() => isWishHovered = false),
                                   child: GestureDetector(
                                       onTap: () {
-                                        //todo
+                                        if (_service.wish(
+                                            widget.movieId, !wish)) {
+                                          setState(() {
+                                            wish = !wish;
+                                          });
+                                        }
                                       },
                                       child: Container(
                                           decoration: BoxDecoration(
@@ -219,11 +251,9 @@ class VideoCardState extends State<VideoCard> {
                                           ),
                                           child: Icon(
                                             TDIcons.play_circle_stroke_add,
-                                            color:
-                                                widget.movie.wishDate != null ||
-                                                        isWishHovered
-                                                    ? Colors.pink
-                                                    : Colors.white70,
+                                            color: wish || isWishHovered
+                                                ? Colors.pink
+                                                : Colors.white70,
                                             size: min(20, widget.itemWidth / 5),
                                           )))),
                               MouseRegion(
@@ -264,7 +294,7 @@ class VideoCardState extends State<VideoCard> {
               height: 25,
               child: Text(
                 style: TextStyle(fontSize: 16),
-                widget.movie.title,
+                title,
                 overflow: TextOverflow.ellipsis,
                 softWrap: false,
                 maxLines: 1,

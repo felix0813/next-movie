@@ -8,7 +8,7 @@ import 'package:tdesign_flutter/tdesign_flutter.dart';
 
 class HomeContentRow extends StatefulWidget {
   final String title;
-  final List<Movie> movies;
+  final List<int> movies;
   const HomeContentRow(
       {super.key, required this.title, required this.movies});
 
@@ -147,10 +147,9 @@ class HomeContentRowState extends State<HomeContentRow> {
                   scrollDirection: Axis.horizontal,
                   itemCount: widget.movies.length, // 确保足够多的item
                   itemBuilder: (context, index) => VideoCard(
-                    movie: widget.movies[index],
+                    movieId: widget.movies[index],
                     itemWidth: itemWidth * 2 / 3 + 10,
                     itemHeight: itemHeight * 2 / 3 + 30,
-                    index: index,
                   ),
                 ),
               ),
