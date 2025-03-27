@@ -7,6 +7,7 @@ import 'package:path/path.dart';
 import 'package:tdesign_flutter/tdesign_flutter.dart';
 
 import 'package:next_movie/model/movie.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class VideoCard extends StatefulWidget {
   const VideoCard(
@@ -36,9 +37,18 @@ class VideoCardState extends State<VideoCard> {
   "next_movie", "poster", "${widget.movie.id}.jpg"));
 
   final result=file.existsSync();
-  print("${file.path} does ${result?"":"not"} exist");
   return result;
 }
+  Future<void> _launchVideo(BuildContext context) async {
+    final uri = Uri.file(widget.movie.path);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('无法打开视频')),
+      );
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -152,8 +162,7 @@ class VideoCardState extends State<VideoCard> {
                                   ),
                                 ),
                                 onTap: () {
-                                  //todo
-                                  print("play");
+                                  _launchVideo(context);
                                 }))),
                   if (isCoverHovered)
                     Positioned(
