@@ -51,6 +51,11 @@ class MovieRepository {
           .build()
         ..limit = 20)
       .findIds();
+  List<int> getOnePageVideos(int page, String orderBy ) =>
+      (_movieBox.query().order(Movie_.recorded, flags: Order.descending).build()
+            ..offset = 100 * page
+            ..limit = 100)
+          .findIds();
 
   List<Movie> getRecentWatchMovie() {
     return [];

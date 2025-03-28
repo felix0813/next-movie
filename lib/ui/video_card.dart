@@ -293,6 +293,7 @@ class VideoCardState extends State<VideoCard> {
               width: widget.itemWidth,
               height: 25,
               child: Text(
+                textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 16),
                 title,
                 overflow: TextOverflow.ellipsis,

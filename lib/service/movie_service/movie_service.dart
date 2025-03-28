@@ -123,13 +123,16 @@ class MovieService {
 
   List<int> getToWatchMovieInHome() => _repository.getToWatchMovieIds();
 
-  Movie? getMovieById(int id)=>_repository.getMovieById(id);
+  Movie? getMovieById(int id) => _repository.getMovieById(id);
 
   List<int> getRecentWatchMovie() {
     return [];
   }
 
-  int? getLatestMovieId()=>_repository.getLatestMovie()?.id;
+  List<int> getOnePageMovies({int page = 0, String orderBy = "recorded"}) =>
+      _repository.getOnePageVideos(page, orderBy);
+
+  int? getLatestMovieId() => _repository.getLatestMovie()?.id;
 }
 
 class MovieExtraMeta {

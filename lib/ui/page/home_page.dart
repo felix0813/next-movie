@@ -3,8 +3,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:next_movie/service/movie_service/movie_service.dart';
 import 'package:next_movie/ui/home_content_row.dart';
+import 'package:next_movie/ui/page/video_list_page.dart';
 import 'package:path/path.dart';
-import '../../utils/app_path.dart';
+import 'package:next_movie/utils/app_path.dart';
 import '../global_navigation_bar.dart';
 import 'dart:math';
 
@@ -63,7 +64,10 @@ class HomePageState extends State<HomePage> {
               cursor: SystemMouseCursors.click,
               child: GestureDetector(
                 onTap: () {
-                  //todo
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => VideoListPage()),
+                  );
                 },
                 child: Container(
                   decoration: BoxDecoration(
