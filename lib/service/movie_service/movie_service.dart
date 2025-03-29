@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 
 import 'package:next_movie/model/movie.dart';
+import 'package:next_movie/model/sort_by.dart';
 import 'package:next_movie/service/movie_service/error_task.dart';
 import 'package:next_movie/service/movie_service/thumbnail_task.dart';
 import 'package:next_movie/task/task_queue.dart';
@@ -129,12 +130,15 @@ class MovieService {
     return [];
   }
 
-  List<int> getOnePageMovies({int page = 0, String orderBy = "recorded"}) =>
-      _repository.getOnePageVideos(page, orderBy);
+  List<int> getOnePageMovies(
+          {int page = 0,
+          String orderBy = SortBy.recorded,
+          String order = SortOrder.descending}) =>
+      _repository.getOnePageVideos(page, orderBy, order);
 
   int? getLatestMovieId() => _repository.getLatestMovie()?.id;
 
-  int getTotalMovies()=>_repository.getTotalCount();
+  int getTotalMovies() => _repository.getTotalCount();
 }
 
 class MovieExtraMeta {

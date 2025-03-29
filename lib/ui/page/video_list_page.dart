@@ -21,7 +21,6 @@ class VideoListPageState extends State<VideoListPage> {
   List<int> ids = [];
   String orderBy = SortBy.recorded;
   String order = SortOrder.descending;
-  String? selectedOption;
   final _movieService = MovieService();
 
   @override
@@ -42,11 +41,10 @@ class VideoListPageState extends State<VideoListPage> {
   Widget build(BuildContext context) {
     int count = _movieService.getTotalMovies();
     return Scaffold(
-      appBar: GlobalNavigationBar(title: "Movies"),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.only(left: 15),
-        child: Column(
-          children: [
+        appBar: GlobalNavigationBar(title: "Movies"),
+        body: SingleChildScrollView(
+          padding: EdgeInsets.only(left: 15),
+          child: Column(children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -55,84 +53,105 @@ class VideoListPageState extends State<VideoListPage> {
                   style: TextStyle(fontSize: 20),
                 ),
                 IconButton(
-                    onPressed: page == 0
-                        ? null
-                        : () {
-                            final tmp = page;
-                            setState(() {
-                              page = page - 1;
-                              ids =
-                                  _movieService.getOnePageMovies(page: tmp - 1);
-                            });
-                          },
+                    onPressed: page == 0 ? null : lastPage,
                     icon: Icon(TDIcons.arrow_left)),
                 IconButton(
-                    onPressed: page * 100 + 100 >= count
-                        ? null
-                        : () {
-                            final tmp = page;
-                            setState(() {
-                              page = page + 1;
-                              ids =
-                                  _movieService.getOnePageMovies(page: tmp + 1);
-                            });
-                          },
+                    onPressed: page * 100 + 100 >= count ? null : nextPage,
                     icon: Icon(TDIcons.arrow_right)),
                 IconButton(
                     tooltip: "sort",
                     icon: Icon(Icons.sort),
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return SortMovieRadioDialog(
-                            options: [
-                              SortBy.recorded,
-                              SortBy.created,
-                              SortBy.star,
-                              SortBy.duration,
-                              SortBy.size,
-                              SortBy.wishDate,
-                              SortBy.likeDate,
-                            ],
-                            initValue: orderBy,
-                            order: order,
-                            onConfirm: (String? result, String? order) {
-                              if (result != null && order != null) {
-                                setState(() {
-                                  orderBy = result;
-                                  this.order = order;
-                                });
-                              }
-                            },
-                          );
-                        },
-                      );
-                    })
+                    onPressed: onSortPressed)
               ],
             ),
-            GridView.builder(
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(), // 禁止 GridView 自滚动
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: ((MediaQuery.of(context).size.width - 15) /
-                        (itemWidth + 10))
-                    .round(), // 动态列数
-                childAspectRatio: 4 / 3,
-              ),
-              itemCount: ids.length,
-              itemBuilder: (context, index) {
-                return VideoCard(
-                  key: Key(ids[index].toString()),
-                  itemWidth: itemWidth + 10,
-                  itemHeight: itemWidth * 9 / 16 + 30,
-                  movieId: ids[index],
-                );
-              },
-            )
+            buildGridView(context),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "${page * 100 + 1}-${min(count, page * 100 + 100)} of $count",
+                  style: TextStyle(fontSize: 20),
+                ),
+                IconButton(
+                    onPressed: page == 0 ? null : lastPage,
+                    icon: Icon(TDIcons.arrow_left)),
+                IconButton(
+                    onPressed: page * 100 + 100 >= count ? null : nextPage,
+                    icon: Icon(TDIcons.arrow_right))
+              ],
+            ),
+          ]),
+        ));
+  }
+
+  GridView buildGridView(BuildContext context) {
+    return GridView.builder(
+            shrinkWrap: true,
+            physics: NeverScrollableScrollPhysics(), // 禁止 GridView 自滚动
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: ((MediaQuery.of(context).size.width - 15) /
+                      (itemWidth + 10))
+                  .round(), // 动态列数
+              childAspectRatio: 4 / 3,
+            ),
+            itemCount: ids.length,
+            itemBuilder: (context, index) {
+              return VideoCard(
+                key: Key(ids[index].toString()),
+                itemWidth: itemWidth + 10,
+                itemHeight: itemWidth * 9 / 16 + 30,
+                movieId: ids[index],
+              );
+            },
+          );
+  }
+
+  nextPage() {
+    final tmp = page;
+    setState(() {
+      page = page + 1;
+      ids = _movieService.getOnePageMovies(
+          page: tmp + 1, orderBy: order, order: order);
+    });
+  }
+
+  lastPage() {
+    final tmp = page;
+    setState(() {
+      page = page - 1;
+      ids = _movieService.getOnePageMovies(
+          page: tmp - 1, orderBy: order, order: order);
+    });
+  }
+
+  onSortPressed() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return SortMovieRadioDialog(
+          options: [
+            SortBy.recorded,
+            SortBy.created,
+            SortBy.star,
+            SortBy.duration,
+            SortBy.size,
+            SortBy.wishDate,
+            SortBy.likeDate,
           ],
-        ),
-      ),
+          initValue: orderBy,
+          order: order,
+          onConfirm: (String? result, String? sortOrder) {
+            if (result != null && sortOrder != null) {
+              setState(() {
+                orderBy = result;
+                order = sortOrder;
+                ids = _movieService.getOnePageMovies(
+                    page: page, orderBy: result, order: sortOrder);
+              });
+            }
+          },
+        );
+      },
     );
   }
 }

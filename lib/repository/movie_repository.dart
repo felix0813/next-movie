@@ -1,4 +1,5 @@
 import 'package:next_movie/model/movie.dart';
+import 'package:next_movie/model/sort_by.dart';
 import 'package:next_movie/objectbox/objectbox.dart';
 import 'package:next_movie/objectbox/objectbox.g.dart';
 
@@ -51,11 +52,66 @@ class MovieRepository {
           .build()
         ..limit = 20)
       .findIds();
-  List<int> getOnePageVideos(int page, String orderBy) =>
-      (_movieBox.query().order(Movie_.recorded, flags: Order.descending).build()
-            ..offset = 100 * page
-            ..limit = 100)
-          .findIds();
+  List<int> getOnePageVideos(int page, String orderBy, String sortOrder) {
+    final order = sortOrder == SortOrder.descending ? Order.descending : 0;
+    switch (orderBy) {
+      case SortBy.recorded:
+        return (_movieBox.query().order(Movie_.recorded, flags: order).build()
+              ..offset = 100 * page
+              ..limit = 100)
+            .findIds();
+      case SortBy.size:
+        return (_movieBox.query().order(Movie_.size, flags: order).build()
+              ..offset = 100 * page
+              ..limit = 100)
+            .findIds();
+      case SortBy.duration:
+        return (_movieBox.query().order(Movie_.duration, flags: order).build()
+              ..offset = 100 * page
+              ..limit = 100)
+            .findIds();
+      case SortBy.likeDate:
+        return (_movieBox
+                .query()
+                .order(Movie_.likeDate, flags: order & Order.nullsLast)
+                .build()
+              ..offset = 100 * page
+              ..limit = 100)
+            .findIds();
+      case SortBy.wishDate:
+        return (_movieBox
+                .query()
+                .order(Movie_.wishDate, flags: order & Order.nullsLast)
+                .build()
+              ..offset = 100 * page
+              ..limit = 100)
+            .findIds();
+      case SortBy.star:
+        return (_movieBox
+                .query()
+                .order(Movie_.star, flags: order & Order.nullsLast)
+                .build()
+              ..offset = 100 * page
+              ..limit = 100)
+            .findIds();
+      case SortBy.created:
+        return (_movieBox
+                .query()
+                .order(Movie_.created, flags: order & Order.nullsLast)
+                .build()
+              ..offset = 100 * page
+              ..limit = 100)
+            .findIds();
+      default:
+        return (_movieBox
+                .query()
+                .order(Movie_.recorded, flags: Order.descending)
+                .build()
+              ..offset = 100 * page
+              ..limit = 100)
+            .findIds();
+    }
+  }
 
   List<Movie> getRecentWatchMovie() {
     return [];
