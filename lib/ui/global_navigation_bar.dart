@@ -23,11 +23,11 @@ class GlobalNavigationBar extends StatelessWidget
       title: Text(title),
       elevation: 0,
       actions: [
-        IconButton(icon: Icon(TDIcons.folder_import),tooltip: 'import video', onPressed: () {
+        IconButton(icon: Icon(TDIcons.file_import),tooltip: 'import video', onPressed: () {
           final movieService=MovieService(taskQueue: Provider.of<TaskQueue>(context, listen: false));
           movieService.importMovie(getExtraMeta, context);
         },),
-        IconButton(icon: Icon(TDIcons.file_import),tooltip: 'add category', onPressed: () {
+        IconButton(icon: Icon(TDIcons.folder_import),tooltip: 'add category', onPressed: () {
           //todo
         },),
         Consumer<TaskQueue>(

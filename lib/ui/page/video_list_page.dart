@@ -7,7 +7,7 @@ import 'package:next_movie/ui/page/radio_dialog.dart';
 import 'package:next_movie/ui/video_card.dart';
 import 'package:tdesign_flutter/tdesign_flutter.dart';
 
-import '../../model/sort_by.dart';
+import 'package:next_movie/model/sort_by.dart';
 
 class VideoListPage extends StatefulWidget {
   const VideoListPage({super.key});
