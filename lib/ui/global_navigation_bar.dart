@@ -8,7 +8,8 @@ import 'movie_extra_meta_form.dart';
 class GlobalNavigationBar extends StatelessWidget
     implements PreferredSizeWidget {
   final String title;
-  const GlobalNavigationBar({super.key, required this.title});
+  final Function? updateUI;
+  const GlobalNavigationBar({super.key, required this.title, this.updateUI});
   Future<MovieExtraMeta?> getExtraMeta(BuildContext context) {
     return showModalBottomSheet<MovieExtraMeta>(
       context: context,
@@ -17,19 +18,33 @@ class GlobalNavigationBar extends StatelessWidget
       },
     );
   }
+
   @override
   Widget build(BuildContext context) {
     return AppBar(
       title: Text(title),
       elevation: 0,
       actions: [
-        IconButton(icon: Icon(TDIcons.file_import),tooltip: 'import video', onPressed: () {
-          final movieService=MovieService(taskQueue: Provider.of<TaskQueue>(context, listen: false));
-          movieService.importMovie(getExtraMeta, context);
-        },),
-        IconButton(icon: Icon(TDIcons.folder_import),tooltip: 'add category', onPressed: () {
-          //todo
-        },),
+        IconButton(
+          icon: Icon(TDIcons.file_import),
+          tooltip: 'import video',
+          onPressed: () {
+            final movieService = MovieService(
+                taskQueue: Provider.of<TaskQueue>(context, listen: false));
+            movieService.importMovie(getExtraMeta, context).then((_) {
+              if (updateUI != null) {
+                updateUI!();
+              }
+            });
+          },
+        ),
+        IconButton(
+          icon: Icon(TDIcons.folder_import),
+          tooltip: 'add category',
+          onPressed: () {
+            //todo
+          },
+        ),
         buildTaskWarning(),
       ],
     );
@@ -37,35 +52,35 @@ class GlobalNavigationBar extends StatelessWidget
 
   Consumer<TaskQueue> buildTaskWarning() {
     return Consumer<TaskQueue>(
-        builder: (context, taskQueue, child) {
-          final errorCount = taskQueue.errorCount;
+      builder: (context, taskQueue, child) {
+        final errorCount = taskQueue.errorCount;
 
-          return Stack(
-            children: [
-              IconButton(
-                icon: const Icon(Icons.notifications),
-                tooltip: 'show task status',
-                onPressed: () {
-                  if (errorCount > 0) {
-                    _showErrorDialog(context, taskQueue);
-                  } else {
-                    _showTaskStatusDialog(context, taskQueue);
-                  }
-                },
-              ),
-              if (errorCount > 0)
-                Positioned(
-                  top: 0,
-                  right: 0,
-                  child: TDBadge(
-                    TDBadgeType.redPoint,
-                    count: errorCount.toString(),
-                  ),
+        return Stack(
+          children: [
+            IconButton(
+              icon: const Icon(Icons.notifications),
+              tooltip: 'show task status',
+              onPressed: () {
+                if (errorCount > 0) {
+                  _showErrorDialog(context, taskQueue);
+                } else {
+                  _showTaskStatusDialog(context, taskQueue);
+                }
+              },
+            ),
+            if (errorCount > 0)
+              Positioned(
+                top: 0,
+                right: 0,
+                child: TDBadge(
+                  TDBadgeType.redPoint,
+                  count: errorCount.toString(),
                 ),
-            ],
-          );
-        },
-      );
+              ),
+          ],
+        );
+      },
+    );
   }
 
   // 显示任务状态对话框
@@ -98,7 +113,8 @@ class GlobalNavigationBar extends StatelessWidget
                       title: Text('Task ${index + 1} (ID: ${task.id})'),
                       subtitle: task.task is Future<void>
                           ? null
-                          : Text('Detail: ${task.task.toString()}'), // 根据需要显示更多任务信息
+                          : Text(
+                              'Detail: ${task.task.toString()}'), // 根据需要显示更多任务信息
                     );
                   },
                 ),
@@ -171,7 +187,8 @@ class GlobalNavigationBar extends StatelessWidget
               // 重试成功后，可以选择不立即清除，但通常需要重新检查任务状态
               // 这里可以选择不自动清除，而是让用户再次查看状态
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Task ${error.task.id} succeed by retrying')),
+                SnackBar(
+                    content: Text('Task ${error.task.id} succeed by retrying')),
               );
             } catch (e) {
               ScaffoldMessenger.of(context).showSnackBar(

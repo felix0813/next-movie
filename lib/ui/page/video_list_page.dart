@@ -41,7 +41,16 @@ class VideoListPageState extends State<VideoListPage> {
   Widget build(BuildContext context) {
     int count = _movieService.getTotalMovies();
     return Scaffold(
-        appBar: GlobalNavigationBar(title: "Movies"),
+        appBar: GlobalNavigationBar(
+          title: "Movies",
+          updateUI: () {
+            print("update");
+            setState(() {
+              ids = _movieService.getOnePageMovies(
+                  page: page, orderBy: orderBy, order: order);
+            });
+          },
+        ),
         body: SingleChildScrollView(
           padding: EdgeInsets.only(left: 15),
           child: Column(children: [
@@ -86,24 +95,24 @@ class VideoListPageState extends State<VideoListPage> {
 
   GridView buildGridView(BuildContext context) {
     return GridView.builder(
-            shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(), // 禁止 GridView 自滚动
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: ((MediaQuery.of(context).size.width - 15) /
-                      (itemWidth + 10))
-                  .round(), // 动态列数
-              childAspectRatio: 4 / 3,
-            ),
-            itemCount: ids.length,
-            itemBuilder: (context, index) {
-              return VideoCard(
-                key: Key(ids[index].toString()),
-                itemWidth: itemWidth + 10,
-                itemHeight: itemWidth * 9 / 16 + 30,
-                movieId: ids[index],
-              );
-            },
-          );
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(), // 禁止 GridView 自滚动
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount:
+            ((MediaQuery.of(context).size.width - 15) / (itemWidth + 10))
+                .round(), // 动态列数
+        childAspectRatio: 4 / 3,
+      ),
+      itemCount: ids.length,
+      itemBuilder: (context, index) {
+        return VideoCard(
+          key: Key(ids[index].toString()),
+          itemWidth: itemWidth + 10,
+          itemHeight: itemWidth * 9 / 16 + 30,
+          movieId: ids[index],
+        );
+      },
+    );
   }
 
   nextPage() {
