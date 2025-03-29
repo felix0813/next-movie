@@ -3,8 +3,11 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:next_movie/service/movie_service/movie_service.dart';
 import 'package:next_movie/ui/global_navigation_bar.dart';
+import 'package:next_movie/ui/page/radio_dialog.dart';
 import 'package:next_movie/ui/video_card.dart';
 import 'package:tdesign_flutter/tdesign_flutter.dart';
+
+import '../../model/sort_by.dart';
 
 class VideoListPage extends StatefulWidget {
   const VideoListPage({super.key});
@@ -16,6 +19,9 @@ class VideoListPage extends StatefulWidget {
 class VideoListPageState extends State<VideoListPage> {
   int page = 0;
   List<int> ids = [];
+  String orderBy = SortBy.recorded;
+  String order = SortOrder.descending;
+  String? selectedOption;
   final _movieService = MovieService();
 
   @override
@@ -71,7 +77,38 @@ class VideoListPageState extends State<VideoListPage> {
                                   _movieService.getOnePageMovies(page: tmp + 1);
                             });
                           },
-                    icon: Icon(TDIcons.arrow_right))
+                    icon: Icon(TDIcons.arrow_right)),
+                IconButton(
+                    tooltip: "sort",
+                    icon: Icon(Icons.sort),
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return SortMovieRadioDialog(
+                            options: [
+                              SortBy.recorded,
+                              SortBy.created,
+                              SortBy.star,
+                              SortBy.duration,
+                              SortBy.size,
+                              SortBy.wishDate,
+                              SortBy.likeDate,
+                            ],
+                            initValue: orderBy,
+                            order: order,
+                            onConfirm: (String? result, String? order) {
+                              if (result != null && order != null) {
+                                setState(() {
+                                  orderBy = result;
+                                  this.order = order;
+                                });
+                              }
+                            },
+                          );
+                        },
+                      );
+                    })
               ],
             ),
             GridView.builder(
@@ -86,7 +123,7 @@ class VideoListPageState extends State<VideoListPage> {
               itemCount: ids.length,
               itemBuilder: (context, index) {
                 return VideoCard(
-                  key:Key(ids[index].toString()),
+                  key: Key(ids[index].toString()),
                   itemWidth: itemWidth + 10,
                   itemHeight: itemWidth * 9 / 16 + 30,
                   movieId: ids[index],
