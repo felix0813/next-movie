@@ -133,6 +133,8 @@ class MovieService {
       _repository.getOnePageVideos(page, orderBy);
 
   int? getLatestMovieId() => _repository.getLatestMovie()?.id;
+
+  int getTotalMovies()=>_repository.getTotalCount();
 }
 
 class MovieExtraMeta {

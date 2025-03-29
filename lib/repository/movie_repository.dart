@@ -51,7 +51,7 @@ class MovieRepository {
           .build()
         ..limit = 20)
       .findIds();
-  List<int> getOnePageVideos(int page, String orderBy ) =>
+  List<int> getOnePageVideos(int page, String orderBy) =>
       (_movieBox.query().order(Movie_.recorded, flags: Order.descending).build()
             ..offset = 100 * page
             ..limit = 100)
@@ -62,6 +62,8 @@ class MovieRepository {
   }
 
   Movie? getMovieById(int id) => _movieBox.get(id);
+
+  int getTotalCount() => _movieBox.query().build().count();
 
   Movie? getLatestMovie() => _movieBox
       .query()
