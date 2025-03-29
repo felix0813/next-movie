@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:next_movie/service/movie_service/movie_service.dart';
 import 'package:next_movie/ui/global_navigation_bar.dart';
-import 'package:next_movie/ui/page/radio_dialog.dart';
+import 'package:next_movie/ui/radio_dialog.dart';
 import 'package:next_movie/ui/video_card.dart';
 import 'package:tdesign_flutter/tdesign_flutter.dart';
 
@@ -111,7 +111,7 @@ class VideoListPageState extends State<VideoListPage> {
     setState(() {
       page = page + 1;
       ids = _movieService.getOnePageMovies(
-          page: tmp + 1, orderBy: order, order: order);
+          page: tmp + 1, orderBy: orderBy, order: order);
     });
   }
 
@@ -120,7 +120,7 @@ class VideoListPageState extends State<VideoListPage> {
     setState(() {
       page = page - 1;
       ids = _movieService.getOnePageMovies(
-          page: tmp - 1, orderBy: order, order: order);
+          page: tmp - 1, orderBy: orderBy, order: order);
     });
   }
 

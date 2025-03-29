@@ -87,221 +87,218 @@ class VideoCardState extends State<VideoCard> {
               onExit: (_) => setState(() => isCoverHovered = false),
               child: Stack(
                 children: [
-                  Container(
-                      height: widget.itemHeight - 30,
-                      width: widget.itemWidth,
-                      padding: const EdgeInsets.symmetric(horizontal: 5),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withValues(alpha: 0.1),
-                            spreadRadius: 2,
-                            blurRadius: 4,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: checkThumbnailExist()
-                            ? Image.file(
-                                File(join(
-                                    AppPaths.instance.appDocumentsDir,
-                                    "next_movie",
-                                    "poster",
-                                    "${widget.movieId}.jpg")),
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, widget, error) {
-                                  return const Icon(Icons.error,
-                                      color: Colors.red);
-                                },
-                              )
-                            : Stack(
-                                children: [
-                                  Container(
-                                    color: Colors.blue, // 蓝色背景
-                                  ),
-                                  Center(
-                                    child: Icon(
-                                      Icons.video_file,
-                                      size: 50,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                      )),
-                  Positioned(
-                      top: 2,
-                      right: 10,
-                      child: Text(
-                        star == null ? "" : "$star.0",
-                        style: TextStyle(
-                            color: Colors.pink,
-                            fontSize:
-                                max(10, (widget.itemHeight - 30) * 10 / 45)),
-                      )),
-                  if (isCoverHovered)
-                    Positioned.fill(
-                        child: GestureDetector(
-                      onTap: () {
-                        print("image");
-                        //todo
-                      },
-                      child: Material(
-                        color: Colors.black.withValues(alpha: 0.3), // 蒙层颜色和透明度
-                      ),
-                    )),
-                  if (isCoverHovered)
-                    Positioned(
-                        left: (widget.itemWidth -
-                                10 -
-                                (widget.itemHeight - 40) / 4 -
-                                20) /
-                            2,
-                        right: (widget.itemWidth -
-                                10 -
-                                (widget.itemHeight - 40) / 4 -
-                                20) /
-                            2,
-                        bottom: 20,
-                        top: 20,
-                        child: SizedBox(
-                            height: (widget.itemHeight - 40) / 4,
-                            width: (widget.itemHeight - 40) / 4,
-                            child: GestureDetector(
-                                child: MouseRegion(
-                                  onEnter: (_) =>
-                                      setState(() => isPlayHovered = true),
-                                  onExit: (_) =>
-                                      setState(() => isPlayHovered = false),
-                                  cursor: SystemMouseCursors.click,
-                                  child: Icon(
-                                    size: min(40, widget.itemWidth / 5),
-                                    TDIcons.play_circle,
-                                    color: isPlayHovered
-                                        ? Colors.blue
-                                        : Colors.white70,
-                                  ),
-                                ),
-                                onTap: () {
-                                  _launchVideo(context);
-                                }))),
-                  if (isCoverHovered)
-                    Positioned(
-                        bottom: 0,
-                        child: SizedBox(
-                          width: widget.itemWidth,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              MouseRegion(
-                                  cursor: SystemMouseCursors.click,
-                                  onEnter: (_) =>
-                                      setState(() => isHeartHovered = true),
-                                  onExit: (_) =>
-                                      setState(() => isHeartHovered = false),
-                                  child: GestureDetector(
-                                      onTap: () {
-                                        if (_service.like(
-                                            widget.movieId, !like)) {
-                                          setState(() {
-                                            like = !like;
-                                          });
-                                        }
-                                      },
-                                      child: Container(
-                                          decoration: BoxDecoration(
-                                            color: isHeartHovered
-                                                ? Colors.grey[200]
-                                                : Colors.transparent,
-                                            borderRadius:
-                                                BorderRadius.circular(4),
-                                          ),
-                                          child: Icon(
-                                            TDIcons.heart,
-                                            color: like || isHeartHovered
-                                                ? Colors.pink
-                                                : Colors.white70,
-                                            size: min(20, widget.itemWidth / 5),
-                                          )))),
-                              MouseRegion(
-                                  cursor: SystemMouseCursors.click,
-                                  onEnter: (_) =>
-                                      setState(() => isWishHovered = true),
-                                  onExit: (_) =>
-                                      setState(() => isWishHovered = false),
-                                  child: GestureDetector(
-                                      onTap: () {
-                                        if (_service.wish(
-                                            widget.movieId, !wish)) {
-                                          setState(() {
-                                            wish = !wish;
-                                          });
-                                        }
-                                      },
-                                      child: Container(
-                                          decoration: BoxDecoration(
-                                            color: isWishHovered
-                                                ? Colors.grey[200]
-                                                : Colors.transparent,
-                                            borderRadius:
-                                                BorderRadius.circular(4),
-                                          ),
-                                          child: Icon(
-                                            TDIcons.play_circle_stroke_add,
-                                            color: wish || isWishHovered
-                                                ? Colors.pink
-                                                : Colors.white70,
-                                            size: min(20, widget.itemWidth / 5),
-                                          )))),
-                              MouseRegion(
-                                cursor: SystemMouseCursors.click,
-                                onEnter: (_) =>
-                                    setState(() => isMoreHovered = true),
-                                onExit: (_) =>
-                                    setState(() => isMoreHovered = false),
-                                child: GestureDetector(
-                                    onTap: () {
-                                      //todo
-                                    },
-                                    child: Container(
-                                        decoration: BoxDecoration(
-                                          color: isMoreHovered
-                                              ? Colors.grey[200]
-                                              : Colors.transparent,
-                                          borderRadius:
-                                              BorderRadius.circular(4),
-                                        ),
-                                        child: Icon(
-                                          TDIcons.more,
-                                          color: isMoreHovered
-                                              ? Colors.pink
-                                              : Colors.white70,
-                                          size: min(20, widget.itemWidth / 5),
-                                          //color: Colors.pink,
-                                        ))),
-                              ),
-                            ],
-                          ),
-                        ))
+                  buildCoverContainer(),
+                  buildRate(),
+                  if (isCoverHovered) buildGrayCover(),
+                  if (isCoverHovered) buildPlayBtn(context),
+                  if (isCoverHovered) buildBtnBar()
                 ],
               ),
             ),
-            SizedBox(
-              width: widget.itemWidth,
-              height: 25,
-              child: Text(
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16),
-                title,
-                overflow: TextOverflow.ellipsis,
-                softWrap: false,
-                maxLines: 1,
-              ),
-            ),
+            buildMovieTitle(),
           ],
         ));
+  }
+
+  Container buildCoverContainer() {
+    return Container(
+        height: widget.itemHeight - 30,
+        width: widget.itemWidth,
+        padding: const EdgeInsets.symmetric(horizontal: 5),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withValues(alpha: 0.1),
+              spreadRadius: 2,
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: buildCover());
+  }
+
+  Positioned buildRate() {
+    return Positioned(
+        top: 2,
+        right: 10,
+        child: Text(
+          star == null ? "" : "$star.0",
+          style: TextStyle(
+              color: Colors.pink,
+              fontSize: max(10, (widget.itemHeight - 30) * 10 / 45)),
+        ));
+  }
+
+  ClipRRect buildCover() {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(10),
+      child: checkThumbnailExist()
+          ? Image.file(
+              File(join(AppPaths.instance.appDocumentsDir, "next_movie",
+                  "poster", "${widget.movieId}.jpg")),
+              fit: BoxFit.cover,
+              errorBuilder: (context, widget, error) {
+                return const Icon(Icons.error, color: Colors.red);
+              },
+            )
+          : Stack(
+              children: [
+                Container(
+                  color: Colors.blue, // 蓝色背景
+                ),
+                Center(
+                  child: Icon(
+                    Icons.video_file,
+                    size: 50,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
+            ),
+    );
+  }
+
+  Positioned buildGrayCover() {
+    return Positioned.fill(
+        child: GestureDetector(
+      onTap: () {
+        print("image");
+        //todo
+      },
+      child: Material(
+        color: Colors.black.withValues(alpha: 0.3), // 蒙层颜色和透明度
+      ),
+    ));
+  }
+
+  Positioned buildPlayBtn(BuildContext context) {
+    return Positioned(
+        left: (widget.itemWidth - 10 - (widget.itemHeight - 40) / 4 - 20) / 2,
+        right: (widget.itemWidth - 10 - (widget.itemHeight - 40) / 4 - 20) / 2,
+        bottom: 20,
+        top: 20,
+        child: SizedBox(
+            height: (widget.itemHeight - 40) / 4,
+            width: (widget.itemHeight - 40) / 4,
+            child: GestureDetector(
+                child: MouseRegion(
+                  onEnter: (_) => setState(() => isPlayHovered = true),
+                  onExit: (_) => setState(() => isPlayHovered = false),
+                  cursor: SystemMouseCursors.click,
+                  child: Icon(
+                    size: min(40, widget.itemWidth / 5),
+                    TDIcons.play_circle,
+                    color: isPlayHovered ? Colors.blue : Colors.white70,
+                  ),
+                ),
+                onTap: () {
+                  _launchVideo(context);
+                })));
+  }
+
+  Positioned buildBtnBar() {
+    return Positioned(
+        bottom: 0,
+        child: SizedBox(
+          width: widget.itemWidth,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              buildLikeBtn(),
+              buildWishBtn(),
+              buildMoreBtn(),
+            ],
+          ),
+        ));
+  }
+
+  MouseRegion buildLikeBtn() {
+    return MouseRegion(
+        cursor: SystemMouseCursors.click,
+        onEnter: (_) => setState(() => isHeartHovered = true),
+        onExit: (_) => setState(() => isHeartHovered = false),
+        child: GestureDetector(
+            onTap: () {
+              if (_service.like(widget.movieId, !like)) {
+                setState(() {
+                  like = !like;
+                });
+              }
+            },
+            child: Container(
+                decoration: BoxDecoration(
+                  color: isHeartHovered ? Colors.grey[200] : Colors.transparent,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Icon(
+                  TDIcons.heart,
+                  color: like || isHeartHovered ? Colors.pink : Colors.white70,
+                  size: min(20, widget.itemWidth / 5),
+                ))));
+  }
+
+  MouseRegion buildWishBtn() {
+    return MouseRegion(
+        cursor: SystemMouseCursors.click,
+        onEnter: (_) => setState(() => isWishHovered = true),
+        onExit: (_) => setState(() => isWishHovered = false),
+        child: GestureDetector(
+            onTap: () {
+              if (_service.wish(widget.movieId, !wish)) {
+                setState(() {
+                  wish = !wish;
+                });
+              }
+            },
+            child: Container(
+                decoration: BoxDecoration(
+                  color: isWishHovered ? Colors.grey[200] : Colors.transparent,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Icon(
+                  TDIcons.play_circle_stroke_add,
+                  color: wish || isWishHovered ? Colors.pink : Colors.white70,
+                  size: min(20, widget.itemWidth / 5),
+                ))));
+  }
+
+  MouseRegion buildMoreBtn() {
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      onEnter: (_) => setState(() => isMoreHovered = true),
+      onExit: (_) => setState(() => isMoreHovered = false),
+      child: GestureDetector(
+          onTap: () {
+            //todo
+          },
+          child: Container(
+              decoration: BoxDecoration(
+                color: isMoreHovered ? Colors.grey[200] : Colors.transparent,
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Icon(
+                TDIcons.more,
+                color: isMoreHovered ? Colors.pink : Colors.white70,
+                size: min(20, widget.itemWidth / 5),
+                //color: Colors.pink,
+              ))),
+    );
+  }
+
+  SizedBox buildMovieTitle() {
+    return SizedBox(
+      width: widget.itemWidth,
+      height: 25,
+      child: Text(
+        textAlign: TextAlign.center,
+        style: TextStyle(fontSize: 16),
+        title,
+        overflow: TextOverflow.ellipsis,
+        softWrap: false,
+        maxLines: 1,
+      ),
+    );
   }
 }

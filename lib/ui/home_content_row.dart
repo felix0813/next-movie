@@ -92,7 +92,6 @@ class HomeContentRowState extends State<HomeContentRow> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween, // 关键：设置主轴对齐方式
           children: [
-            // 行首组件（左侧按钮）
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 20),
               child: Text(
@@ -104,59 +103,65 @@ class HomeContentRowState extends State<HomeContentRow> {
                 ),
               ),
             ),
+            buildScrollBtn(itemWidth),
+          ],
+        ),
+        // 内容容器
+        buildList(itemHeight, itemWidth),
+      ],
+    );
+  }
 
-            // 行尾组件（右侧按钮组）
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    icon: const Icon(TDIcons.arrow_left),
-                    onPressed: _showLeftButton
-                        ? () {
-                            _scrollLeft(itemWidth);
-                          }
-                        : null,
-                    tooltip: 'scroll left',
-                  ),
-                  IconButton(
-                    icon: const Icon(TDIcons.arrow_right),
-                    onPressed: _showRightButton
-                        ? () {
-                            _scrollRight(itemWidth);
-                          }
-                        : null,
-                    tooltip: 'scroll right',
-                  ),
-                ],
+  SizedBox buildList(double itemHeight, double itemWidth) {
+    return SizedBox(
+        height: itemHeight * 2 / 3 + 30, // 包含间距
+        child: Row(
+          children: [
+            Expanded(
+              child: ListView.builder(
+                controller: _scrollController,
+                physics: const ClampingScrollPhysics(),
+                scrollDirection: Axis.horizontal,
+                itemCount: widget.movies.length, // 确保足够多的item
+                itemBuilder: (context, index) => VideoCard(
+                  key: Key(widget.movies[index].toString()),
+                  movieId: widget.movies[index],
+                  itemWidth: itemWidth * 2 / 3 + 10,
+                  itemHeight: itemHeight * 2 / 3 + 30,
+                ),
               ),
             ),
           ],
         ),
-        // 内容容器
-        SizedBox(
-          height: itemHeight * 2 / 3 + 30, // 包含间距
-          child: Row(
-            children: [
-              Expanded(
-                child: ListView.builder(
-                  controller: _scrollController,
-                  physics: const ClampingScrollPhysics(),
-                  scrollDirection: Axis.horizontal,
-                  itemCount: widget.movies.length, // 确保足够多的item
-                  itemBuilder: (context, index) => VideoCard(
-                    key: Key(widget.movies[index].toString()),
-                    movieId: widget.movies[index],
-                    itemWidth: itemWidth * 2 / 3 + 10,
-                    itemHeight: itemHeight * 2 / 3 + 30,
-                  ),
+      );
+  }
+
+  Padding buildScrollBtn(double itemWidth) {
+    return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  icon: const Icon(TDIcons.arrow_left),
+                  onPressed: _showLeftButton
+                      ? () {
+                          _scrollLeft(itemWidth);
+                        }
+                      : null,
+                  tooltip: 'scroll left',
                 ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
+                IconButton(
+                  icon: const Icon(TDIcons.arrow_right),
+                  onPressed: _showRightButton
+                      ? () {
+                          _scrollRight(itemWidth);
+                        }
+                      : null,
+                  tooltip: 'scroll right',
+                ),
+              ],
+            ),
+          );
   }
 }

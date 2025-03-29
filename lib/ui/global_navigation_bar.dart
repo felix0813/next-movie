@@ -30,38 +30,42 @@ class GlobalNavigationBar extends StatelessWidget
         IconButton(icon: Icon(TDIcons.folder_import),tooltip: 'add category', onPressed: () {
           //todo
         },),
-        Consumer<TaskQueue>(
-          builder: (context, taskQueue, child) {
-            final errorCount = taskQueue.errorCount;
-
-            return Stack(
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.notifications),
-                  tooltip: 'show task status',
-                  onPressed: () {
-                    if (errorCount > 0) {
-                      _showErrorDialog(context, taskQueue);
-                    } else {
-                      _showTaskStatusDialog(context, taskQueue);
-                    }
-                  },
-                ),
-                if (errorCount > 0)
-                  Positioned(
-                    top: 0,
-                    right: 0,
-                    child: TDBadge(
-                      TDBadgeType.redPoint,
-                      count: errorCount.toString(),
-                    ),
-                  ),
-              ],
-            );
-          },
-        ),
+        buildTaskWarning(),
       ],
     );
+  }
+
+  Consumer<TaskQueue> buildTaskWarning() {
+    return Consumer<TaskQueue>(
+        builder: (context, taskQueue, child) {
+          final errorCount = taskQueue.errorCount;
+
+          return Stack(
+            children: [
+              IconButton(
+                icon: const Icon(Icons.notifications),
+                tooltip: 'show task status',
+                onPressed: () {
+                  if (errorCount > 0) {
+                    _showErrorDialog(context, taskQueue);
+                  } else {
+                    _showTaskStatusDialog(context, taskQueue);
+                  }
+                },
+              ),
+              if (errorCount > 0)
+                Positioned(
+                  top: 0,
+                  right: 0,
+                  child: TDBadge(
+                    TDBadgeType.redPoint,
+                    count: errorCount.toString(),
+                  ),
+                ),
+            ],
+          );
+        },
+      );
   }
 
   // 显示任务状态对话框
