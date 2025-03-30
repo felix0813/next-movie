@@ -5,6 +5,7 @@ import 'package:objectbox/objectbox.dart';
 class Category {
   @Id()
   late int id;
+  @Unique()
   late String name;
   @Property(type: PropertyType.date)
   late DateTime created;
@@ -17,7 +18,7 @@ class Category {
     this.id = 0,
     required this.name,
     required this.created,
-    movies = const [],
+    this.movies = const [],
     this.description,
   });
 

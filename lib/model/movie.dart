@@ -4,6 +4,7 @@ import 'package:objectbox/objectbox.dart';
 class Movie {
   @Id()
   late int id;
+  @Unique()
   late String title;
   @Index()
   late int duration; //movie duration(in seconds)

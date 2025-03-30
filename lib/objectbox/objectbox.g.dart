@@ -14,8 +14,8 @@ import 'package:objectbox/internal.dart'
 import 'package:objectbox/objectbox.dart' as obx;
 import 'package:objectbox_flutter_libs/objectbox_flutter_libs.dart';
 
-import 'package:next_movie/model/category.dart';
-import 'package:next_movie/model/movie.dart';
+import '../model/category.dart';
+import '../model/movie.dart';
 
 export 'package:objectbox/objectbox.dart'; // so that callers only have to import this file
 
@@ -35,7 +35,8 @@ final _entities = <obx_int.ModelEntity>[
             id: const obx_int.IdUid(2, 5515622235946707349),
             name: 'title',
             type: 9,
-            flags: 0),
+            flags: 2080,
+            indexId: const obx_int.IdUid(6, 1371444089402834689)),
         obx_int.ModelProperty(
             id: const obx_int.IdUid(3, 8448954999548393062),
             name: 'created',
@@ -118,7 +119,8 @@ final _entities = <obx_int.ModelEntity>[
             id: const obx_int.IdUid(2, 7019395681395354069),
             name: 'name',
             type: 9,
-            flags: 0),
+            flags: 2080,
+            indexId: const obx_int.IdUid(5, 2002224758764688635)),
         obx_int.ModelProperty(
             id: const obx_int.IdUid(3, 1867845353882763649),
             name: 'description',
@@ -180,7 +182,7 @@ obx_int.ModelDefinition getObjectBoxModel() {
   final model = obx_int.ModelInfo(
       entities: _entities,
       lastEntityId: const obx_int.IdUid(2, 5643815084047552370),
-      lastIndexId: const obx_int.IdUid(4, 5206353645984327553),
+      lastIndexId: const obx_int.IdUid(6, 1371444089402834689),
       lastRelationId: const obx_int.IdUid(0, 0),
       lastSequenceId: const obx_int.IdUid(0, 0),
       retiredEntityUids: const [],

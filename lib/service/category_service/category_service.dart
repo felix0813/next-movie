@@ -10,7 +10,7 @@ class CategoryService {
 
   CategoryService({TaskQueue? taskQueue}) : _taskQueue = taskQueue;
 
-  bool create(String name, String description) {
+  bool create(String name, String? description) {
     if (name.isEmpty) {
       ErrorTask(
               taskId: "Add new category $name fail",
@@ -22,10 +22,11 @@ class CategoryService {
         name: name,
         description: description,
         created: DateTime.now().toLocal());
+
     if (_repository.addCategory(category) == 0) {
       throw Exception("Category name already exists");
     }
-    return _repository.addCategory(category) != 0;
+    return true;
   }
 
   bool removeCategory(int id) => _repository.removeCategory(id);

@@ -44,7 +44,6 @@ class VideoListPageState extends State<VideoListPage> {
         appBar: GlobalNavigationBar(
           title: "Movies",
           updateUI: () {
-            print("update");
             setState(() {
               ids = _movieService.getOnePageMovies(
                   page: page, orderBy: orderBy, order: order);

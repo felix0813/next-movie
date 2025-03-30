@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:next_movie/service/category_service/category_service.dart';
 import 'package:next_movie/service/movie_service/movie_service.dart';
+import 'package:next_movie/ui/input_dialog.dart';
 import 'package:provider/provider.dart';
 import 'package:tdesign_flutter/tdesign_flutter.dart';
 import 'package:next_movie/task/task_queue.dart';
@@ -42,7 +44,14 @@ class GlobalNavigationBar extends StatelessWidget
           icon: Icon(TDIcons.folder_import),
           tooltip: 'add category',
           onPressed: () {
-            //todo
+            DoubleInputDialog.show(
+                    context: context, maxLength2: 100, title: 'Add Category', maxLength1: 20,hintText1: "category name",hintText2: "category description")
+                .then((pair) {
+              if (pair != null&&pair.first!=null&&pair.first!.trim().isNotEmpty) {
+                final service = CategoryService();
+                service.create(pair.first!, pair.second);
+              }
+            });
           },
         ),
         buildTaskWarning(),

@@ -18,6 +18,28 @@ class HomePage extends StatefulWidget {
 
 class HomePageState extends State<HomePage> {
   final _movieService = MovieService();
+  List<int> recentAdd = [];
+  List<int> toWatch = [];
+  List<int> favourite = [];
+  List<int> history = [];
+  int latest = 0;
+
+  @override
+  void initState() {
+    getAllStatus();
+    super.initState();
+  }
+
+  void getAllStatus() {
+    setState(() {
+      latest = _movieService.getLatestMovieId() ?? 0;
+      recentAdd = _movieService.getRecentAddMovieInHome();
+      toWatch = _movieService.getToWatchMovieInHome();
+      favourite = _movieService.getFavoriteMovieInHome();
+      history = _movieService.getRecentWatchMovie();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,18 +52,10 @@ class HomePageState extends State<HomePage> {
             child: Column(children: [
               // 头部导航栏
               _buildHeaderRow(context),
-              HomeContentRow(
-                  title: "New",
-                  movies: _movieService.getRecentAddMovieInHome()),
-              HomeContentRow(
-                  title: "ToWatch",
-                  movies: _movieService.getToWatchMovieInHome()),
-              HomeContentRow(
-                  title: "Like",
-                  movies: _movieService.getFavoriteMovieInHome()),
-              HomeContentRow(
-                  title: "History",
-                  movies: _movieService.getRecentWatchMovie()),
+              HomeContentRow(title: "New", movies: recentAdd),
+              HomeContentRow(title: "ToWatch", movies: toWatch),
+              HomeContentRow(title: "Like", movies: favourite),
+              HomeContentRow(title: "History", movies: history),
             ])));
   }
 
@@ -78,7 +92,7 @@ class HomePageState extends State<HomePage> {
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => VideoListPage()),
-            );
+            ).then((_) => getAllStatus());
           },
           child: Container(
             decoration: BoxDecoration(
@@ -87,7 +101,7 @@ class HomePageState extends State<HomePage> {
             child: Stack(
               children: [
                 // 背景图使用占位符，实际使用时替换为真实图片
-                buildCover(singleWidth, singleHeight, latestId),
+                buildCover(singleWidth, singleHeight),
                 // 半透明蒙层
                 buildGreyCover(singleWidth, singleHeight),
               ],
@@ -119,21 +133,21 @@ class HomePageState extends State<HomePage> {
     );
   }
 
-  Container buildCover(double singleWidth, double singleHeight, int latestId) {
+  Container buildCover(double singleWidth, double singleHeight) {
     return Container(
       width: singleWidth,
       height: singleHeight,
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10.0),
           color: Colors.blue,
-          image: latestId != 0
+          image: latest != 0
               ? DecorationImage(
                   fit: BoxFit.cover,
                   image: FileImage(File(join(
                       AppPaths.instance.appDocumentsDir,
                       "next_movie",
                       "poster",
-                      "${_movieService.getLatestMovieId()}.jpg"))),
+                      "$latest.jpg"))),
                 )
               : null),
     );
