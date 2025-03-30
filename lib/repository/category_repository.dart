@@ -13,4 +13,16 @@ class CategoryRepository {
       _box.put(category, mode: PutMode.update);
 
   Category? getCategoryById(int id) => _box.get(id);
+
+  List<int> getOnePageCategories(int page, String sortBy, String order) {
+    return (_box
+            .query()
+            .order(Category_.created, flags: Order.descending)
+            .build()
+          ..offset = 100 * page
+          ..limit = 100)
+        .findIds();
+  }
+
+  int getTotalCategories()=>_box.count();
 }

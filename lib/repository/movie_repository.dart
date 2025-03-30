@@ -119,7 +119,7 @@ class MovieRepository {
 
   Movie? getMovieById(int id) => _movieBox.get(id);
 
-  int getTotalCount() => _movieBox.query().build().count();
+  int getTotalCount() => _movieBox.count();
 
   Movie? getLatestMovie() => _movieBox
       .query()

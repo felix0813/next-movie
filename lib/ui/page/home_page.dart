@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:next_movie/service/movie_service/movie_service.dart';
 import 'package:next_movie/ui/home_content_row.dart';
+import 'package:next_movie/ui/page/category_list_page.dart';
 import 'package:next_movie/ui/page/video_list_page.dart';
 import 'package:path/path.dart';
 import 'package:next_movie/utils/app_path.dart';
@@ -75,7 +76,7 @@ class HomePageState extends State<HomePage> {
           buildMovieEntrance(context, singleWidth, singleHeight, latestId),
 
           // 右侧分类入口 - 保持相同比例
-          buildCategoryEntrance(singleWidth, singleHeight),
+          buildCategoryEntrance(context,singleWidth, singleHeight),
         ],
       ),
     );
@@ -153,7 +154,7 @@ class HomePageState extends State<HomePage> {
     );
   }
 
-  SizedBox buildCategoryEntrance(double singleWidth, double singleHeight) {
+  SizedBox buildCategoryEntrance(BuildContext context,double singleWidth, double singleHeight) {
     return SizedBox(
         width: singleWidth,
         height: singleHeight,
@@ -161,7 +162,10 @@ class HomePageState extends State<HomePage> {
           cursor: SystemMouseCursors.click,
           child: GestureDetector(
             onTap: () {
-              //todo
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => CategoryListPage()),
+              ).then((_) => getAllStatus());
             },
             child: Container(
               decoration: BoxDecoration(

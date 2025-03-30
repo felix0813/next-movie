@@ -51,4 +51,8 @@ class CategoryService {
     }
     return false;
   }
+
+  List<int> getOnePageCategories(int page,String sortBy,String order)=>_repository.getOnePageCategories(page, sortBy, order);
+
+  int getTotalCategories()=>_repository.getTotalCategories();
 }
