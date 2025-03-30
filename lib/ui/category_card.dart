@@ -138,7 +138,7 @@ class CategoryCardState extends State<CategoryCard> {
                 ),
                 Center(
                   child: Icon(
-                    Icons.video_file,
+                    Icons.video_collection,
                     size: 50,
                     color: Colors.white,
                   ),
