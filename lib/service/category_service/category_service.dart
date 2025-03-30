@@ -55,4 +55,6 @@ class CategoryService {
   List<int> getOnePageCategories(int page,String sortBy,String order)=>_repository.getOnePageCategories(page, sortBy, order);
 
   int getTotalCategories()=>_repository.getTotalCategories();
+
+  Category? getCategoryById(int id)=>_repository.getCategoryById(id);
 }

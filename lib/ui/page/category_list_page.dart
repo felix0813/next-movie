@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:next_movie/service/category_service/category_service.dart';
+import 'package:next_movie/ui/category_card.dart';
 import 'package:next_movie/ui/global_navigation_bar.dart';
 import 'package:tdesign_flutter/tdesign_flutter.dart';
 
@@ -16,13 +17,29 @@ class CategoryListPageState extends State<CategoryListPage> {
   List<int> ids = [];
   int page = 0;
   final _categoryService = CategoryService();
+
+  @override
+  initState() {
+    setState(() {
+      ids =
+          _categoryService.getOnePageCategories(page, "created", "descending");
+    });
+    super.initState();
+  }
+
+  double get itemWidth {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final columns = max(2, screenWidth / 300);
+    return (screenWidth - 15) / columns;
+  }
+
   @override
   Widget build(BuildContext context) {
     int count = _categoryService.getTotalCategories();
     return Scaffold(
       appBar: GlobalNavigationBar(
         title: "Category",
-        updateUI: () {
+        onCategoryUpdate: () {
           setState(() {
             ids = _categoryService.getOnePageCategories(
                 page, "created", "descending");
@@ -54,6 +71,7 @@ class CategoryListPageState extends State<CategoryListPage> {
                     })
               ],
             ),
+            buildGridView(context),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -72,6 +90,28 @@ class CategoryListPageState extends State<CategoryListPage> {
           ],
         ),
       ),
+    );
+  }
+
+  GridView buildGridView(BuildContext context) {
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(), // 禁止 GridView 自滚动
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount:
+            ((MediaQuery.of(context).size.width - 15) / (itemWidth + 10))
+                .round(), // 动态列数
+        childAspectRatio: 4 / 3,
+      ),
+      itemCount: ids.length,
+      itemBuilder: (context, index) {
+        return CategoryCard(
+          key: Key(ids[index].toString()),
+          itemWidth: itemWidth + 10,
+          itemHeight: itemWidth * 9 / 16 + 30,
+          categoryId: ids[index],
+        );
+      },
     );
   }
 

@@ -10,8 +10,9 @@ import 'movie_extra_meta_form.dart';
 class GlobalNavigationBar extends StatelessWidget
     implements PreferredSizeWidget {
   final String title;
-  final Function? updateUI;
-  const GlobalNavigationBar({super.key, required this.title, this.updateUI});
+  final Function? onMovieUpdate;
+  final Function? onCategoryUpdate;
+  const GlobalNavigationBar({super.key, required this.title, this.onMovieUpdate, this.onCategoryUpdate});
   Future<MovieExtraMeta?> getExtraMeta(BuildContext context) {
     return showModalBottomSheet<MovieExtraMeta>(
       context: context,
@@ -34,8 +35,8 @@ class GlobalNavigationBar extends StatelessWidget
             final movieService = MovieService(
                 taskQueue: Provider.of<TaskQueue>(context, listen: false));
             movieService.importMovie(getExtraMeta, context).then((_) {
-              if (updateUI != null) {
-                updateUI!();
+              if (onMovieUpdate != null) {
+                onMovieUpdate!();
               }
             });
           },
@@ -49,7 +50,9 @@ class GlobalNavigationBar extends StatelessWidget
                 .then((pair) {
               if (pair != null&&pair.first!=null&&pair.first!.trim().isNotEmpty) {
                 final service = CategoryService();
-                service.create(pair.first!, pair.second);
+                if(service.create(pair.first!, pair.second)&&onCategoryUpdate!=null){
+                  onCategoryUpdate!();
+                }
               }
             });
           },

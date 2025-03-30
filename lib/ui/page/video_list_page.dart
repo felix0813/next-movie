@@ -43,7 +43,7 @@ class VideoListPageState extends State<VideoListPage> {
     return Scaffold(
         appBar: GlobalNavigationBar(
           title: "Movies",
-          updateUI: () {
+          onMovieUpdate: () {
             setState(() {
               ids = _movieService.getOnePageMovies(
                   page: page, orderBy: orderBy, order: order);
