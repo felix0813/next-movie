@@ -57,4 +57,6 @@ class CategoryService {
   int getTotalCategories()=>_repository.getTotalCategories();
 
   Category? getCategoryById(int id)=>_repository.getCategoryById(id);
+
+  List<Category> getAllCategories()=>_repository.getAllCategories();
 }

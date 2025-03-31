@@ -1,8 +1,11 @@
+import 'dart:ffi';
 import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:next_movie/service/category_service/category_service.dart';
 import 'package:next_movie/service/movie_service/movie_service.dart';
+import 'package:next_movie/ui/select_category_dialog.dart';
 import 'package:next_movie/utils/app_path.dart';
 import 'package:path/path.dart';
 import 'package:tdesign_flutter/tdesign_flutter.dart';
@@ -101,7 +104,7 @@ class VideoCardState extends State<VideoCard> {
                   buildRate(),
                   if (isCoverHovered) buildGrayCover(),
                   if (isCoverHovered) buildPlayBtn(context),
-                  if (isCoverHovered) buildBtnBar()
+                  if (isCoverHovered) buildBtnBar(context)
                 ],
               ),
             ),
@@ -208,7 +211,7 @@ class VideoCardState extends State<VideoCard> {
                 })));
   }
 
-  Positioned buildBtnBar() {
+  Positioned buildBtnBar(BuildContext context) {
     return Positioned(
         bottom: 0,
         child: SizedBox(
@@ -218,7 +221,7 @@ class VideoCardState extends State<VideoCard> {
             children: [
               buildLikeBtn(),
               buildWishBtn(),
-              buildMoreBtn(),
+              buildMoreBtn(context),
             ],
           ),
         ));
@@ -274,7 +277,7 @@ class VideoCardState extends State<VideoCard> {
                 ))));
   }
 
-  MouseRegion buildMoreBtn() {
+  MouseRegion buildMoreBtn(BuildContext parentContext) {
     return MouseRegion(
       cursor: SystemMouseCursors.click,
       onEnter: (_) => setState(() => isMoreHovered = true),
@@ -283,13 +286,28 @@ class VideoCardState extends State<VideoCard> {
           itemBuilder: (BuildContext context) {
             return [
               _buildMenuItem(context, Icons.playlist_add_outlined,
-                  "add to category", "category"),
-              _buildMenuItem(context, Icons.check_box, "select", "select"),
-              _buildMenuItem(context, Icons.delete, "delete", "delete"),
-              _buildMenuItem(context, Icons.edit, "edit", "edit"),
+                  "add to category", "category", () {
+                final categoryService = CategoryService();
+                showDialog(
+                    context: parentContext,
+                    builder: (BuildContext context) {
+                      return SelectCategoryDialog(
+                          initValue: null,
+                          onConfirm: (result) {
+                            categoryService
+                                .addMovies(result!, [widget.movieId]);
+                          },
+                          options: categoryService.getAllCategories());
+                    });
+              }),
               _buildMenuItem(
-                  context, Icons.image, "generate thumbnail", "thumbnail"),
-              _buildMenuItem(context, Icons.info, "check metadata", "metadata")
+                  context, Icons.check_box, "select", "select", () {}),
+              _buildMenuItem(context, Icons.delete, "delete", "delete", () {}),
+              _buildMenuItem(context, Icons.edit, "edit", "edit", () {}),
+              _buildMenuItem(context, Icons.image, "generate thumbnail",
+                  "thumbnail", () {}),
+              _buildMenuItem(
+                  context, Icons.info, "check metadata", "metadata", () {})
             ];
           },
           child: Container(
@@ -321,9 +339,10 @@ class VideoCardState extends State<VideoCard> {
     );
   }
 
-  PopupMenuItem<String> _buildMenuItem(
-      BuildContext context, IconData icon, String text, String value) {
+  PopupMenuItem<String> _buildMenuItem(BuildContext context, IconData icon,
+      String text, String value, VoidCallback onTap) {
     return PopupMenuItem(
+      onTap: onTap,
       value: value,
       child: Row(
         children: [

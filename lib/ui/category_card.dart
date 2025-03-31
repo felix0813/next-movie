@@ -149,7 +149,6 @@ class CategoryCardState extends State<CategoryCard> {
     return Positioned.fill(
         child: GestureDetector(
       onTap: () {
-        print("image");
         //todo
       },
       child: Material(

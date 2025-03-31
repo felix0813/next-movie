@@ -25,4 +25,6 @@ class CategoryRepository {
   }
 
   int getTotalCategories()=>_box.count();
+
+  List<Category> getAllCategories()=>_box.getAll();
 }
