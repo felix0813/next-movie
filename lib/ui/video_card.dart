@@ -269,9 +269,16 @@ class VideoCardState extends State<VideoCard> {
       cursor: SystemMouseCursors.click,
       onEnter: (_) => setState(() => isMoreHovered = true),
       onExit: (_) => setState(() => isMoreHovered = false),
-      child: GestureDetector(
-          onTap: () {
-            //todo
+      child: PopupMenuButton(
+          itemBuilder: (BuildContext context) {
+            return [
+              _buildMenuItem(context, Icons.check_box, "select", "select"),
+              _buildMenuItem(context, Icons.delete, "delete", "delete"),
+              _buildMenuItem(context, Icons.edit, "edit", "edit"),
+              _buildMenuItem(
+                  context, Icons.image, "generate thumbnail", "thumbnail"),
+              _buildMenuItem(context, Icons.info, "check metadata", "metadata")
+            ];
           },
           child: Container(
               decoration: BoxDecoration(
@@ -298,6 +305,20 @@ class VideoCardState extends State<VideoCard> {
         overflow: TextOverflow.ellipsis,
         softWrap: false,
         maxLines: 1,
+      ),
+    );
+  }
+
+  PopupMenuItem<String> _buildMenuItem(
+      BuildContext context, IconData icon, String text, String value) {
+    return PopupMenuItem(
+      value: value,
+      child: Row(
+        children: [
+          Icon(icon, size: 20, color: Theme.of(context).iconTheme.color), // 图标
+          SizedBox(width: 12), // 图标与文字间距
+          Text(text, style: TextStyle(color: Colors.grey[600])), // 文字
+        ],
       ),
     );
   }

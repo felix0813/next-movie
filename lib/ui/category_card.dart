@@ -187,7 +187,7 @@ class CategoryCardState extends State<CategoryCard> {
             //todo
           },
           child: Container(
-            margin: EdgeInsets.only(right: 5),
+              margin: EdgeInsets.only(right: 5),
               decoration: BoxDecoration(
                 color: isAddHovered ? Colors.grey[200] : Colors.transparent,
                 borderRadius: BorderRadius.circular(4),
@@ -206,9 +206,16 @@ class CategoryCardState extends State<CategoryCard> {
       cursor: SystemMouseCursors.click,
       onEnter: (_) => setState(() => isMoreHovered = true),
       onExit: (_) => setState(() => isMoreHovered = false),
-      child: GestureDetector(
-          onTap: () {
-            //todo
+      child: PopupMenuButton(
+        onSelected: (value){
+          //todo
+        },
+          itemBuilder: (BuildContext context) {
+            return [
+              _buildMenuItem(context,Icons.check_box,"select","select"),
+              _buildMenuItem(context,Icons.delete,"delete","delete"),
+              _buildMenuItem(context,Icons.edit,"edit","edit")
+            ];
           },
           child: Container(
               decoration: BoxDecoration(
@@ -223,6 +230,21 @@ class CategoryCardState extends State<CategoryCard> {
               ))),
     );
   }
+
+  // 封装菜单项构建方法
+  PopupMenuItem<String> _buildMenuItem(BuildContext context,IconData icon, String text, String value) {
+    return PopupMenuItem(
+      value: value,
+      child: Row(
+        children: [
+          Icon(icon, size: 20, color: Theme.of(context).iconTheme.color), // 图标
+          SizedBox(width: 12), // 图标与文字间距
+          Text(text, style: TextStyle(color: Colors.grey[600])), // 文字
+        ],
+      ),
+    );
+  }
+
 
   SizedBox buildMovieTitle() {
     return SizedBox(
