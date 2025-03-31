@@ -46,17 +46,22 @@ class CategoryService {
       List<int> result = List.empty(growable: true);
       result.addAll(category.movies);
       result.addAll(movies);
+      result = [
+        ...{...result}
+      ];
       category.movies = result;
       return _repository.updateCategory(category) == id;
     }
+
     return false;
   }
 
-  List<int> getOnePageCategories(int page,String sortBy,String order)=>_repository.getOnePageCategories(page, sortBy, order);
+  List<int> getOnePageCategories(int page, String sortBy, String order) =>
+      _repository.getOnePageCategories(page, sortBy, order);
 
-  int getTotalCategories()=>_repository.getTotalCategories();
+  int getTotalCategories() => _repository.getTotalCategories();
 
-  Category? getCategoryById(int id)=>_repository.getCategoryById(id);
+  Category? getCategoryById(int id) => _repository.getCategoryById(id);
 
-  List<Category> getAllCategories()=>_repository.getAllCategories();
+  List<Category> getAllCategories() => _repository.getAllCategories();
 }
