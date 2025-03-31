@@ -110,6 +110,10 @@ class CategoryListPageState extends State<CategoryListPage> {
           itemWidth: itemWidth + 10,
           itemHeight: itemWidth * 9 / 16 + 30,
           categoryId: ids[index],
+          onUpdateUI: () => setState(() {
+            ids = _categoryService.getOnePageCategories(
+                page, "created", "descending");
+          }),
         );
       },
     );

@@ -7,7 +7,6 @@ import 'package:next_movie/utils/app_path.dart';
 import 'package:path/path.dart';
 import 'package:tdesign_flutter/tdesign_flutter.dart';
 
-
 import '../service/category_service/category_service.dart';
 
 class CategoryCard extends StatefulWidget {
@@ -15,10 +14,12 @@ class CategoryCard extends StatefulWidget {
       {super.key,
       required this.itemWidth,
       required this.itemHeight,
-      required this.categoryId});
+      required this.categoryId,
+      required this.onUpdateUI});
   final double itemWidth;
   final double itemHeight;
   final int categoryId;
+  final VoidCallback onUpdateUI;
   @override
   CategoryCardState createState() => CategoryCardState();
 }
@@ -76,7 +77,7 @@ class CategoryCardState extends State<CategoryCard> {
                   buildCoverContainer(),
                   buildRate(),
                   if (isCoverHovered) buildGrayCover(),
-                  if (isCoverHovered) buildBtnBar()
+                  if (isCoverHovered) buildBtnBar(context)
                 ],
               ),
             ),
@@ -157,7 +158,7 @@ class CategoryCardState extends State<CategoryCard> {
     ));
   }
 
-  Positioned buildBtnBar() {
+  Positioned buildBtnBar(BuildContext context) {
     return Positioned(
         bottom: 5,
         right: 10,
@@ -167,7 +168,7 @@ class CategoryCardState extends State<CategoryCard> {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               buildAddBtn(),
-              buildMoreBtn(),
+              buildMoreBtn(context),
             ],
           ),
         ));
@@ -197,20 +198,47 @@ class CategoryCardState extends State<CategoryCard> {
     );
   }
 
-  MouseRegion buildMoreBtn() {
+  MouseRegion buildMoreBtn(BuildContext parentContext) {
     return MouseRegion(
       cursor: SystemMouseCursors.click,
       onEnter: (_) => setState(() => isMoreHovered = true),
       onExit: (_) => setState(() => isMoreHovered = false),
       child: PopupMenuButton(
-        onSelected: (value){
-          //todo
-        },
           itemBuilder: (BuildContext context) {
             return [
-              _buildMenuItem(context,Icons.check_box,"select","select"),
-              _buildMenuItem(context,Icons.delete,"delete","delete"),
-              _buildMenuItem(context,Icons.edit,"edit","edit")
+              _buildMenuItem(context, Icons.check_box, "select", "select", () {
+                //todo
+              }),
+              _buildMenuItem(context, Icons.delete, "delete", "delete", () {
+                showDialog(
+                    context: parentContext,
+                    builder: (BuildContext context) => AlertDialog(
+                          title: Text("Delete Category"),
+                          content: Text(
+                              "The category with title '$title' will be removed,and the files of movies will remain."),
+                          actions: [
+                            TextButton(
+                              child: Text('Cancel'),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                            TextButton(
+                              child: Text('Confirm'),
+                              onPressed: () {
+                                if(CategoryService()
+                                    .removeCategory(widget.categoryId)){
+                                  widget.onUpdateUI();
+                                }
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                          ],
+                        ));
+              }),
+              _buildMenuItem(context, Icons.edit, "edit", "edit", () {
+                //todo
+              })
             ];
           },
           child: Container(
@@ -228,9 +256,11 @@ class CategoryCardState extends State<CategoryCard> {
   }
 
   // 封装菜单项构建方法
-  PopupMenuItem<String> _buildMenuItem(BuildContext context,IconData icon, String text, String value) {
+  PopupMenuItem<String> _buildMenuItem(BuildContext context, IconData icon,
+      String text, String value, VoidCallback onTap) {
     return PopupMenuItem(
       value: value,
+      onTap: onTap,
       child: Row(
         children: [
           Icon(icon, size: 20, color: Theme.of(context).iconTheme.color), // 图标
@@ -240,7 +270,6 @@ class CategoryCardState extends State<CategoryCard> {
       ),
     );
   }
-
 
   SizedBox buildMovieTitle() {
     return SizedBox(
