@@ -62,15 +62,25 @@ class VideoCardState extends State<VideoCard> {
     return result;
   }
 
-  Future<void> _launchVideo(BuildContext context) async {
+  void _launchVideo(BuildContext context) {
     final uri = Uri.file(path);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri);
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('无法打开视频')),
-      );
-    }
+    canLaunchUrl(uri).then((valid) {
+      if (valid) {
+        launchUrl(uri);
+      } else {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('无法打开视频')),
+          );
+        }
+      }
+    }).catchError((e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('无法打开视频:$e')),
+        );
+      }
+    });
   }
 
   @override
@@ -272,6 +282,8 @@ class VideoCardState extends State<VideoCard> {
       child: PopupMenuButton(
           itemBuilder: (BuildContext context) {
             return [
+              _buildMenuItem(context, Icons.playlist_add_outlined,
+                  "add to category", "category"),
               _buildMenuItem(context, Icons.check_box, "select", "select"),
               _buildMenuItem(context, Icons.delete, "delete", "delete"),
               _buildMenuItem(context, Icons.edit, "edit", "edit"),

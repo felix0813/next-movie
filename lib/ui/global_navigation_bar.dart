@@ -12,7 +12,11 @@ class GlobalNavigationBar extends StatelessWidget
   final String title;
   final Function? onMovieUpdate;
   final Function? onCategoryUpdate;
-  const GlobalNavigationBar({super.key, required this.title, this.onMovieUpdate, this.onCategoryUpdate});
+  const GlobalNavigationBar(
+      {super.key,
+      required this.title,
+      this.onMovieUpdate,
+      this.onCategoryUpdate});
   Future<MovieExtraMeta?> getExtraMeta(BuildContext context) {
     return showModalBottomSheet<MovieExtraMeta>(
       context: context,
@@ -46,11 +50,19 @@ class GlobalNavigationBar extends StatelessWidget
           tooltip: 'add category',
           onPressed: () {
             DoubleInputDialog.show(
-                    context: context, maxLength2: 100, title: 'Add Category', maxLength1: 20,hintText1: "category name",hintText2: "category description")
+                    context: context,
+                    maxLength2: 100,
+                    title: 'Add Category',
+                    maxLength1: 20,
+                    hintText1: "category name",
+                    hintText2: "category description")
                 .then((pair) {
-              if (pair != null&&pair.first!=null&&pair.first!.trim().isNotEmpty) {
+              if (pair != null &&
+                  pair.first != null &&
+                  pair.first!.trim().isNotEmpty) {
                 final service = CategoryService();
-                if(service.create(pair.first!, pair.second)&&onCategoryUpdate!=null){
+                if (service.create(pair.first!, pair.second) &&
+                    onCategoryUpdate != null) {
                   onCategoryUpdate!();
                 }
               }
@@ -198,14 +210,19 @@ class GlobalNavigationBar extends StatelessWidget
               await error.retry();
               // 重试成功后，可以选择不立即清除，但通常需要重新检查任务状态
               // 这里可以选择不自动清除，而是让用户再次查看状态
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                    content: Text('Task ${error.task.id} succeed by retrying')),
-              );
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                      content:
+                          Text('Task ${error.task.id} succeed by retrying')),
+                );
+              }
             } catch (e) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Retry ${error.task.id} fail: $e')),
-              );
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Retry ${error.task.id} fail: $e')),
+                );
+              }
             }
           },
         ),
