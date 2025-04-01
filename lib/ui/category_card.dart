@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:next_movie/model/category.dart';
+import 'package:next_movie/ui/page/category_video_page.dart';
 import 'package:next_movie/utils/app_path.dart';
 import 'package:path/path.dart';
 import 'package:tdesign_flutter/tdesign_flutter.dart';
@@ -76,7 +77,7 @@ class CategoryCardState extends State<CategoryCard> {
                 children: [
                   buildCoverContainer(),
                   buildRate(),
-                  if (isCoverHovered) buildGrayCover(),
+                  if (isCoverHovered) buildGrayCover(context),
                   if (isCoverHovered) buildBtnBar(context)
                 ],
               ),
@@ -146,11 +147,16 @@ class CategoryCardState extends State<CategoryCard> {
     );
   }
 
-  Positioned buildGrayCover() {
+  Positioned buildGrayCover(BuildContext context) {
     return Positioned.fill(
         child: GestureDetector(
       onTap: () {
-        //todo
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) =>
+                  CategoryVideoPage(categoryId: widget.categoryId)),
+        );
       },
       child: Material(
         color: Colors.black.withValues(alpha: 0.3), // 蒙层颜色和透明度
@@ -226,8 +232,8 @@ class CategoryCardState extends State<CategoryCard> {
                             TextButton(
                               child: Text('Confirm'),
                               onPressed: () {
-                                if(CategoryService()
-                                    .removeCategory(widget.categoryId)){
+                                if (CategoryService()
+                                    .removeCategory(widget.categoryId)) {
                                   widget.onUpdateUI();
                                 }
                                 Navigator.of(context).pop();

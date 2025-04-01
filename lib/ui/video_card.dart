@@ -13,14 +13,19 @@ import 'package:next_movie/model/movie.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class VideoCard extends StatefulWidget {
-  const VideoCard(
-      {super.key,
-      required this.itemWidth,
-      required this.itemHeight,
-      required this.movieId});
+  const VideoCard({
+    super.key,
+    required this.itemWidth,
+    required this.itemHeight,
+    required this.movieId,
+    this.categoryId,
+    this.onRemoveFromCategory,
+  });
   final double itemWidth;
   final double itemHeight;
   final int movieId;
+  final int? categoryId;
+  final void Function(int)? onRemoveFromCategory;
   @override
   VideoCardState createState() => VideoCardState();
 }
@@ -299,14 +304,33 @@ class VideoCardState extends State<VideoCard> {
                           options: categoryService.getAllCategories());
                     });
               }),
+              if (widget.categoryId != null &&
+                  widget.onRemoveFromCategory != null)
+                _buildMenuItem(context, Icons.playlist_remove,
+                    "remove from category", "remove", () {
+                  final categoryService = CategoryService();
+                  if (categoryService
+                      .removeMovies(widget.categoryId!, [widget.movieId])) {
+                    widget.onRemoveFromCategory!(widget.movieId);
+                  }
+                }),
+              _buildMenuItem(context, Icons.check_box, "select", "select", () {
+                //todo
+              }),
+              _buildMenuItem(context, Icons.delete, "delete", "delete", () {
+                //todo
+              }),
+              _buildMenuItem(context, Icons.edit, "edit", "edit", () {
+                //todo
+              }),
               _buildMenuItem(
-                  context, Icons.check_box, "select", "select", () {}),
-              _buildMenuItem(context, Icons.delete, "delete", "delete", () {}),
-              _buildMenuItem(context, Icons.edit, "edit", "edit", () {}),
-              _buildMenuItem(context, Icons.image, "generate thumbnail",
-                  "thumbnail", () {}),
-              _buildMenuItem(
-                  context, Icons.info, "check metadata", "metadata", () {})
+                  context, Icons.image, "generate thumbnail", "thumbnail", () {
+                //todo
+              }),
+              _buildMenuItem(context, Icons.info, "check metadata", "metadata",
+                  () {
+                //todo
+              })
             ];
           },
           child: Container(

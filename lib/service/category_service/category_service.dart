@@ -64,4 +64,6 @@ class CategoryService {
   Category? getCategoryById(int id) => _repository.getCategoryById(id);
 
   List<Category> getAllCategories() => _repository.getAllCategories();
+
+  bool removeMovies(int category,List<int>movies)=>_repository.removeMovies(category,movies)==category;
 }

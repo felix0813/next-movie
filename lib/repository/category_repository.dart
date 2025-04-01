@@ -24,7 +24,17 @@ class CategoryRepository {
         .findIds();
   }
 
-  int getTotalCategories()=>_box.count();
+  int getTotalCategories() => _box.count();
 
-  List<Category> getAllCategories()=>_box.getAll();
+  List<Category> getAllCategories() => _box.getAll();
+
+  int removeMovies(int category, List<int> movies) {
+    final newCategory = _box.get(category);
+    if (newCategory != null) {
+      newCategory.movies =
+          newCategory.movies.where((item) => !movies.contains(item)).toList();
+      return _box.put(newCategory);
+    }
+    return 0;
+  }
 }
