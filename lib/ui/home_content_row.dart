@@ -8,8 +8,7 @@ import 'package:tdesign_flutter/tdesign_flutter.dart';
 class HomeContentRow extends StatefulWidget {
   final String title;
   final List<int> movies;
-  const HomeContentRow(
-      {super.key, required this.title, required this.movies});
+  const HomeContentRow({super.key, required this.title, required this.movies});
 
   @override
   HomeContentRowState createState() => HomeContentRowState();
@@ -80,7 +79,7 @@ class HomeContentRowState extends State<HomeContentRow> {
 
   @override
   Widget build(BuildContext context) {
-    if(widget.movies.isEmpty){
+    if (widget.movies.isEmpty) {
       return Container();
     }
     double itemWidth =
@@ -114,54 +113,54 @@ class HomeContentRowState extends State<HomeContentRow> {
 
   SizedBox buildList(double itemHeight, double itemWidth) {
     return SizedBox(
-        height: itemHeight * 2 / 3 + 30, // 包含间距
-        child: Row(
-          children: [
-            Expanded(
-              child: ListView.builder(
-                controller: _scrollController,
-                physics: const ClampingScrollPhysics(),
-                scrollDirection: Axis.horizontal,
-                itemCount: widget.movies.length, // 确保足够多的item
-                itemBuilder: (context, index) => VideoCard(
-                  key: Key(widget.movies[index].toString()),
-                  movieId: widget.movies[index],
-                  itemWidth: itemWidth * 2 / 3 + 10,
-                  itemHeight: itemHeight * 2 / 3 + 30,
-                ),
+      height: itemHeight * 2 / 3 + 30, // 包含间距
+      child: Row(
+        children: [
+          Expanded(
+            child: ListView.builder(
+              controller: _scrollController,
+              physics: const ClampingScrollPhysics(),
+              scrollDirection: Axis.horizontal,
+              itemCount: widget.movies.length, // 确保足够多的item
+              itemBuilder: (context, index) => VideoCard(
+                key: Key(widget.movies[index].toString()),
+                movieId: widget.movies[index],
+                itemWidth: itemWidth * 2 / 3 + 10,
+                itemHeight: itemHeight * 2 / 3 + 30,
               ),
             ),
-          ],
-        ),
-      );
+          ),
+        ],
+      ),
+    );
   }
 
   Padding buildScrollBtn(double itemWidth) {
     return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                IconButton(
-                  icon: const Icon(TDIcons.arrow_left),
-                  onPressed: _showLeftButton
-                      ? () {
-                          _scrollLeft(itemWidth);
-                        }
-                      : null,
-                  tooltip: 'scroll left',
-                ),
-                IconButton(
-                  icon: const Icon(TDIcons.arrow_right),
-                  onPressed: _showRightButton
-                      ? () {
-                          _scrollRight(itemWidth);
-                        }
-                      : null,
-                  tooltip: 'scroll right',
-                ),
-              ],
-            ),
-          );
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          IconButton(
+            icon: const Icon(TDIcons.arrow_left),
+            onPressed: _showLeftButton
+                ? () {
+                    _scrollLeft(itemWidth);
+                  }
+                : null,
+            tooltip: 'scroll left',
+          ),
+          IconButton(
+            icon: const Icon(TDIcons.arrow_right),
+            onPressed: _showRightButton
+                ? () {
+                    _scrollRight(itemWidth);
+                  }
+                : null,
+            tooltip: 'scroll right',
+          ),
+        ],
+      ),
+    );
   }
 }

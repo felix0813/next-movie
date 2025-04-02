@@ -20,6 +20,8 @@ class CategoryVideoPageState extends State<CategoryVideoPage> {
   final _movieService = MovieService();
   int page = 0;
   List<int> ids = [];
+  Set<int> selectedMovie = {};
+  bool selecting = false;
 
   @override
   void initState() {
@@ -73,6 +75,22 @@ class CategoryVideoPageState extends State<CategoryVideoPage> {
           onRemoveFromCategory: (movie) {
             setState(() {
               ids.remove(movie);
+            });
+          },
+          onSelect: (bool isSelected) {
+            setState(() {
+              if (isSelected) {
+                selectedMovie.add(ids[index]);
+              } else {
+                selectedMovie.remove(ids[index]);
+              }
+            });
+          },
+          selecting: selecting,
+          isSelected: selectedMovie.contains(ids[index]),
+          startSelect: () {
+            setState(() {
+              selecting = true;
             });
           },
         );

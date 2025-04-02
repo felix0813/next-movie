@@ -20,12 +20,20 @@ class VideoCard extends StatefulWidget {
     required this.movieId,
     this.categoryId,
     this.onRemoveFromCategory,
+    this.onSelect,
+    this.selecting = false,
+    this.isSelected = false,
+    this.startSelect,
   });
   final double itemWidth;
   final double itemHeight;
   final int movieId;
   final int? categoryId;
   final void Function(int)? onRemoveFromCategory;
+  final Function(bool)? onSelect;
+  final bool selecting;
+  final bool isSelected;
+  final Function()? startSelect;
   @override
   VideoCardState createState() => VideoCardState();
 }
@@ -107,14 +115,28 @@ class VideoCardState extends State<VideoCard> {
                   buildCoverContainer(),
                   buildRate(),
                   if (isCoverHovered) buildGrayCover(),
-                  if (isCoverHovered) buildPlayBtn(context),
-                  if (isCoverHovered) buildBtnBar(context)
+                  if (isCoverHovered&&!widget.selecting) buildPlayBtn(context),
+                  if (isCoverHovered&&!widget.selecting) buildBtnBar(context),
+                  if (widget.selecting) buildSelectBox(context)
                 ],
               ),
             ),
             buildMovieTitle(),
           ],
         ));
+  }
+
+  buildSelectBox(BuildContext context) {
+    return Positioned(
+        top: 0,
+        right: 0,
+        child: Checkbox(
+            value: widget.isSelected,
+            onChanged: (isSelected) {
+              if (widget.onSelect != null && isSelected != null) {
+                widget.onSelect!(isSelected);
+              }
+            }));
   }
 
   Container buildCoverContainer() {
@@ -181,7 +203,9 @@ class VideoCardState extends State<VideoCard> {
     return Positioned.fill(
         child: GestureDetector(
       onTap: () {
-        print("image");
+        if(widget.selecting&&widget.onSelect!=null){
+          widget.onSelect!(!widget.isSelected);
+        }
         //todo
       },
       child: Material(
@@ -315,7 +339,10 @@ class VideoCardState extends State<VideoCard> {
                   }
                 }),
               _buildMenuItem(context, Icons.check_box, "select", "select", () {
-                //todo
+                if (widget.startSelect != null && widget.onSelect != null) {
+                  widget.startSelect!();
+                  widget.onSelect!(true);
+                }
               }),
               _buildMenuItem(context, Icons.delete, "delete", "delete", () {
                 //todo

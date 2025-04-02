@@ -22,6 +22,8 @@ class VideoListPageState extends State<VideoListPage> {
   String orderBy = SortBy.recorded;
   String order = SortOrder.descending;
   final _movieService = MovieService();
+  Set<int> selectedMovie = {};
+  bool selecting = false;
 
   @override
   void initState() {
@@ -109,6 +111,22 @@ class VideoListPageState extends State<VideoListPage> {
           itemWidth: itemWidth + 10,
           itemHeight: itemWidth * 9 / 16 + 30,
           movieId: ids[index],
+          onSelect: (bool isSelected) {
+            setState(() {
+              if (isSelected) {
+                selectedMovie.add(ids[index]);
+              } else {
+                selectedMovie.remove(ids[index]);
+              }
+            });
+          },
+          selecting: selecting,
+          isSelected: selectedMovie.contains(ids[index]),
+          startSelect: () {
+            setState(() {
+              selecting = true;
+            });
+          },
         );
       },
     );
