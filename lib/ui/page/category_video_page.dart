@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:next_movie/service/category_service/category_service.dart';
 import 'package:next_movie/service/movie_service/movie_service.dart';
 import 'package:next_movie/ui/global_navigation_bar.dart';
+import 'package:next_movie/ui/select_navigation_bar.dart';
 
 import '../video_card.dart';
 
@@ -17,7 +18,7 @@ class CategoryVideoPage extends StatefulWidget {
 
 class CategoryVideoPageState extends State<CategoryVideoPage> {
   final _categoryService = CategoryService();
-  final _movieService = MovieService();
+  // final _movieService = MovieService();
   int page = 0;
   List<int> ids = [];
   Set<int> selectedMovie = {};
@@ -38,8 +39,18 @@ class CategoryVideoPageState extends State<CategoryVideoPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: GlobalNavigationBar(
-            title: _categoryService.getCategoryById(widget.categoryId)!.name),
+        appBar: selecting
+            ? SelectNavigationBar(
+                selectedMovies: selectedMovie,
+                quitSelecting: () {
+                  setState(() {
+                    selectedMovie.clear();
+                    selecting = false;
+                  });
+                })
+            : GlobalNavigationBar(
+                title:
+                    _categoryService.getCategoryById(widget.categoryId)!.name),
         body: SingleChildScrollView(
           padding: EdgeInsets.only(left: 15),
           child: Column(children: [

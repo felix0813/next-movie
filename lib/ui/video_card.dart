@@ -24,6 +24,7 @@ class VideoCard extends StatefulWidget {
     this.selecting = false,
     this.isSelected = false,
     this.startSelect,
+    this.canBeSelected = true,
   });
   final double itemWidth;
   final double itemHeight;
@@ -34,6 +35,7 @@ class VideoCard extends StatefulWidget {
   final bool selecting;
   final bool isSelected;
   final Function()? startSelect;
+  final bool canBeSelected;
   @override
   VideoCardState createState() => VideoCardState();
 }
@@ -135,11 +137,13 @@ class VideoCardState extends State<VideoCard> {
             activeColor: Colors.blue,
             checkColor: Colors.white70,
             value: widget.isSelected,
-            onChanged: (isSelected) {
-              if (widget.onSelect != null && isSelected != null) {
-                widget.onSelect!(isSelected);
-              }
-            }));
+            onChanged: onCheckBoxChange));
+  }
+
+  void onCheckBoxChange(isSelected) {
+    if (widget.onSelect != null && isSelected != null) {
+      widget.onSelect!(isSelected);
+    }
   }
 
   Container buildCoverContainer() {
@@ -181,10 +185,8 @@ class VideoCardState extends State<VideoCard> {
               File(join(AppPaths.instance.appDocumentsDir, "next_movie",
                   "poster", "${widget.movieId}.jpg")),
               fit: BoxFit.cover,
-              errorBuilder: (context, widget, error) {
-                return const Icon(Icons.error, color: Colors.red);
-              },
-            )
+              errorBuilder: (context, widget, error) =>
+                  const Icon(Icons.error, color: Colors.red))
           : Stack(
               children: [
                 Container(
@@ -205,16 +207,18 @@ class VideoCardState extends State<VideoCard> {
   Positioned buildGrayCover() {
     return Positioned.fill(
         child: GestureDetector(
-      onTap: () {
-        if (widget.selecting && widget.onSelect != null) {
-          widget.onSelect!(!widget.isSelected);
-        }
-        //todo
-      },
+      onTap: onCoverTap,
       child: Material(
         color: Colors.black.withValues(alpha: 0.3), // 蒙层颜色和透明度
       ),
     ));
+  }
+
+  void onCoverTap() {
+    if (widget.selecting && widget.onSelect != null) {
+      widget.onSelect!(!widget.isSelected);
+    }
+    //todo
   }
 
   Positioned buildPlayBtn(BuildContext context) {
@@ -341,12 +345,14 @@ class VideoCardState extends State<VideoCard> {
                     widget.onRemoveFromCategory!(widget.movieId);
                   }
                 }),
-              _buildMenuItem(context, Icons.check_box, "select", "select", () {
-                if (widget.startSelect != null && widget.onSelect != null) {
-                  widget.startSelect!();
-                  widget.onSelect!(true);
-                }
-              }),
+              if (widget.canBeSelected)
+                _buildMenuItem(context, Icons.check_box, "select", "select",
+                    () {
+                  if (widget.startSelect != null && widget.onSelect != null) {
+                    widget.startSelect!();
+                    widget.onSelect!(true);
+                  }
+                }),
               _buildMenuItem(context, Icons.delete, "delete", "delete", () {
                 //todo
               }),

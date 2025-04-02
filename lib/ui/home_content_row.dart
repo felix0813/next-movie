@@ -127,6 +127,7 @@ class HomeContentRowState extends State<HomeContentRow> {
                 movieId: widget.movies[index],
                 itemWidth: itemWidth * 2 / 3 + 10,
                 itemHeight: itemHeight * 2 / 3 + 30,
+                canBeSelected: false,
               ),
             ),
           ),

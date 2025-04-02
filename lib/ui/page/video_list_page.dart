@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:next_movie/service/movie_service/movie_service.dart';
+import 'package:next_movie/ui/select_navigation_bar.dart';
 import 'package:next_movie/ui/global_navigation_bar.dart';
 import 'package:next_movie/ui/radio_dialog.dart';
 import 'package:next_movie/ui/video_card.dart';
@@ -43,15 +44,25 @@ class VideoListPageState extends State<VideoListPage> {
   Widget build(BuildContext context) {
     int count = _movieService.getTotalMovies();
     return Scaffold(
-        appBar: GlobalNavigationBar(
-          title: "Movies",
-          onMovieUpdate: () {
-            setState(() {
-              ids = _movieService.getOnePageMovies(
-                  page: page, orderBy: orderBy, order: order);
-            });
-          },
-        ),
+        appBar: selecting
+            ? SelectNavigationBar(
+                selectedMovies: selectedMovie,
+                quitSelecting: () {
+                  setState(() {
+                    selectedMovie.clear();
+                    selecting = false;
+                  });
+                },
+              )
+            : GlobalNavigationBar(
+                title: "Movies",
+                onMovieUpdate: () {
+                  setState(() {
+                    ids = _movieService.getOnePageMovies(
+                        page: page, orderBy: orderBy, order: order);
+                  });
+                },
+              ),
         body: SingleChildScrollView(
           padding: EdgeInsets.only(left: 15),
           child: Column(children: [
