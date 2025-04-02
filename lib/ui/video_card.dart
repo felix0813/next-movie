@@ -115,8 +115,9 @@ class VideoCardState extends State<VideoCard> {
                   buildCoverContainer(),
                   buildRate(),
                   if (isCoverHovered) buildGrayCover(),
-                  if (isCoverHovered&&!widget.selecting) buildPlayBtn(context),
-                  if (isCoverHovered&&!widget.selecting) buildBtnBar(context),
+                  if (isCoverHovered && !widget.selecting)
+                    buildPlayBtn(context),
+                  if (isCoverHovered && !widget.selecting) buildBtnBar(context),
                   if (widget.selecting) buildSelectBox(context)
                 ],
               ),
@@ -131,6 +132,8 @@ class VideoCardState extends State<VideoCard> {
         top: 0,
         right: 0,
         child: Checkbox(
+            activeColor: Colors.blue,
+            checkColor: Colors.white70,
             value: widget.isSelected,
             onChanged: (isSelected) {
               if (widget.onSelect != null && isSelected != null) {
@@ -203,7 +206,7 @@ class VideoCardState extends State<VideoCard> {
     return Positioned.fill(
         child: GestureDetector(
       onTap: () {
-        if(widget.selecting&&widget.onSelect!=null){
+        if (widget.selecting && widget.onSelect != null) {
           widget.onSelect!(!widget.isSelected);
         }
         //todo
