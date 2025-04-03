@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:next_movie/model/movie.dart';
 import 'package:next_movie/model/sort_by.dart';
+import 'package:next_movie/repository/category_repository.dart';
 import 'package:next_movie/repository/movie_repository.dart';
 import 'package:next_movie/service/movie_service/error_task.dart';
 import 'package:next_movie/service/movie_service/thumbnail_task.dart';
@@ -31,6 +32,9 @@ class MovieService {
             .run();
       }
     }
+    final categoryRepository = CategoryRepository();
+    categoryRepository.getAllCategories().forEach(
+        (category) => categoryRepository.removeMovies(category.id, ids));
     for (var id in ids) {
       DeleteThumbnailTask(movieId: id, taskQueue: _taskQueue).run();
     }
