@@ -1,12 +1,11 @@
 import 'package:flutter/cupertino.dart';
-
 import 'package:next_movie/model/movie.dart';
 import 'package:next_movie/model/sort_by.dart';
+import 'package:next_movie/repository/movie_repository.dart';
 import 'package:next_movie/service/movie_service/error_task.dart';
 import 'package:next_movie/service/movie_service/thumbnail_task.dart';
 import 'package:next_movie/task/task_queue.dart';
 
-import 'package:next_movie/repository/movie_repository.dart';
 import 'importer/local_importer_impl.dart';
 
 class MovieService {

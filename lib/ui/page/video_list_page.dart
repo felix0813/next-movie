@@ -1,14 +1,13 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:next_movie/model/sort_by.dart';
 import 'package:next_movie/service/movie_service/movie_service.dart';
-import 'package:next_movie/ui/select_navigation_bar.dart';
 import 'package:next_movie/ui/global_navigation_bar.dart';
 import 'package:next_movie/ui/radio_dialog.dart';
+import 'package:next_movie/ui/select_navigation_bar.dart';
 import 'package:next_movie/ui/video_card.dart';
 import 'package:tdesign_flutter/tdesign_flutter.dart';
-
-import 'package:next_movie/model/sort_by.dart';
 
 class VideoListPage extends StatefulWidget {
   const VideoListPage({super.key});

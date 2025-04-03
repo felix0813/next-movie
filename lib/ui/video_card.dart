@@ -2,15 +2,15 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:next_movie/model/movie.dart';
 import 'package:next_movie/service/category_service/category_service.dart';
 import 'package:next_movie/service/movie_service/movie_service.dart';
-import 'select_category_dialog.dart';
 import 'package:next_movie/utils/app_path.dart';
 import 'package:path/path.dart';
 import 'package:tdesign_flutter/tdesign_flutter.dart';
-
-import 'package:next_movie/model/movie.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import 'select_category_dialog.dart';
 
 class VideoCard extends StatefulWidget {
   const VideoCard({

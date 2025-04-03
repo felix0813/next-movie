@@ -1,7 +1,6 @@
+import 'package:next_movie/model/category.dart';
 import 'package:next_movie/repository/category_repository.dart';
 import 'package:next_movie/service/movie_service/error_task.dart';
-
-import 'package:next_movie/model/category.dart';
 import 'package:next_movie/task/task_queue.dart';
 
 class CategoryService {

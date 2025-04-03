@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'package:next_movie/service/movie_service/movie_service.dart';
 
 class MovieExtraMetaForm extends StatefulWidget {

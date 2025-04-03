@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:next_movie/service/category_service/category_service.dart';
 import 'package:next_movie/service/movie_service/movie_service.dart';
-import 'select_category_dialog.dart';
+
 import 'movie_extra_meta_form.dart';
+import 'select_category_dialog.dart';
 
 class SelectNavigationBar extends StatelessWidget
     implements PreferredSizeWidget {

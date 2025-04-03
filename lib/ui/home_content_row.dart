@@ -2,8 +2,9 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'video_card.dart';
 import 'package:tdesign_flutter/tdesign_flutter.dart';
+
+import 'video_card.dart';
 
 class HomeContentRow extends StatefulWidget {
   final String title;

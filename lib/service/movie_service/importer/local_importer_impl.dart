@@ -3,15 +3,15 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_media_info/flutter_media_info.dart';
 import 'package:logging/logging.dart';
+import 'package:media_info/media_info.dart' as m;
 import 'package:next_movie/model/movie.dart';
+import 'package:next_movie/objectbox/objectbox.dart';
+import 'package:next_movie/objectbox/objectbox.g.dart';
 import 'package:next_movie/service/movie_service/thumbnail_task.dart';
+import 'package:next_movie/task/task_queue.dart';
 import 'package:next_movie/utils/time.dart';
 
-import 'package:next_movie/task/task_queue.dart';
-import 'package:next_movie/objectbox/objectbox.g.dart';
-import 'package:next_movie/objectbox/objectbox.dart';
 import 'importer.dart';
-import 'package:media_info/media_info.dart' as m;
 
 class LocalImporterImpl extends Importer {
   static final _logger = Logger('LocalImporterImpl');
