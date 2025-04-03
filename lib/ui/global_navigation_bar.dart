@@ -40,7 +40,7 @@ class GlobalNavigationBar extends StatelessWidget
             final movieService = MovieService(
                 taskQueue: Provider.of<TaskQueue>(context, listen: false));
             movieService.importMovie(getExtraMeta, context).then((_) {
-              if (onMovieUpdate != null) {
+              if (onMovieUpdate != null && context.mounted) {
                 onMovieUpdate!();
               }
             });
