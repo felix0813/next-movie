@@ -55,39 +55,39 @@ class SelectNavigationBar extends StatelessWidget
                 });
           },
         ),
-        if(removeMoviesFromCategory != null)
-        IconButton(
-          icon: Icon(Icons.playlist_remove_outlined),
-          tooltip: 'remove from category',
-          onPressed: () {
-            final categoryService = CategoryService();
-            showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  title: Text('Remove from category'),
-                  content: Text('You will remove ${selectedMovies.length} movies from current category'),
-                  actions: <Widget>[
-                    TextButton(
-                      child: Text('cancel'),
-                      onPressed: () {
-                        Navigator.of(context).pop(); // 关闭对话框
-                      },
-                    ),
-                    TextButton(
-                      child: Text('confirm'),
-                      onPressed: () {
-                        removeMoviesFromCategory!();
-                        Navigator.of(context).pop(); // 关闭对话框
-                        quitSelecting();
-                      },
-                    ),
-                  ],
-                );
-              },
-            );
-          },
-        ),
+        if (removeMoviesFromCategory != null)
+          IconButton(
+            icon: Icon(Icons.playlist_remove_outlined),
+            tooltip: 'remove from category',
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text('Remove from category'),
+                    content: Text(
+                        'You will remove ${selectedMovies.length} movies from current category'),
+                    actions: <Widget>[
+                      TextButton(
+                        child: Text('cancel'),
+                        onPressed: () {
+                          Navigator.of(context).pop(); // 关闭对话框
+                        },
+                      ),
+                      TextButton(
+                        child: Text('confirm'),
+                        onPressed: () {
+                          removeMoviesFromCategory!();
+                          Navigator.of(context).pop(); // 关闭对话框
+                          quitSelecting();
+                        },
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+          ),
         IconButton(
           icon: Icon(Icons.delete),
           tooltip: 'Delete',

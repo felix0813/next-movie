@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:next_movie/service/category_service/category_service.dart';
-import 'package:next_movie/service/movie_service/movie_service.dart';
 import 'package:next_movie/ui/global_navigation_bar.dart';
 import 'package:next_movie/ui/select_navigation_bar.dart';
 
@@ -30,6 +29,12 @@ class CategoryVideoPageState extends State<CategoryVideoPage> {
     super.initState();
   }
 
+  double get itemWidth {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final columns = max(2, screenWidth / 150);
+    return (screenWidth - 15) / columns;
+  }
+
   void updateMovies() {
     setState(() {
       ids = _categoryService
@@ -43,23 +48,7 @@ class CategoryVideoPageState extends State<CategoryVideoPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: selecting
-            ? SelectNavigationBar(
-                selectedMovies: selectedMovie,
-                removeMoviesFromCategory: () {
-                  _categoryService.removeMovies(
-                      widget.categoryId, selectedMovie.toList());
-                  updateMovies();
-                },
-                quitSelecting: () {
-                  setState(() {
-                    selectedMovie.clear();
-                    selecting = false;
-                  });
-                })
-            : GlobalNavigationBar(
-                title:
-                    _categoryService.getCategoryById(widget.categoryId)!.name),
+        appBar: buildAppBar(),
         body: SingleChildScrollView(
           padding: EdgeInsets.only(left: 15),
           child: Column(children: [
@@ -68,10 +57,24 @@ class CategoryVideoPageState extends State<CategoryVideoPage> {
         ));
   }
 
-  double get itemWidth {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final columns = max(2, screenWidth / 150);
-    return (screenWidth - 15) / columns;
+  PreferredSizeWidget? buildAppBar() {
+    return selecting
+        ? SelectNavigationBar(
+            selectedMovies: selectedMovie,
+            removeMoviesFromCategory: () {
+              if (_categoryService.removeMovies(
+                  widget.categoryId, selectedMovie.toList())) {
+                updateMovies();
+              }
+            },
+            quitSelecting: () {
+              setState(() {
+                selectedMovie.clear();
+                selecting = false;
+              });
+            })
+        : GlobalNavigationBar(
+            title: _categoryService.getCategoryById(widget.categoryId)!.name);
   }
 
   GridView buildGridView(BuildContext context) {
@@ -85,35 +88,37 @@ class CategoryVideoPageState extends State<CategoryVideoPage> {
         childAspectRatio: 4 / 3,
       ),
       itemCount: ids.length,
-      itemBuilder: (context, index) {
-        return VideoCard(
-          key: Key(ids[index].toString()),
-          itemWidth: itemWidth + 10,
-          itemHeight: itemWidth * 9 / 16 + 30,
-          movieId: ids[index],
-          categoryId: widget.categoryId,
-          onRemoveFromCategory: (movie) {
-            setState(() {
-              ids.remove(movie);
-            });
-          },
-          onSelect: (bool isSelected) {
-            setState(() {
-              if (isSelected) {
-                selectedMovie.add(ids[index]);
-              } else {
-                selectedMovie.remove(ids[index]);
-              }
-            });
-          },
-          selecting: selecting,
-          isSelected: selectedMovie.contains(ids[index]),
-          startSelect: () {
-            setState(() {
-              selecting = true;
-            });
-          },
-        );
+      itemBuilder: buildVideoCard,
+    );
+  }
+
+  Widget? buildVideoCard(context, index) {
+    return VideoCard(
+      key: Key(ids[index].toString()),
+      itemWidth: itemWidth + 10,
+      itemHeight: itemWidth * 9 / 16 + 30,
+      movieId: ids[index],
+      categoryId: widget.categoryId,
+      onRemoveFromCategory: (movie) {
+        setState(() {
+          ids.remove(movie);
+        });
+      },
+      onSelect: (bool isSelected) {
+        setState(() {
+          if (isSelected) {
+            selectedMovie.add(ids[index]);
+          } else {
+            selectedMovie.remove(ids[index]);
+          }
+        });
+      },
+      selecting: selecting,
+      isSelected: selectedMovie.contains(ids[index]),
+      startSelect: () {
+        setState(() {
+          selecting = true;
+        });
       },
     );
   }
