@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:next_movie/service/category_service/category_service.dart';
 import 'package:next_movie/service/movie_service/movie_service.dart';
-import 'package:next_movie/ui/input_dialog.dart';
+import 'input_dialog.dart';
 import 'package:provider/provider.dart';
 import 'package:tdesign_flutter/tdesign_flutter.dart';
 import 'package:next_movie/task/task_queue.dart';
