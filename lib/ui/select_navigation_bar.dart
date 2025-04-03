@@ -8,10 +8,12 @@ class SelectNavigationBar extends StatelessWidget
     implements PreferredSizeWidget {
   final Set<int> selectedMovies;
   final Function() quitSelecting;
+  final void Function()? removeMoviesFromCategory;
   const SelectNavigationBar({
     super.key,
     required this.selectedMovies,
     required this.quitSelecting,
+    this.removeMoviesFromCategory,
   });
   Future<MovieExtraMeta?> getExtraMeta(BuildContext context) {
     return showModalBottomSheet<MovieExtraMeta>(
@@ -51,6 +53,39 @@ class SelectNavigationBar extends StatelessWidget
                       },
                       options: categoryService.getAllCategories());
                 });
+          },
+        ),
+        if(removeMoviesFromCategory != null)
+        IconButton(
+          icon: Icon(Icons.playlist_remove_outlined),
+          tooltip: 'remove from category',
+          onPressed: () {
+            final categoryService = CategoryService();
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Text('Remove from category'),
+                  content: Text('You will remove ${selectedMovies.length} movies from current category'),
+                  actions: <Widget>[
+                    TextButton(
+                      child: Text('cancel'),
+                      onPressed: () {
+                        Navigator.of(context).pop(); // 关闭对话框
+                      },
+                    ),
+                    TextButton(
+                      child: Text('confirm'),
+                      onPressed: () {
+                        removeMoviesFromCategory!();
+                        Navigator.of(context).pop(); // 关闭对话框
+                        quitSelecting();
+                      },
+                    ),
+                  ],
+                );
+              },
+            );
           },
         ),
         IconButton(

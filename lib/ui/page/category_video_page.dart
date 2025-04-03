@@ -26,6 +26,11 @@ class CategoryVideoPageState extends State<CategoryVideoPage> {
 
   @override
   void initState() {
+    updateMovies();
+    super.initState();
+  }
+
+  void updateMovies() {
     setState(() {
       ids = _categoryService
           .getCategoryById(widget.categoryId)!
@@ -33,7 +38,6 @@ class CategoryVideoPageState extends State<CategoryVideoPage> {
           .reversed
           .toList();
     });
-    super.initState();
   }
 
   @override
@@ -42,6 +46,11 @@ class CategoryVideoPageState extends State<CategoryVideoPage> {
         appBar: selecting
             ? SelectNavigationBar(
                 selectedMovies: selectedMovie,
+                removeMoviesFromCategory: () {
+                  _categoryService.removeMovies(
+                      widget.categoryId, selectedMovie.toList());
+                  updateMovies();
+                },
                 quitSelecting: () {
                   setState(() {
                     selectedMovie.clear();
