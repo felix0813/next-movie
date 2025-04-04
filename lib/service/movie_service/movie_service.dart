@@ -13,8 +13,12 @@ class MovieService {
   final _repository = MovieRepository();
 
   final TaskQueue? _taskQueue;
+  final Function()? updateUI;
 
-  MovieService({TaskQueue? taskQueue}) : _taskQueue = taskQueue;
+  MovieService({
+    TaskQueue? taskQueue,
+    this.updateUI,
+  }) : _taskQueue = taskQueue;
 
   void deleteMovieAndThumbnail(List<int> ids) {
     if (_taskQueue == null) {
@@ -100,12 +104,12 @@ class MovieService {
     if (_taskQueue == null) {
       throw Exception("Task queue is not initialized");
     }
-    LocalImporterImpl importer = LocalImporterImpl(taskQueue: _taskQueue);
+    LocalImporterImpl importer =
+        LocalImporterImpl(taskQueue: _taskQueue, updateUI: updateUI);
     final result = await importer.getVideos();
     if (result.isEmpty) {
       return;
     }
-    await importer.makeMeta();
     if (!context.mounted) {
       return;
     }
@@ -114,7 +118,7 @@ class MovieService {
       return;
     }
     importer.setExtraData(meta.tags, meta.rate, meta.source, meta.comments);
-    importer.storeMovie();
+    await importer.makeMeta();
   }
 
   List<Movie> getRecentAddMovie() => _repository.getRecentAddMovie();

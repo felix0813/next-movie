@@ -16,7 +16,8 @@ import 'importer.dart';
 class LocalImporterImpl extends Importer {
   static final _logger = Logger('LocalImporterImpl');
   late List<Movie> _videos;
-  final box=ObjectBox.getBox<Movie>();
+  final box = ObjectBox.getBox<Movie>();
+  final Function()? updateUI;
   TaskQueue? taskQueue;
 
   @override
@@ -26,8 +27,8 @@ class LocalImporterImpl extends Importer {
 
   @override
   Future<List<Movie>> getVideos() async {
-    var result = await FilePicker.platform
-        .pickFiles(allowMultiple: true, type: FileType.video,lockParentWindow: true);
+    var result = await FilePicker.platform.pickFiles(
+        allowMultiple: true, type: FileType.video, lockParentWindow: true);
     if (result != null) {
       _videos = result.files
           .map((e) => Movie(title: e.name, path: e.path ?? '', size: e.size))
@@ -38,24 +39,27 @@ class LocalImporterImpl extends Importer {
 
   Future<int> getVideoDuration(String path) async {
     if (Platform.isIOS || Platform.isAndroid) {
-      try{
-        final  mf=m.MediaInfo();
-        final result=await mf.getMediaInfo(path);
-        int duration=result["durationMs"];
+      try {
+        final mf = m.MediaInfo();
+        final result = await mf.getMediaInfo(path);
+        int duration = result["durationMs"];
         return duration;
-      }
-      catch(e){
+      } catch (e) {
         _logger.severe("Get duration of $path fail:$e");
         return 0;
       }
-      
     } else {
-      final mi = Mediainfo();
-      mi.quickLoad(path);
-      final movieDuration = mi.getInfo(
-          MediaInfoStreamType.mediaInfoStreamVideo, 0, "Duration/String2");
-      mi.close();
-      return durationStringToSeconds(movieDuration);
+      try {
+        final mi = Mediainfo();
+        mi.quickLoad(path);
+        final movieDuration = mi.getInfo(
+            MediaInfoStreamType.mediaInfoStreamVideo, 0, "Duration/String2");
+        mi.close();
+        return durationStringToSeconds(movieDuration);
+      } catch (e) {
+        _logger.severe("Get duration of $path fail:$e");
+        return 0;
+      }
     }
   }
 
@@ -73,6 +77,7 @@ class LocalImporterImpl extends Importer {
 
   @override
   Future<void> makeMeta() async {
+    int count = 0;
     for (var video in _videos) {
       if (video.path == '') {
         continue;
@@ -81,15 +86,21 @@ class LocalImporterImpl extends Importer {
         video.title = '';
         continue;
       }
-      video.duration = await getVideoDuration(video.path);
       video.recorded = DateTime.now().toLocal();
+      video.duration = await getVideoDuration(video.path);
       await getVideoCreatedTime(video);
+      storeMovie(video);
+      count++;
+      if (count % 10 == 0) {
+        show();
+      }
     }
+    show();
   }
 
   @override
-  void setExtraData(
-      List<String> tags, int? rate, String? source, List<String> comments) async {
+  void setExtraData(List<String> tags, int? rate, String? source,
+      List<String> comments) async {
     for (var video in _videos) {
       video.tags = tags;
       video.star = rate;
@@ -99,34 +110,32 @@ class LocalImporterImpl extends Importer {
   }
 
   @override
-  int storeMovie() {
+  int storeMovie(Movie movie) {
     if (taskQueue == null) {
       return 0;
     }
-    int count = 0;
-    for (var video in _videos) {
-      var id = 0;
-      if (video.path != '' && video.title != '') {
-        id = box.put(video,mode: PutMode.insert);
-        count++;
-      }
-      AddThumbnailTask task = AddThumbnailTask(
-          movieId: id,
-          moviePath: video.path,
-          taskQueue: taskQueue!,
-          );
-      task.run();
+    var id = 0;
+    if (movie.path != '' && movie.title != '') {
+      id = box.put(movie, mode: PutMode.insert);
     }
-    return count;
+    AddThumbnailTask task = AddThumbnailTask(
+      movieId: id,
+      moviePath: movie.path,
+      taskQueue: taskQueue!,
+    );
+    task.run();
+    _logger.info("Add movie:${movie.title}");
+    return id;
   }
 
   @override
   void show() {
-    // TODO: implement show
+    if (updateUI != null) {
+      updateUI!();
+    }
   }
 
   LocalImporterImpl(
-      {List<Movie> videos = const [],
-      this.taskQueue})
+      {List<Movie> videos = const [], this.taskQueue, this.updateUI})
       : _videos = videos;
 }

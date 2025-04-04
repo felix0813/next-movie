@@ -11,8 +11,8 @@ import 'movie_extra_meta_form.dart';
 class GlobalNavigationBar extends StatelessWidget
     implements PreferredSizeWidget {
   final String title;
-  final Function? onMovieUpdate;
-  final Function? onCategoryUpdate;
+  final Function()? onMovieUpdate;
+  final Function()? onCategoryUpdate;
   const GlobalNavigationBar(
       {super.key,
       required this.title,
@@ -38,7 +38,7 @@ class GlobalNavigationBar extends StatelessWidget
           tooltip: 'import video',
           onPressed: () {
             final movieService = MovieService(
-                taskQueue: Provider.of<TaskQueue>(context, listen: false));
+                taskQueue: Provider.of<TaskQueue>(context, listen: false),updateUI: onMovieUpdate);
             movieService.importMovie(getExtraMeta, context).then((_) {
               if (onMovieUpdate != null && context.mounted) {
                 onMovieUpdate!();

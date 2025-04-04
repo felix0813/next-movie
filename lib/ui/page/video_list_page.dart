@@ -56,10 +56,12 @@ class VideoListPageState extends State<VideoListPage> {
             : GlobalNavigationBar(
                 title: "Movies",
                 onMovieUpdate: () {
-                  setState(() {
-                    ids = _movieService.getOnePageMovies(
-                        page: page, orderBy: orderBy, order: order);
-                  });
+                  if (context.mounted) {
+                    setState(() {
+                      ids = _movieService.getOnePageMovies(
+                          page: page, orderBy: orderBy, order: order);
+                    });
+                  }
                 },
               ),
         body: SingleChildScrollView(
