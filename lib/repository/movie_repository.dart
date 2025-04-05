@@ -116,9 +116,9 @@ class MovieRepository {
 
       case SortBy.wishDate:
         if (order == Order.descending) {
-          final int likedCount =
+          final int wishCount =
               _movieBox.query(Movie_.wishDate.notNull()).build().count();
-          if (likedCount >= 100 * page + 100) {
+          if (wishCount >= 100 * page + 100) {
             //获取到的都是喜欢的视频
             return (_movieBox
                     .query(Movie_.wishDate.notNull())
@@ -141,7 +141,7 @@ class MovieRepository {
                       .query(Movie_.wishDate.isNull())
                       .order(Movie_.id)
                       .build()
-                    ..offset = max(100 * page - likedCount, 0)
+                    ..offset = max(100 * page - wishCount, 0)
                     ..limit = 100)
                   .findIds())
             ]).sublist(0, 100);
@@ -157,9 +157,9 @@ class MovieRepository {
         }
       case SortBy.star:
         if (order == Order.descending) {
-          final int likedCount =
+          final int starCount =
               _movieBox.query(Movie_.star.notNull()).build().count();
-          if (likedCount >= 100 * page + 100) {
+          if (starCount >= 100 * page + 100) {
             //获取到的都是喜欢的视频
             return (_movieBox
                     .query(Movie_.star.notNull())
@@ -182,7 +182,7 @@ class MovieRepository {
                       .query(Movie_.star.isNull())
                       .order(Movie_.id)
                       .build()
-                    ..offset = max(100 * page - likedCount, 0)
+                    ..offset = max(100 * page - starCount, 0)
                     ..limit = 100)
                   .findIds())
             ]).sublist(0, 100);
