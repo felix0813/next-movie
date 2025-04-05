@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:next_movie/model/movie.dart';
 import 'package:next_movie/model/sort_by.dart';
 import 'package:next_movie/objectbox/objectbox.dart';
@@ -71,33 +73,133 @@ class MovieRepository {
               ..limit = 100)
             .findIds();
       case SortBy.likeDate:
-        return (_movieBox
-                .query()
-                .order(Movie_.likeDate, flags: order & Order.nullsLast)
-                .build()
-              ..offset = 100 * page
-              ..limit = 100)
-            .findIds();
+        if (order == Order.descending) {
+          final int likedCount =
+              _movieBox.query(Movie_.likeDate.notNull()).build().count();
+          if (likedCount >= 100 * page + 100) {
+            //获取到的都是喜欢的视频
+            return (_movieBox
+                    .query(Movie_.likeDate.notNull())
+                    .order(Movie_.likeDate, flags: order)
+                    .build()
+                  ..offset = 100 * page
+                  ..limit = 100)
+                .findIds();
+          } else {
+            //都是不喜欢的或者部分是不喜欢的
+            return ([
+              ...(_movieBox
+                      .query(Movie_.likeDate.notNull())
+                      .order(Movie_.likeDate, flags: order)
+                      .build()
+                    ..offset = 100 * page
+                    ..limit = 100)
+                  .findIds(),
+              ...((_movieBox
+                      .query(Movie_.likeDate.isNull())
+                      .order(Movie_.id)
+                      .build()
+                    ..offset = max(100 * page - likedCount, 0)
+                    ..limit = 100)
+                  .findIds())
+            ]).sublist(0, 100);
+          }
+        } else {
+          return (_movieBox
+                  .query()
+                  .order(Movie_.likeDate, flags: Order.nullsLast)
+                  .build()
+                ..offset = 100 * page
+                ..limit = 100)
+              .findIds();
+        }
+
       case SortBy.wishDate:
-        return (_movieBox
-                .query()
-                .order(Movie_.wishDate, flags: order & Order.nullsLast)
-                .build()
-              ..offset = 100 * page
-              ..limit = 100)
-            .findIds();
+        if (order == Order.descending) {
+          final int likedCount =
+              _movieBox.query(Movie_.wishDate.notNull()).build().count();
+          if (likedCount >= 100 * page + 100) {
+            //获取到的都是喜欢的视频
+            return (_movieBox
+                    .query(Movie_.wishDate.notNull())
+                    .order(Movie_.wishDate, flags: order)
+                    .build()
+                  ..offset = 100 * page
+                  ..limit = 100)
+                .findIds();
+          } else {
+            //都是不喜欢的或者部分是不喜欢的
+            return ([
+              ...(_movieBox
+                      .query(Movie_.wishDate.notNull())
+                      .order(Movie_.wishDate, flags: order)
+                      .build()
+                    ..offset = 100 * page
+                    ..limit = 100)
+                  .findIds(),
+              ...((_movieBox
+                      .query(Movie_.wishDate.isNull())
+                      .order(Movie_.id)
+                      .build()
+                    ..offset = max(100 * page - likedCount, 0)
+                    ..limit = 100)
+                  .findIds())
+            ]).sublist(0, 100);
+          }
+        } else {
+          return (_movieBox
+                  .query()
+                  .order(Movie_.wishDate, flags: Order.nullsLast)
+                  .build()
+                ..offset = 100 * page
+                ..limit = 100)
+              .findIds();
+        }
       case SortBy.star:
-        return (_movieBox
-                .query()
-                .order(Movie_.star, flags: order & Order.nullsLast)
-                .build()
-              ..offset = 100 * page
-              ..limit = 100)
-            .findIds();
+        if (order == Order.descending) {
+          final int likedCount =
+              _movieBox.query(Movie_.star.notNull()).build().count();
+          if (likedCount >= 100 * page + 100) {
+            //获取到的都是喜欢的视频
+            return (_movieBox
+                    .query(Movie_.star.notNull())
+                    .order(Movie_.star, flags: order)
+                    .build()
+                  ..offset = 100 * page
+                  ..limit = 100)
+                .findIds();
+          } else {
+            //都是不喜欢的或者部分是不喜欢的
+            return ([
+              ...(_movieBox
+                      .query(Movie_.star.notNull())
+                      .order(Movie_.star, flags: order)
+                      .build()
+                    ..offset = 100 * page
+                    ..limit = 100)
+                  .findIds(),
+              ...((_movieBox
+                      .query(Movie_.star.isNull())
+                      .order(Movie_.id)
+                      .build()
+                    ..offset = max(100 * page - likedCount, 0)
+                    ..limit = 100)
+                  .findIds())
+            ]).sublist(0, 100);
+          }
+        } else {
+          return (_movieBox
+                  .query()
+                  .order(Movie_.star, flags: Order.nullsLast)
+                  .build()
+                ..offset = 100 * page
+                ..limit = 100)
+              .findIds();
+        }
       case SortBy.created:
         return (_movieBox
                 .query()
-                .order(Movie_.created, flags: order & Order.nullsLast)
+                .order(Movie_.created, flags: order | Order.nullsLast)
                 .build()
               ..offset = 100 * page
               ..limit = 100)
