@@ -7,9 +7,11 @@ import 'package:next_movie/service/category_service/category_service.dart';
 import 'package:next_movie/service/movie_service/movie_service.dart';
 import 'package:next_movie/utils/app_path.dart';
 import 'package:path/path.dart';
+import 'package:provider/provider.dart';
 import 'package:tdesign_flutter/tdesign_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../task/task_queue.dart';
 import 'select_category_dialog.dart';
 
 class VideoCard extends StatefulWidget {
@@ -25,6 +27,7 @@ class VideoCard extends StatefulWidget {
     this.isSelected = false,
     this.startSelect,
     this.canBeSelected = true,
+    required this.onDelete,
   });
   final double itemWidth;
   final double itemHeight;
@@ -36,6 +39,7 @@ class VideoCard extends StatefulWidget {
   final bool isSelected;
   final Function()? startSelect;
   final bool canBeSelected;
+  final void Function() onDelete;
   @override
   VideoCardState createState() => VideoCardState();
 }
@@ -354,7 +358,13 @@ class VideoCardState extends State<VideoCard> {
                   }
                 }),
               _buildMenuItem(context, Icons.delete, "delete", "delete", () {
-                //todo
+                MovieService(
+                            taskQueue:
+                                Provider.of<TaskQueue>(parentContext, listen: false))
+                        .deleteMovieAndThumbnail([widget.movieId]).contains(
+                            widget.movieId)
+                    ? widget.onDelete()
+                    : null;
               }),
               _buildMenuItem(context, Icons.edit, "edit", "edit", () {
                 //todo

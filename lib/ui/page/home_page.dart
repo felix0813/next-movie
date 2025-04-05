@@ -54,12 +54,21 @@ class HomePageState extends State<HomePage> {
             child: Column(children: [
               // 头部导航栏
               _buildHeaderRow(context),
-              HomeContentRow(title: "New", movies: recentAdd),
-              HomeContentRow(title: "ToWatch", movies: toWatch),
-              HomeContentRow(title: "Like", movies: favourite),
-              HomeContentRow(title: "History", movies: history),
+              HomeContentRow(title: "New", movies: recentAdd,onMovieDelete: onMovieDelete,),
+              HomeContentRow(title: "ToWatch", movies: toWatch,onMovieDelete: onMovieDelete),
+              HomeContentRow(title: "Like", movies: favourite,onMovieDelete: onMovieDelete),
+              HomeContentRow(title: "History", movies: history,onMovieDelete: onMovieDelete),
             ])));
   }
+
+  void onMovieDelete(id) {
+              setState(() {
+                recentAdd.remove(id);
+                toWatch.remove(id);
+                favourite.remove(id);
+                history.remove(id);
+              });
+            }
 
   // 构建头部导航行
   Widget _buildHeaderRow(BuildContext context) {

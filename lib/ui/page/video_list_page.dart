@@ -56,12 +56,7 @@ class VideoListPageState extends State<VideoListPage> {
             : GlobalNavigationBar(
                 title: "Movies",
                 onMovieUpdate: () {
-                  if (context.mounted) {
-                    setState(() {
-                      ids = _movieService.getOnePageMovies(
-                          page: page, orderBy: orderBy, order: order);
-                    });
-                  }
+                  updateCurrentPage(context);
                 },
               ),
         body: SingleChildScrollView(
@@ -123,6 +118,9 @@ class VideoListPageState extends State<VideoListPage> {
           itemWidth: itemWidth + 10,
           itemHeight: itemWidth * 9 / 16 + 30,
           movieId: ids[index],
+          onDelete: () {
+            updateCurrentPage(context);
+          },
           onSelect: (bool isSelected) {
             setState(() {
               if (isSelected) {
@@ -142,6 +140,15 @@ class VideoListPageState extends State<VideoListPage> {
         );
       },
     );
+  }
+
+  void updateCurrentPage(BuildContext context) {
+    if (context.mounted) {
+      setState(() {
+        ids = _movieService.getOnePageMovies(
+            page: page, orderBy: orderBy, order: order);
+      });
+    }
   }
 
   nextPage() {

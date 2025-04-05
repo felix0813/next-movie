@@ -20,7 +20,7 @@ class MovieService {
     this.updateUI,
   }) : _taskQueue = taskQueue;
 
-  void deleteMovieAndThumbnail(List<int> ids) {
+  List<int> deleteMovieAndThumbnail(List<int> ids) {
     if (_taskQueue == null) {
       throw Exception("Task queue is not initialized");
     }
@@ -42,6 +42,7 @@ class MovieService {
     for (var id in ids) {
       DeleteThumbnailTask(movieId: id, taskQueue: _taskQueue).run();
     }
+    return ids;
   }
 
   bool like(int id, bool like) {

@@ -99,6 +99,11 @@ class CategoryVideoPageState extends State<CategoryVideoPage> {
       itemHeight: itemWidth * 9 / 16 + 30,
       movieId: ids[index],
       categoryId: widget.categoryId,
+      onDelete: () {
+        setState(() {
+          ids.remove(ids[index]);
+        });
+      },
       onRemoveFromCategory: (movie) {
         setState(() {
           ids.remove(movie);

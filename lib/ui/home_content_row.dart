@@ -9,7 +9,8 @@ import 'video_card.dart';
 class HomeContentRow extends StatefulWidget {
   final String title;
   final List<int> movies;
-  const HomeContentRow({super.key, required this.title, required this.movies});
+  final void Function(int id)onMovieDelete;
+  const HomeContentRow({super.key, required this.title, required this.movies, required this.onMovieDelete});
 
   @override
   HomeContentRowState createState() => HomeContentRowState();
@@ -129,6 +130,9 @@ class HomeContentRowState extends State<HomeContentRow> {
                 itemWidth: itemWidth * 2 / 3 + 10,
                 itemHeight: itemHeight * 2 / 3 + 30,
                 canBeSelected: false,
+                onDelete: () {
+                  setState(() {});
+                },
               ),
             ),
           ),
