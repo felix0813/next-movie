@@ -6,6 +6,8 @@ import 'package:next_movie/model/movie.dart';
 import 'package:next_movie/service/category_service/category_service.dart';
 import 'package:next_movie/service/movie_service/movie_service.dart';
 import 'package:next_movie/utils/app_path.dart';
+import 'package:next_movie/utils/time.dart';
+import 'package:next_movie/utils/size.dart';
 import 'package:path/path.dart';
 import 'package:provider/provider.dart';
 import 'package:tdesign_flutter/tdesign_flutter.dart';
@@ -403,7 +405,40 @@ class VideoCardState extends State<VideoCard> {
               }),
               _buildMenuItem(context, Icons.info, "check metadata", "metadata",
                   () {
-                //todo
+                final movie = _service.getMovieById(widget.movieId);
+                if (movie != null) {
+                  showDialog(
+                    context: parentContext,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text(movie.title),
+                        content: Column(
+                            spacing: 8,
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SelectableText("Path: ${movie.path}"),
+                              if (movie.created != null)
+                                SelectableText(
+                                    "Created: ${movie.created!.split(".")[0]}"),
+                              SelectableText(
+                                  "Recorded: ${movie.recorded.toString().split(".")[0]}"),
+                              SelectableText(
+                                  "Duration: ${secondsToDurationString(movie.duration)}"),
+                              SelectableText("Size: ${formatBytes(movie.size)}")
+                            ]),
+                        actions: <Widget>[
+                          TextButton(
+                            child: Text('Cancel'),
+                            onPressed: () {
+                              Navigator.of(context).pop(); // 关闭对话框
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                }
               })
             ];
           },
