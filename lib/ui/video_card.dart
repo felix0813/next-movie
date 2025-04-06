@@ -358,13 +358,41 @@ class VideoCardState extends State<VideoCard> {
                   }
                 }),
               _buildMenuItem(context, Icons.delete, "delete", "delete", () {
-                MovieService(
-                            taskQueue:
-                                Provider.of<TaskQueue>(parentContext, listen: false))
-                        .deleteMovieAndThumbnail([widget.movieId]).contains(
-                            widget.movieId)
-                    ? widget.onDelete()
-                    : null;
+                final movie = _service.getMovieById(widget.movieId);
+                if (movie != null) {
+                  showDialog(
+                    context: parentContext,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text('Delete movie'),
+                        content: Text(
+                            'You will delete ${movie.path}, please choose how to delete.\nDelete file means delete the file in file system.\nDelete in database means delete the record in database of this software.'),
+                        actions: <Widget>[
+                          TextButton(
+                            child: Text('Cancel'),
+                            onPressed: () {
+                              Navigator.of(context).pop(); // 关闭对话框
+                            },
+                          ),
+                          TextButton(
+                            child: Text('Delete file'),
+                            onPressed: () {
+                              deleteMovieFile(parentContext, movie.path);
+                              Navigator.of(context).pop(); // 关闭对话框
+                            },
+                          ),
+                          TextButton(
+                            child: Text('Delete in database'),
+                            onPressed: () {
+                              deleteMovieInDB(parentContext);
+                              Navigator.of(context).pop(); // 关闭对话框
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                }
               }),
               _buildMenuItem(context, Icons.edit, "edit", "edit", () {
                 //todo
@@ -391,6 +419,33 @@ class VideoCardState extends State<VideoCard> {
                 //color: Colors.pink,
               ))),
     );
+  }
+
+  deleteMovieInDB(BuildContext parentContext) {
+    MovieService(
+                taskQueue: Provider.of<TaskQueue>(parentContext, listen: false))
+            .deleteMovieAndThumbnail([widget.movieId]).contains(widget.movieId)
+        ? widget.onDelete()
+        : null;
+  }
+
+  deleteMovieFile(BuildContext parentContext, String path) {
+    if (MovieService(
+            taskQueue: Provider.of<TaskQueue>(parentContext, listen: false))
+        .deleteMovieAndThumbnail([widget.movieId]).contains(widget.movieId)) {
+      widget.onDelete();
+      try {
+        File file = File(path);
+        if (file.existsSync()) {
+          file.deleteSync();
+          TDToast.showSuccess(
+              context: parentContext, "The file has been deleted.");
+        }
+      } catch (e) {
+        TDToast.showWarning(
+            context: parentContext, "The file does not exist in file system.");
+      }
+    }
   }
 
   SizedBox buildMovieTitle() {
