@@ -61,6 +61,11 @@ class CategoryVideoPageState extends State<CategoryVideoPage> {
     return selecting
         ? SelectNavigationBar(
             selectedMovies: selectedMovie,
+            onDelete: (List<int> movies) {
+              setState(() {
+                ids.removeWhere((element) => movies.contains(element));
+              });
+            },
             removeMoviesFromCategory: () {
               if (_categoryService.removeMovies(
                   widget.categoryId, selectedMovie.toList())) {

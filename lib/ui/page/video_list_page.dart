@@ -46,6 +46,9 @@ class VideoListPageState extends State<VideoListPage> {
         appBar: selecting
             ? SelectNavigationBar(
                 selectedMovies: selectedMovie,
+                onDelete: (_) {
+                  updateCurrentPage(context);
+                },
                 quitSelecting: () {
                   setState(() {
                     selectedMovie.clear();
