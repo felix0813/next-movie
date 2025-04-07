@@ -132,6 +132,17 @@ class MovieService {
 
   List<int> getToWatchMovieInHome() => _repository.getToWatchMovieIds();
 
+  void generateThumbnail(int id) {
+    final movie = _repository.getMovieById(id);
+    if (movie == null ||
+        movie.path.isEmpty ||
+        _taskQueue == null) {
+      return;
+    }
+    AddThumbnailTask(movieId: id, moviePath: movie.path, taskQueue: _taskQueue)
+        .run();
+  }
+
   Movie? getMovieById(int id) => _repository.getMovieById(id);
 
   List<int> getRecentWatchMovie() {

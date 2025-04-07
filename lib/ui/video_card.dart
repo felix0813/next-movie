@@ -401,7 +401,8 @@ class VideoCardState extends State<VideoCard> {
               }),
               _buildMenuItem(
                   context, Icons.image, "generate thumbnail", "thumbnail", () {
-                //todo
+                final service= MovieService(taskQueue: Provider.of<TaskQueue>(parentContext, listen: false));
+                service.generateThumbnail(widget.movieId);
               }),
               _buildMenuItem(context, Icons.info, "check metadata", "metadata",
                   () {
