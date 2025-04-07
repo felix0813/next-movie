@@ -6,6 +6,9 @@ import 'package:next_movie/ui/category_card.dart';
 import 'package:next_movie/ui/global_navigation_bar.dart';
 import 'package:tdesign_flutter/tdesign_flutter.dart';
 
+import '../../model/sort_by.dart';
+import '../radio_dialog.dart';
+
 class CategoryListPage extends StatefulWidget {
   const CategoryListPage({super.key});
 
@@ -17,12 +20,14 @@ class CategoryListPageState extends State<CategoryListPage> {
   List<int> ids = [];
   int page = 0;
   final _categoryService = CategoryService();
+  String orderBy = SortBy.created;
+  String order = SortOrder.descending;
 
   @override
   initState() {
     setState(() {
       ids =
-          _categoryService.getOnePageCategories(page, "created", "descending");
+          _categoryService.getOnePageCategories(page, orderBy, order);
     });
     super.initState();
   }
@@ -41,8 +46,7 @@ class CategoryListPageState extends State<CategoryListPage> {
         title: "Category",
         onCategoryUpdate: () {
           setState(() {
-            ids = _categoryService.getOnePageCategories(
-                page, "created", "descending");
+            ids = _categoryService.getOnePageCategories(page, orderBy, order);
           });
         },
       ),
@@ -66,9 +70,7 @@ class CategoryListPageState extends State<CategoryListPage> {
                 IconButton(
                     tooltip: "sort",
                     icon: Icon(Icons.sort),
-                    onPressed: () {
-                      //todo
-                    })
+                    onPressed: onSortPressed)
               ],
             ),
             buildGridView(context),
@@ -90,6 +92,29 @@ class CategoryListPageState extends State<CategoryListPage> {
           ],
         ),
       ),
+    );
+  }
+
+  onSortPressed() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return SortMovieRadioDialog(
+          options: [SortBy.created, SortBy.title],
+          initValue: orderBy,
+          order: order,
+          onConfirm: (String? result, String? sortOrder) {
+            if (result != null && sortOrder != null) {
+              setState(() {
+                orderBy = result;
+                order = sortOrder;
+                ids = _categoryService.getOnePageCategories(
+                    page, result, sortOrder);
+              });
+            }
+          },
+        );
+      },
     );
   }
 

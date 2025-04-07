@@ -6,6 +6,7 @@ class SortBy {
   static const duration = "duration";
   static const likeDate = "like date";
   static const wishDate = "add to watchlist date";
+  static const title="title";
 }
 
 class SortOrder {

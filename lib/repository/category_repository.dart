@@ -1,4 +1,5 @@
 import 'package:next_movie/model/category.dart';
+import 'package:next_movie/model/sort_by.dart';
 import 'package:next_movie/objectbox/objectbox.dart';
 import 'package:next_movie/objectbox/objectbox.g.dart';
 
@@ -15,13 +16,24 @@ class CategoryRepository {
   Category? getCategoryById(int id) => _box.get(id);
 
   List<int> getOnePageCategories(int page, String sortBy, String order) {
-    return (_box
-            .query()
-            .order(Category_.created, flags: Order.descending)
-            .build()
-          ..offset = 100 * page
-          ..limit = 100)
-        .findIds();
+    int flag = order == SortOrder.descending ? Order.descending : 0;
+    switch (sortBy) {
+      case SortBy.created:
+        return (_box.query().order(Category_.created, flags: flag).build()
+              ..offset = 100 * page
+              ..limit = 100)
+            .findIds();
+      case SortBy.title:
+        return (_box.query().order(Category_.name, flags: flag).build()
+              ..offset = 100 * page
+              ..limit = 100)
+            .findIds();
+      default:
+        return (_box.query().order(Category_.created, flags: flag).build()
+              ..offset = 100 * page
+              ..limit = 100)
+            .findIds();
+    }
   }
 
   int getTotalCategories() => _box.count();
