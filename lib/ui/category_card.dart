@@ -14,13 +14,21 @@ class CategoryCard extends StatefulWidget {
   const CategoryCard(
       {super.key,
       required this.itemWidth,
+      required this.isSelected,
       required this.itemHeight,
       required this.categoryId,
+      required this.onSelect,
+      required this.selecting,
       required this.onUpdateUI});
   final double itemWidth;
   final double itemHeight;
   final int categoryId;
+  final bool isSelected;
   final VoidCallback onUpdateUI;
+
+  final Function(bool) onSelect;
+
+  final bool selecting;
   @override
   CategoryCardState createState() => CategoryCardState();
 }
@@ -78,7 +86,8 @@ class CategoryCardState extends State<CategoryCard> {
                   buildCoverContainer(),
                   buildRate(),
                   if (isCoverHovered) buildGrayCover(context),
-                  if (isCoverHovered) buildBtnBar(context)
+                  if (isCoverHovered && !widget.selecting) buildBtnBar(context),
+                  if (widget.isSelected) buildSelectBox(context)
                 ],
               ),
             ),
@@ -151,12 +160,18 @@ class CategoryCardState extends State<CategoryCard> {
     return Positioned.fill(
         child: GestureDetector(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) =>
-                  CategoryVideoPage(categoryId: widget.categoryId)),
-        );
+        if (widget.selecting) {
+          if (widget.selecting) {
+            widget.onSelect(!widget.isSelected);
+          }
+        } else {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    CategoryVideoPage(categoryId: widget.categoryId)),
+          );
+        }
       },
       child: Material(
         color: Colors.black.withValues(alpha: 0.3), // 蒙层颜色和透明度
@@ -213,7 +228,7 @@ class CategoryCardState extends State<CategoryCard> {
           itemBuilder: (BuildContext context) {
             return [
               _buildMenuItem(context, Icons.check_box, "select", "select", () {
-                //todo
+                widget.onSelect(true);
               }),
               _buildMenuItem(context, Icons.delete, "delete", "delete", () {
                 showDialog(
@@ -290,5 +305,22 @@ class CategoryCardState extends State<CategoryCard> {
         maxLines: 1,
       ),
     );
+  }
+
+  buildSelectBox(BuildContext context) {
+    return Positioned(
+        top: 0,
+        right: 0,
+        child: Checkbox(
+            activeColor: Colors.blue,
+            checkColor: Colors.white70,
+            value: widget.isSelected,
+            onChanged: onCheckBoxChange));
+  }
+
+  void onCheckBoxChange(isSelected) {
+    if (isSelected != null) {
+      widget.onSelect(isSelected);
+    }
   }
 }

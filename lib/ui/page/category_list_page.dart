@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:next_movie/service/category_service/category_service.dart';
 import 'package:next_movie/ui/category_card.dart';
 import 'package:next_movie/ui/global_navigation_bar.dart';
+import 'package:next_movie/ui/select_navigation_bar.dart';
 import 'package:tdesign_flutter/tdesign_flutter.dart';
 
 import '../../model/sort_by.dart';
@@ -23,12 +24,12 @@ class CategoryListPageState extends State<CategoryListPage> {
   String orderBy = SortBy.created;
   String order = SortOrder.descending;
   bool selecting = false;
+  Set<int> selectedCategory = {};
 
   @override
   initState() {
     setState(() {
-      ids =
-          _categoryService.getOnePageCategories(page, orderBy, order);
+      ids = _categoryService.getOnePageCategories(page, orderBy, order);
     });
     super.initState();
   }
@@ -43,14 +44,33 @@ class CategoryListPageState extends State<CategoryListPage> {
   Widget build(BuildContext context) {
     int count = _categoryService.getTotalCategories();
     return Scaffold(
-      appBar: GlobalNavigationBar(
-        title: "Category",
-        onCategoryUpdate: () {
-          setState(() {
-            ids = _categoryService.getOnePageCategories(page, orderBy, order);
-          });
-        },
-      ),
+      appBar: selecting
+          ? SelectCategoryNavigationBar(
+              selectedCategory: selectedCategory,
+              quitSelecting: () {
+                setState(() {
+                  selecting = false;
+                  selectedCategory.clear();
+                });
+              },
+              deleteCategory: (Set<int> categories) {
+                for (int i in categories) {
+                  _categoryService.removeCategory(i);
+                }
+                setState(() {
+                  ids = _categoryService.getOnePageCategories(
+                      page, orderBy, order);
+                });
+              })
+          : GlobalNavigationBar(
+              title: "Category",
+              onCategoryUpdate: () {
+                setState(() {
+                  ids = _categoryService.getOnePageCategories(
+                      page, orderBy, order);
+                });
+              },
+            ),
       body: SingleChildScrollView(
         padding: EdgeInsets.only(left: 15),
         child: Column(
@@ -136,6 +156,19 @@ class CategoryListPageState extends State<CategoryListPage> {
           itemWidth: itemWidth + 10,
           itemHeight: itemWidth * 9 / 16 + 30,
           categoryId: ids[index],
+          isSelected: selectedCategory.contains(ids[index]),
+          selecting: selecting,
+          onSelect: (bool isSelected){
+            setState(() {
+              selecting = true;
+              if(isSelected) {
+                selectedCategory.add(ids[index]);
+              }
+              else{
+                selectedCategory.remove(ids[index]);
+              }
+            });
+          },
           onUpdateUI: () => setState(() {
             ids = _categoryService.getOnePageCategories(
                 page, "created", "descending");

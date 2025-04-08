@@ -186,3 +186,80 @@ class SelectMovieNavigationBar extends StatelessWidget
   @override
   Size get preferredSize => const Size.fromHeight(60);
 }
+
+class SelectCategoryNavigationBar extends StatelessWidget
+    implements PreferredSizeWidget {
+  final Set<int> selectedCategory;
+  final Function() quitSelecting;
+  final void Function(Set<int>) deleteCategory;
+  const SelectCategoryNavigationBar({
+    super.key,
+    required this.selectedCategory,
+    required this.quitSelecting,
+    required this.deleteCategory,
+  });
+  Future<MovieExtraMeta?> getExtraMeta(BuildContext context) {
+    return showModalBottomSheet<MovieExtraMeta>(
+      context: context,
+      builder: (context) {
+        return MovieExtraMetaForm();
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      title: Text(selectedCategory.length.toString()),
+      leading: IconButton(
+        icon: Icon(Icons.arrow_back),
+        onPressed: () {
+          quitSelecting();
+        },
+      ),
+      elevation: 0,
+      actions: [
+        IconButton(
+          icon: Icon(Icons.delete),
+          tooltip: 'Delete category',
+          onPressed: () {
+            if (selectedCategory.isEmpty) {
+              TDToast.showWarning("Please select 1 category at least",
+                  context: context);
+            } else {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text('Delete categories'),
+                    content: Text(
+                        'You will delete ${selectedCategory.length} category, and this operation is irreversible.'),
+                    actions: <Widget>[
+                      TextButton(
+                        child: Text('Cancel'),
+                        onPressed: () {
+                          Navigator.of(context).pop(); // 关闭对话框
+                        },
+                      ),
+                      TextButton(
+                        child: Text('Delete'),
+                        onPressed: () {
+                            deleteCategory(selectedCategory);
+                          Navigator.of(context).pop(); // 关闭对话框
+                          quitSelecting();
+                        },
+                      ),
+                    ],
+                  );
+                },
+              );
+            }
+          },
+        ),
+      ],
+    );
+  }
+
+  @override
+  Size get preferredSize => const Size.fromHeight(60);
+}
