@@ -59,7 +59,7 @@ class CategoryVideoPageState extends State<CategoryVideoPage> {
 
   PreferredSizeWidget? buildAppBar() {
     return selecting
-        ? SelectNavigationBar(
+        ? SelectMovieNavigationBar(
             selectedMovies: selectedMovie,
             onDelete: (List<int> movies) {
               setState(() {

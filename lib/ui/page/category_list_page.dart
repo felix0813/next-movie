@@ -22,6 +22,7 @@ class CategoryListPageState extends State<CategoryListPage> {
   final _categoryService = CategoryService();
   String orderBy = SortBy.created;
   String order = SortOrder.descending;
+  bool selecting = false;
 
   @override
   initState() {

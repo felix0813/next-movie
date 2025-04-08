@@ -44,7 +44,7 @@ class VideoListPageState extends State<VideoListPage> {
     int count = _movieService.getTotalMovies();
     return Scaffold(
         appBar: selecting
-            ? SelectNavigationBar(
+            ? SelectMovieNavigationBar(
                 selectedMovies: selectedMovie,
                 onDelete: (_) {
                   updateCurrentPage(context);

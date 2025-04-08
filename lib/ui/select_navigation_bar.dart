@@ -10,13 +10,13 @@ import '../task/task_queue.dart';
 import 'movie_extra_meta_form.dart';
 import 'select_category_dialog.dart';
 
-class SelectNavigationBar extends StatelessWidget
+class SelectMovieNavigationBar extends StatelessWidget
     implements PreferredSizeWidget {
   final Set<int> selectedMovies;
   final Function() quitSelecting;
   final void Function()? removeMoviesFromCategory;
   final Function(List<int> movies) onDelete;
-  const SelectNavigationBar({
+  const SelectMovieNavigationBar({
     super.key,
     required this.selectedMovies,
     required this.quitSelecting,
