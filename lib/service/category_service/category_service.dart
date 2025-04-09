@@ -1,3 +1,4 @@
+import 'package:logging/logging.dart';
 import 'package:next_movie/model/category.dart';
 import 'package:next_movie/repository/category_repository.dart';
 import 'package:next_movie/service/movie_service/error_task.dart';
@@ -6,6 +7,7 @@ import 'package:next_movie/task/task_queue.dart';
 class CategoryService {
   final _repository = CategoryRepository();
   final TaskQueue? _taskQueue;
+  static final _logger= Logger("CategoryService");
 
   CategoryService({TaskQueue? taskQueue}) : _taskQueue = taskQueue;
 
@@ -34,7 +36,13 @@ class CategoryService {
     final category = _repository.getCategoryById(id);
     if (category != null) {
       category.name = name;
-      return _repository.updateCategory(category) == id;
+      try {
+        return _repository.updateCategory(category) == id;
+      }
+      catch (e) {
+        _logger.severe("Rename fail:$e");
+        return false;
+      }
     }
     return false;
   }

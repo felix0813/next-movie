@@ -257,8 +257,8 @@ class CategoryCardState extends State<CategoryCard> {
                           ],
                         ));
               }),
-              _buildMenuItem(context, Icons.edit, "edit", "edit", () {
-                //todo
+              _buildMenuItem(parentContext, Icons.edit, "rename", "rename", () {
+                _showRenameDialog(parentContext);
               })
             ];
           },
@@ -273,6 +273,61 @@ class CategoryCardState extends State<CategoryCard> {
                 size: min(20, widget.itemWidth / 5),
                 //color: Colors.pink,
               ))),
+    );
+  }
+
+  void _showRenameDialog(BuildContext parentContext) {
+    // 创建一个 TextEditingController 来获取输入框的值
+    TextEditingController textController = TextEditingController();
+
+    // 弹出对话框
+    showDialog(
+      context: parentContext,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Rename Category'),
+          content: TextField(
+            controller: textController,
+            decoration: InputDecoration(labelText: 'New name'),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                // 关闭对话框
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Confirm'),
+              onPressed: () {
+                // 获取输入框的值
+                String newName = textController.text.trim();
+
+                // 调用外部传入的回调函数
+                if (newName.isNotEmpty) {
+                  if(_service.renameCategory(widget.categoryId, newName)){
+                    // 关闭对话框
+                    Navigator.of(context).pop();
+                    setState(() {
+                      title = newName;
+                    });
+                  }
+                  else{
+                    ScaffoldMessenger.of(parentContext).showSnackBar(
+                      SnackBar(content: Text('Rename fail, please check if the category name already exists')),
+                    );
+                  }
+                } else {
+                  ScaffoldMessenger.of(parentContext).showSnackBar(
+                    SnackBar(content: Text('New name cannot be blank')),
+                  );
+                }
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 
