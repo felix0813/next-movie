@@ -221,6 +221,13 @@ class MovieRepository {
 
   Movie? getMovieById(int id) => _movieBox.get(id);
 
+  bool checkMovieNameValid (String name) {
+    final query = _movieBox.query(Movie_.title.equals(name)).build()..limit=1;
+    final result = query.count();
+    query.close();
+    return result==0;
+  }
+
   int getTotalCount() => _movieBox.count();
 
   Movie? getLatestMovie() => _movieBox

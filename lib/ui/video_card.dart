@@ -396,8 +396,8 @@ class VideoCardState extends State<VideoCard> {
                   );
                 }
               }),
-              _buildMenuItem(context, Icons.edit, "edit", "edit", () {
-                //todo
+              _buildMenuItem(context, Icons.edit, "rename", "rename", () {
+                _showRenameDialog(parentContext);
               }),
               _buildMenuItem(
                   context, Icons.image, "generate thumbnail", "thumbnail", () {
@@ -454,6 +454,63 @@ class VideoCardState extends State<VideoCard> {
                 size: min(20, widget.itemWidth / 5),
                 //color: Colors.pink,
               ))),
+    );
+  }
+
+  void _showRenameDialog(BuildContext parentContext) {
+    // 创建一个 TextEditingController 来获取输入框的值
+    TextEditingController textController = TextEditingController(text: basenameWithoutExtension(title));
+
+    // 弹出对话框
+    showDialog(
+      context: parentContext,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Rename Movie'),
+          content: Column(children: [
+            Text("Rename movie will rename the source file of this movie."),
+            TextField(
+            controller: textController,
+            decoration: InputDecoration(labelText: 'New name'),
+          )],),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                // 关闭对话框
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Confirm'),
+              onPressed: () {
+                // 获取输入框的值
+                String newName = textController.text.trim();
+
+                // 调用外部传入的回调函数
+                if (newName.isNotEmpty) {
+                  if(_service.renameMovie(widget.movieId, "$newName${extension(title)}")){
+                    // 关闭对话框
+                    Navigator.of(context).pop();
+                    setState(() {
+                      title = "$newName${extension(title)}";
+                    });
+                  }
+                  else{
+                    ScaffoldMessenger.of(parentContext).showSnackBar(
+                      SnackBar(content: Text('Rename fail, please check the file path.')),
+                    );
+                  }
+                } else {
+                  ScaffoldMessenger.of(parentContext).showSnackBar(
+                    SnackBar(content: Text('New name cannot be blank')),
+                  );
+                }
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 

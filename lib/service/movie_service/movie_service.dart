@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:next_movie/model/movie.dart';
 import 'package:next_movie/model/sort_by.dart';
@@ -6,6 +8,7 @@ import 'package:next_movie/repository/movie_repository.dart';
 import 'package:next_movie/service/movie_service/error_task.dart';
 import 'package:next_movie/service/movie_service/thumbnail_task.dart';
 import 'package:next_movie/task/task_queue.dart';
+import 'package:path/path.dart';
 
 import 'importer/local_importer_impl.dart';
 
@@ -134,9 +137,7 @@ class MovieService {
 
   void generateThumbnail(int id) {
     final movie = _repository.getMovieById(id);
-    if (movie == null ||
-        movie.path.isEmpty ||
-        _taskQueue == null) {
+    if (movie == null || movie.path.isEmpty || _taskQueue == null) {
       return;
     }
     AddThumbnailTask(movieId: id, moviePath: movie.path, taskQueue: _taskQueue)
@@ -158,6 +159,29 @@ class MovieService {
   int? getLatestMovieId() => _repository.getLatestMovie()?.id;
 
   int getTotalMovies() => _repository.getTotalCount();
+
+  bool renameMovie(int id, String title) {
+    if (!_repository.checkMovieNameValid(title)) {
+      return false;
+    }
+    Movie? movie = _repository.getMovieById(id);
+    if (movie == null) {
+      return false;
+    }
+    File oldFile = File(movie.path);
+    Directory d = oldFile.parent;
+    File newFile = File(join(d.path, title));
+    if (newFile.existsSync()) {
+      return false;
+    }
+    if (oldFile.renameSync(newFile.path).existsSync()) {
+      movie.path = newFile.path;
+      movie.title = title;
+      _repository.storeMovie(movie);
+      return true;
+    }
+    return false;
+  }
 }
 
 class MovieExtraMeta {
