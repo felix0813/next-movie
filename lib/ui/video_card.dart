@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:next_movie/model/movie.dart';
 import 'package:next_movie/service/category_service/category_service.dart';
 import 'package:next_movie/service/movie_service/movie_service.dart';
+import 'package:next_movie/ui/page/movie_detail_page.dart';
 import 'package:next_movie/utils/app_path.dart';
 import 'package:next_movie/utils/time.dart';
 import 'package:next_movie/utils/size.dart';
@@ -122,7 +123,7 @@ class VideoCardState extends State<VideoCard> {
                 children: [
                   buildCoverContainer(),
                   buildRate(),
-                  if (isCoverHovered) buildGrayCover(),
+                  if (isCoverHovered) buildGrayCover(context),
                   if (isCoverHovered && !widget.selecting)
                     buildPlayBtn(context),
                   if (isCoverHovered && !widget.selecting) buildBtnBar(context),
@@ -210,21 +211,23 @@ class VideoCardState extends State<VideoCard> {
     );
   }
 
-  Positioned buildGrayCover() {
+  Positioned buildGrayCover(BuildContext context) {
     return Positioned.fill(
         child: GestureDetector(
-      onTap: onCoverTap,
+      onTap: () => onCoverTap(context),
       child: Material(
         color: Colors.black.withValues(alpha: 0.3), // 蒙层颜色和透明度
       ),
     ));
   }
 
-  void onCoverTap() {
+  void onCoverTap(BuildContext context) {
     if (widget.selecting && widget.onSelect != null) {
       widget.onSelect!(!widget.isSelected);
+    } else {
+      Navigator.of(context)
+          .push(MaterialPageRoute(builder: (context) => MovieDetailPage(movieId: widget.movieId,)));
     }
-    //todo
   }
 
   Positioned buildPlayBtn(BuildContext context) {
@@ -401,7 +404,9 @@ class VideoCardState extends State<VideoCard> {
               }),
               _buildMenuItem(
                   context, Icons.image, "generate thumbnail", "thumbnail", () {
-                final service= MovieService(taskQueue: Provider.of<TaskQueue>(parentContext, listen: false));
+                final service = MovieService(
+                    taskQueue:
+                        Provider.of<TaskQueue>(parentContext, listen: false));
                 service.generateThumbnail(widget.movieId);
               }),
               _buildMenuItem(context, Icons.info, "check metadata", "metadata",
@@ -459,7 +464,8 @@ class VideoCardState extends State<VideoCard> {
 
   void _showRenameDialog(BuildContext parentContext) {
     // 创建一个 TextEditingController 来获取输入框的值
-    TextEditingController textController = TextEditingController(text: basenameWithoutExtension(title));
+    TextEditingController textController =
+        TextEditingController(text: basenameWithoutExtension(title));
 
     // 弹出对话框
     showDialog(
@@ -467,12 +473,15 @@ class VideoCardState extends State<VideoCard> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('Rename Movie'),
-          content: Column(children: [
-            Text("Rename movie will rename the source file of this movie."),
-            TextField(
-            controller: textController,
-            decoration: InputDecoration(labelText: 'New name'),
-          )],),
+          content: Column(
+            children: [
+              Text("Rename movie will rename the source file of this movie."),
+              TextField(
+                controller: textController,
+                decoration: InputDecoration(labelText: 'New name'),
+              )
+            ],
+          ),
           actions: <Widget>[
             TextButton(
               child: Text('Cancel'),
@@ -489,16 +498,18 @@ class VideoCardState extends State<VideoCard> {
 
                 // 调用外部传入的回调函数
                 if (newName.isNotEmpty) {
-                  if(_service.renameMovie(widget.movieId, "$newName${extension(title)}")){
+                  if (_service.renameMovie(
+                      widget.movieId, "$newName${extension(title)}")) {
                     // 关闭对话框
                     Navigator.of(context).pop();
                     setState(() {
                       title = "$newName${extension(title)}";
                     });
-                  }
-                  else{
+                  } else {
                     ScaffoldMessenger.of(parentContext).showSnackBar(
-                      SnackBar(content: Text('Rename fail, please check the file path.')),
+                      SnackBar(
+                          content:
+                              Text('Rename fail, please check the file path.')),
                     );
                   }
                 } else {
