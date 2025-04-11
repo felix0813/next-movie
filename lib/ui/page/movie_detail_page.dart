@@ -4,8 +4,11 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:next_movie/ui/global_navigation_bar.dart';
 import 'package:next_movie/utils/app_path.dart';
+import 'package:next_movie/utils/size.dart';
+import 'package:next_movie/utils/time.dart';
 import 'package:path/path.dart';
-
+import 'package:tdesign_flutter/tdesign_flutter.dart';
+import '../../model/movie.dart';
 import '../../service/movie_service/movie_service.dart';
 
 class MovieDetailPage extends StatefulWidget {
@@ -17,14 +20,24 @@ class MovieDetailPage extends StatefulWidget {
 
 class MovieDetailPageState extends State<MovieDetailPage> {
   String thumbnailPath = ""; // 替换为实际的缩略图路径
-  String title = '';
-  String metadata = '2023 | 120 mins | Action, Adventure';
   final _service = MovieService();
+  String title = "";
+  String path = "";
+  int duration = 0;
+  int size = 0;
+  int star = 0;
+  DateTime recorded = DateTime.now();
+
   @override
   void initState() {
     final movie = _service.getMovieById(widget.movieId)!;
     setState(() {
       title = movie.title;
+      path = movie.path;
+      duration = movie.duration;
+      size = movie.size;
+      recorded = movie.recorded!;
+      star = movie.star ?? 0;
       thumbnailPath = join(AppPaths.instance.appDocumentsDir, "next_movie",
           "poster", "${widget.movieId}.jpg");
     });
@@ -68,7 +81,18 @@ class MovieDetailPageState extends State<MovieDetailPage> {
                       ),
                       SizedBox(height: 4),
                       Text(
-                        metadata,
+                        dirname(path),
+                        style: TextStyle(fontSize: 14, color: Colors.grey),
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        secondsToDurationString(duration)
+                            .concat(formatBytes(size), " | "),
+                        style: TextStyle(fontSize: 14, color: Colors.grey),
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        "Recorded at ${recorded.toString().split(".")[0]}",
                         style: TextStyle(fontSize: 14, color: Colors.grey),
                       ),
                     ],
@@ -83,15 +107,21 @@ class MovieDetailPageState extends State<MovieDetailPage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // 打分组件
-                  Row(
-                    children: [
-                      Icon(Icons.star, color: Colors.orange),
-                      SizedBox(width: 4),
-                      Text('8.5'),
-                    ],
-                  ),
-                  // 其他操作选项
+                  TDRate(
+                      value: star.toDouble(),
+                      onChange: (value) {
+                        if (_service.star(widget.movieId, value.toInt())) {
+                          setState(() {
+                            star = value.toInt();
+                          });
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Fail to star')),
+                          );
+                        }
+                      },
+                      placement: PlacementEnum.none,
+                      color: [Color(0xFFFFC51C), Color(0xFFE8E8E8)]),
                   Row(
                     children: [
                       IconButton(
@@ -123,5 +153,21 @@ class MovieDetailPageState extends State<MovieDetailPage> {
         ),
       ),
     );
+  }
+}
+
+extension StringExtensions on String {
+  String concat(String next, String separator) {
+    return this + separator + next;
+  }
+
+  String concatWithoutEmpty(String next, String separator) {
+    if (isEmpty) {
+      return next;
+    }
+    if (next.isEmpty) {
+      return this;
+    }
+    return this + separator + next;
   }
 }
