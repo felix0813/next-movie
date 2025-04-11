@@ -225,8 +225,10 @@ class VideoCardState extends State<VideoCard> {
     if (widget.selecting && widget.onSelect != null) {
       widget.onSelect!(!widget.isSelected);
     } else {
-      Navigator.of(context)
-          .push(MaterialPageRoute(builder: (context) => MovieDetailPage(movieId: widget.movieId,)));
+      Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => MovieDetailPage(
+                movieId: widget.movieId,
+              )));
     }
   }
 
@@ -271,54 +273,63 @@ class VideoCardState extends State<VideoCard> {
         ));
   }
 
-  MouseRegion buildLikeBtn() {
-    return MouseRegion(
-        cursor: SystemMouseCursors.click,
-        onEnter: (_) => setState(() => isHeartHovered = true),
-        onExit: (_) => setState(() => isHeartHovered = false),
-        child: GestureDetector(
-            onTap: () {
-              if (_service.like(widget.movieId, !like)) {
-                setState(() {
-                  like = !like;
-                });
-              }
-            },
-            child: Container(
-                decoration: BoxDecoration(
-                  color: isHeartHovered ? Colors.grey[200] : Colors.transparent,
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: Icon(
-                  TDIcons.heart,
-                  color: like || isHeartHovered ? Colors.pink : Colors.white70,
-                  size: min(20, widget.itemWidth / 5),
-                ))));
+  Tooltip buildLikeBtn() {
+    return Tooltip(
+        message: "Like",
+        child: MouseRegion(
+            cursor: SystemMouseCursors.click,
+            onEnter: (_) => setState(() => isHeartHovered = true),
+            onExit: (_) => setState(() => isHeartHovered = false),
+            child: GestureDetector(
+                onTap: () {
+                  if (_service.like(widget.movieId, !like)) {
+                    setState(() {
+                      like = !like;
+                    });
+                  }
+                },
+                child: Container(
+                    decoration: BoxDecoration(
+                      color: isHeartHovered
+                          ? Colors.grey[200]
+                          : Colors.transparent,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Icon(
+                      TDIcons.heart,
+                      color:
+                          like || isHeartHovered ? Colors.pink : Colors.white70,
+                      size: min(20, widget.itemWidth / 5),
+                    )))));
   }
 
-  MouseRegion buildWishBtn() {
-    return MouseRegion(
-        cursor: SystemMouseCursors.click,
-        onEnter: (_) => setState(() => isWishHovered = true),
-        onExit: (_) => setState(() => isWishHovered = false),
-        child: GestureDetector(
-            onTap: () {
-              if (_service.wish(widget.movieId, !wish)) {
-                setState(() {
-                  wish = !wish;
-                });
-              }
-            },
-            child: Container(
-                decoration: BoxDecoration(
-                  color: isWishHovered ? Colors.grey[200] : Colors.transparent,
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: Icon(
-                  TDIcons.play_circle_stroke_add,
-                  color: wish || isWishHovered ? Colors.pink : Colors.white70,
-                  size: min(20, widget.itemWidth / 5),
-                ))));
+  Tooltip buildWishBtn() {
+    return Tooltip(
+        message: "Add to watchlist",
+        child: MouseRegion(
+            cursor: SystemMouseCursors.click,
+            onEnter: (_) => setState(() => isWishHovered = true),
+            onExit: (_) => setState(() => isWishHovered = false),
+            child: GestureDetector(
+              onTap: () {
+                if (_service.wish(widget.movieId, !wish)) {
+                  setState(() {
+                    wish = !wish;
+                  });
+                }
+              },
+              child: Container(
+                  decoration: BoxDecoration(
+                    color:
+                        isWishHovered ? Colors.grey[200] : Colors.transparent,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Icon(
+                    Icons.watch_later,
+                    color: wish || isWishHovered ? Colors.pink : Colors.white70,
+                    size: min(20, widget.itemWidth / 5),
+                  )),
+            )));
   }
 
   MouseRegion buildMoreBtn(BuildContext parentContext) {
