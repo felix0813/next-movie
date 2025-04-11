@@ -8,6 +8,7 @@ import 'package:next_movie/utils/size.dart';
 import 'package:next_movie/utils/time.dart';
 import 'package:path/path.dart';
 import 'package:tdesign_flutter/tdesign_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../service/movie_service/movie_service.dart';
 
 class MovieDetailPage extends StatefulWidget {
@@ -130,12 +131,12 @@ class MovieDetailPageState extends State<MovieDetailPage> {
                     ],
                   ),
                   if (MediaQuery.of(context).size.width >= 500)
-                    buildFunctionBtn(width),
+                    buildFunctionBtn(context,width),
                 ],
               ),
             ),
             if (MediaQuery.of(context).size.width <= 500)
-              buildFunctionBtn(width),
+              buildFunctionBtn(context,width),
           ],
         ),
       ),
@@ -205,7 +206,7 @@ class MovieDetailPageState extends State<MovieDetailPage> {
     );
   }
 
-  SizedBox buildFunctionBtn(double width) {
+  SizedBox buildFunctionBtn(BuildContext context,double width) {
     return SizedBox(
       width: min(280, width * 0.9), // 设置一个固定宽度，例如屏幕宽度的40%
       child: Wrap(
@@ -216,46 +217,66 @@ class MovieDetailPageState extends State<MovieDetailPage> {
           IconButton(
             icon: Icon(Icons.play_arrow),
             onPressed: () {
-              // 分享功能
+              _launchVideo(context);
             },
           ),
           IconButton(
             icon: Icon(Icons.share),
             onPressed: () {
-              // 分享功能
+              // todo 分享功能
             },
           ),
           IconButton(
             tooltip: "Rename",
             icon: Icon(Icons.edit),
             onPressed: () {
-              // 编辑功能
+              // todo 编辑功能
             },
           ),
           IconButton(
             tooltip: "Generate thumbnail",
             icon: Icon(Icons.image),
             onPressed: () {
-              // 添加图片功能（假设修改为添加图片）
+              // todo 添加图片功能（假设修改为添加图片）
             },
           ),
           IconButton(
             tooltip: "Add to category",
             icon: Icon(Icons.playlist_add),
             onPressed: () {
-              // 添加分类功能
+              // todo 添加分类功能
             },
           ),
           IconButton(
             tooltip: "Delete",
             icon: Icon(Icons.delete),
             onPressed: () {
-              // 删除功能
+              // todo 删除功能
             },
           ),
         ],
       ),
     );
+  }
+  void _launchVideo(BuildContext context) {
+    final uri = Uri.file(path);
+    canLaunchUrl(uri).then((valid) {
+      if (valid) {
+        launchUrl(uri);
+      } else {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('无法打开视频')),
+          );
+        }
+      }
+    }).catchError((e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('无法打开视频:$e')),
+        );
+      }
+    });
   }
 }
 
