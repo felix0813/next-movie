@@ -72,7 +72,7 @@ class CategoryListPageState extends State<CategoryListPage> {
               },
             ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.only(left: 15),
+        padding: EdgeInsets.only(left: 10),
         child: Column(
           children: [
             Row(
@@ -147,7 +147,7 @@ class CategoryListPageState extends State<CategoryListPage> {
         crossAxisCount:
             ((MediaQuery.of(context).size.width - 15) / (itemWidth + 10))
                 .round(), // 动态列数
-        childAspectRatio: 4 / 3,
+        childAspectRatio: 5 / 4,
       ),
       itemCount: ids.length,
       itemBuilder: (context, index) {

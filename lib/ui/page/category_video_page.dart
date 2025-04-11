@@ -50,7 +50,7 @@ class CategoryVideoPageState extends State<CategoryVideoPage> {
     return Scaffold(
         appBar: buildAppBar(),
         body: SingleChildScrollView(
-          padding: EdgeInsets.only(left: 15),
+          padding: EdgeInsets.only(left: 10),
           child: Column(children: [
             buildGridView(context),
           ]),
@@ -90,7 +90,7 @@ class CategoryVideoPageState extends State<CategoryVideoPage> {
         crossAxisCount:
             ((MediaQuery.of(context).size.width - 15) / (itemWidth + 10))
                 .round(), // 动态列数
-        childAspectRatio: 4 / 3,
+        childAspectRatio: 5 / 4,
       ),
       itemCount: ids.length,
       itemBuilder: buildVideoCard,

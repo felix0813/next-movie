@@ -153,23 +153,26 @@ class VideoCardState extends State<VideoCard> {
     }
   }
 
-  Container buildCoverContainer() {
-    return Container(
+  SizedBox buildCoverContainer() {
+    return SizedBox(
         height: widget.itemHeight - 30,
         width: widget.itemWidth,
-        padding: const EdgeInsets.symmetric(horizontal: 5),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withValues(alpha: 0.1),
-              spreadRadius: 2,
-              blurRadius: 4,
-              offset: const Offset(0, 2),
+        child: Container(
+            height: widget.itemHeight - 30,
+            width: widget.itemWidth,
+            padding: const EdgeInsets.symmetric(horizontal: 5),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withValues(alpha: 0.1),
+                  spreadRadius: 2,
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
-          ],
-        ),
-        child: buildCover());
+            child: buildCover()));
   }
 
   Positioned buildRate() {
