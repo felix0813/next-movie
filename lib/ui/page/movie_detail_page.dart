@@ -60,8 +60,9 @@ class MovieDetailPageState extends State<MovieDetailPage> {
           children: [
             // 视频缩略图和元数据部分
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: EdgeInsets.all(min(16.0, width*0.05)),
               child: Wrap(
+                runSpacing: 16.0,
                 children: [
                   // 视频缩略图
                   buildThumbnail(width),
@@ -74,7 +75,7 @@ class MovieDetailPageState extends State<MovieDetailPage> {
             SizedBox(height: 16),
             // 工具栏部分
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              padding: EdgeInsets.symmetric(horizontal: min(16.0, width*0.05)),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -129,11 +130,12 @@ class MovieDetailPageState extends State<MovieDetailPage> {
                     ],
                   ),
                   if (MediaQuery.of(context).size.width >= 500)
-                    buildFunctionBtn(),
+                    buildFunctionBtn(width),
                 ],
               ),
             ),
-            if (MediaQuery.of(context).size.width <= 500) buildFunctionBtn(),
+            if (MediaQuery.of(context).size.width <= 500)
+              buildFunctionBtn(width),
           ],
         ),
       ),
@@ -203,14 +205,20 @@ class MovieDetailPageState extends State<MovieDetailPage> {
     );
   }
 
-  SizedBox buildFunctionBtn() {
+  SizedBox buildFunctionBtn(double width) {
     return SizedBox(
-      width: 240, // 设置一个固定宽度，例如屏幕宽度的40%
+      width: min(280, width * 0.9), // 设置一个固定宽度，例如屏幕宽度的40%
       child: Wrap(
         spacing: 5.0, // 水平间距
         runSpacing: 4.0, // 垂直间距
         direction: Axis.horizontal,
         children: [
+          IconButton(
+            icon: Icon(Icons.play_arrow),
+            onPressed: () {
+              // 分享功能
+            },
+          ),
           IconButton(
             icon: Icon(Icons.share),
             onPressed: () {
