@@ -304,15 +304,15 @@ class MovieDetailPageState extends State<MovieDetailPage> {
               TextButton(
                 child: Text('Delete file'),
                 onPressed: () {
-                  deleteMovieFile(parentContext, movie.path);
                   Navigator.of(context).pop(); // 关闭对话框
+                  deleteMovieFile(parentContext, movie.path);
                 },
               ),
               TextButton(
                 child: Text('Delete in database'),
                 onPressed: () {
-                  deleteMovieInDB(parentContext);
                   Navigator.of(context).pop(); // 关闭对话框
+                  deleteMovieInDB(parentContext);
                 },
               ),
             ],
@@ -326,7 +326,7 @@ class MovieDetailPageState extends State<MovieDetailPage> {
     MovieService(
                 taskQueue: Provider.of<TaskQueue>(parentContext, listen: false))
             .deleteMovieAndThumbnail([widget.movieId]).contains(widget.movieId)
-        ? Navigator.of(parentContext).pop()
+        ? Navigator.pop(parentContext,"delete")
         : null;
   }
 
@@ -334,7 +334,6 @@ class MovieDetailPageState extends State<MovieDetailPage> {
     if (MovieService(
             taskQueue: Provider.of<TaskQueue>(parentContext, listen: false))
         .deleteMovieAndThumbnail([widget.movieId]).contains(widget.movieId)) {
-      Navigator.of(parentContext).pop();
       try {
         File file = File(path);
         if (file.existsSync()) {
@@ -346,6 +345,7 @@ class MovieDetailPageState extends State<MovieDetailPage> {
         TDToast.showWarning(
             context: parentContext, "The file does not exist in file system.");
       }
+      Navigator.pop(parentContext,"delete");
     }
   }
 }

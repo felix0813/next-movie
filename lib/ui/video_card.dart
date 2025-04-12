@@ -228,10 +228,18 @@ class VideoCardState extends State<VideoCard> {
     if (widget.selecting && widget.onSelect != null) {
       widget.onSelect!(!widget.isSelected);
     } else {
-      Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => MovieDetailPage(
-                movieId: widget.movieId,
-              )));
+      Navigator.of(context)
+          .push(MaterialPageRoute(
+              builder: (context) => MovieDetailPage(
+                    movieId: widget.movieId,
+                  )))
+          .then((data) {
+        switch (data) {
+          case "delete":
+            widget.onDelete();
+            break;
+        }
+      });
     }
   }
 
