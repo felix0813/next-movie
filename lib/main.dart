@@ -9,7 +9,7 @@ import 'package:path/path.dart';
 import 'package:provider/provider.dart';
 
 import 'utils/app_path.dart';
-
+//todo 解决键盘的删除错误 https://cloud.tencent.com/developer/ask/sof/534850
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // 设置根日志器的级别为ALL，表示记录所有级别的日志

@@ -11,12 +11,16 @@ import 'package:path/path.dart';
 import 'package:provider/provider.dart';
 import 'package:tdesign_flutter/tdesign_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../service/category_service/category_service.dart';
 import '../../service/movie_service/movie_service.dart';
 import '../../task/task_queue.dart';
+import '../select_category_dialog.dart';
 
 class MovieDetailPage extends StatefulWidget {
-  const MovieDetailPage({super.key, required this.movieId});
+  const MovieDetailPage(
+      {super.key, required this.movieId, required this.onMetaUpdate});
   final int movieId;
+  final Function() onMetaUpdate;
   @override
   MovieDetailPageState createState() => MovieDetailPageState();
 }
@@ -47,8 +51,10 @@ class MovieDetailPageState extends State<MovieDetailPage> {
       created = movie.created ?? "";
       like = movie.likeDate != null;
       wish = movie.wishDate != null;
-      thumbnailPath = join(AppPaths.instance.appDocumentsDir, "next_movie",
-          "poster", "${widget.movieId}.jpg");
+      thumbnailPath = checkThumbnailExist()
+          ? join(AppPaths.instance.appDocumentsDir, "next_movie", "poster",
+              "${widget.movieId}.jpg")
+          : "";
     });
     super.initState();
   }
@@ -100,6 +106,7 @@ class MovieDetailPageState extends State<MovieDetailPage> {
                                 setState(() {
                                   like = !like;
                                 });
+                                widget.onMetaUpdate();
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(content: Text('Fail to like')),
@@ -118,6 +125,7 @@ class MovieDetailPageState extends State<MovieDetailPage> {
                             ),
                             onPressed: () {
                               if (_service.wish(widget.movieId, !wish)) {
+                                widget.onMetaUpdate();
                                 setState(() {
                                   wish = !wish;
                                 });
@@ -152,6 +160,7 @@ class MovieDetailPageState extends State<MovieDetailPage> {
         value: star.toDouble(),
         onChange: (value) {
           if (_service.star(widget.movieId, value.toInt())) {
+            widget.onMetaUpdate();
             setState(() {
               star = value.toInt();
             });
@@ -198,16 +207,36 @@ class MovieDetailPageState extends State<MovieDetailPage> {
     );
   }
 
-  ClipRRect buildThumbnail(double width) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(8.0),
-      child: Image.file(
-        File(thumbnailPath), // 从文件系统加载缩略图
-        width: min(width * 0.75, 480),
-        height: min(width * 0.75, 480) * 9 / 16,
-        fit: BoxFit.cover,
-      ),
-    );
+  buildThumbnail(double width) {
+    return checkThumbnailExist()
+        ? ClipRRect(
+            borderRadius: BorderRadius.circular(8.0),
+            child: Image.file(
+              File(thumbnailPath), // 从文件系统加载缩略图
+              width: min(width * 0.75, 480),
+              height: min(width * 0.75, 480) * 9 / 16,
+              fit: BoxFit.cover,
+            ),
+          )
+        : Stack(
+            children: [
+              Container(
+                width: min(width * 0.75, 480),
+                height: min(width * 0.75, 480) * 9 / 16,
+                decoration: BoxDecoration(
+                  color: Colors.blue, // 蓝色背景
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                child: Center(
+                  child: Icon(
+                    Icons.video_file,
+                    size: 50,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ],
+          );
   }
 
   SizedBox buildFunctionBtn(BuildContext context, double width) {
@@ -234,21 +263,41 @@ class MovieDetailPageState extends State<MovieDetailPage> {
             tooltip: "Rename",
             icon: Icon(Icons.edit),
             onPressed: () {
-              // todo 编辑功能
+              _showRenameDialog(context);
             },
           ),
           IconButton(
             tooltip: "Generate thumbnail",
             icon: Icon(Icons.image),
             onPressed: () {
-              // todo 添加图片功能（假设修改为添加图片）
+              final service = MovieService(
+                  taskQueue: Provider.of<TaskQueue>(context, listen: false));
+              service.generateThumbnail(widget.movieId);
+              Future.delayed(const Duration(seconds: 2)).then((_) {
+                setState(() {
+                  checkThumbnailExist()
+                      ? join(AppPaths.instance.appDocumentsDir, "next_movie",
+                          "poster", "${widget.movieId}.jpg")
+                      : "";
+                });
+              });
             },
           ),
           IconButton(
             tooltip: "Add to category",
             icon: Icon(Icons.playlist_add),
             onPressed: () {
-              // todo 添加分类功能
+              final categoryService = CategoryService();
+              showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return SelectCategoryDialog(
+                        initValue: null,
+                        onConfirm: (result) {
+                          categoryService.addMovies(result!, [widget.movieId]);
+                        },
+                        options: categoryService.getAllCategories());
+                  });
             },
           ),
           IconButton(
@@ -260,6 +309,71 @@ class MovieDetailPageState extends State<MovieDetailPage> {
           ),
         ],
       ),
+    );
+  }
+
+  void _showRenameDialog(BuildContext parentContext) {
+    // 创建一个 TextEditingController 来获取输入框的值
+    TextEditingController textController =
+        TextEditingController(text: basenameWithoutExtension(title));
+
+    // 弹出对话框
+    showDialog(
+      context: parentContext,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Rename Movie'),
+          content: Column(
+            children: [
+              Text("Rename movie will rename the source file of this movie."),
+              TextField(
+                controller: textController,
+                keyboardType: TextInputType.text,
+                decoration: InputDecoration(labelText: 'New name'),
+              )
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                // 关闭对话框
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Confirm'),
+              onPressed: () {
+                // 获取输入框的值
+                String newName = textController.text.trim();
+
+                // 调用外部传入的回调函数
+                if (newName.isNotEmpty) {
+                  if (_service.renameMovie(
+                      widget.movieId, "$newName${extension(title)}")) {
+                    // 关闭对话框
+                    Navigator.of(context).pop();
+                    setState(() {
+                      title = "$newName${extension(title)}";
+                    });
+                    widget.onMetaUpdate();
+                  } else {
+                    ScaffoldMessenger.of(parentContext).showSnackBar(
+                      SnackBar(
+                          content:
+                              Text('Rename fail, please check the file path.')),
+                    );
+                  }
+                } else {
+                  ScaffoldMessenger.of(parentContext).showSnackBar(
+                    SnackBar(content: Text('New name cannot be blank')),
+                  );
+                }
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -322,11 +436,19 @@ class MovieDetailPageState extends State<MovieDetailPage> {
     }
   }
 
+  bool checkThumbnailExist() {
+    final file = File(join(AppPaths.instance.appDocumentsDir, "next_movie",
+        "poster", "${widget.movieId}.jpg"));
+
+    final result = file.existsSync();
+    return result;
+  }
+
   deleteMovieInDB(BuildContext parentContext) {
     MovieService(
                 taskQueue: Provider.of<TaskQueue>(parentContext, listen: false))
             .deleteMovieAndThumbnail([widget.movieId]).contains(widget.movieId)
-        ? Navigator.pop(parentContext,"delete")
+        ? Navigator.pop(parentContext, "delete")
         : null;
   }
 
@@ -345,7 +467,7 @@ class MovieDetailPageState extends State<MovieDetailPage> {
         TDToast.showWarning(
             context: parentContext, "The file does not exist in file system.");
       }
-      Navigator.pop(parentContext,"delete");
+      Navigator.pop(parentContext, "delete");
     }
   }
 }

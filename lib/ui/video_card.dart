@@ -67,15 +67,19 @@ class VideoCardState extends State<VideoCard> {
     if (m == null) {
       return;
     } else {
-      setState(() {
-        like = m.likeDate != null;
-        wish = m.wishDate != null;
-        path = m.path;
-        star = m.star;
-        title = m.title;
-      });
+      updateMeta(m);
     }
     super.initState();
+  }
+
+  void updateMeta(Movie m) {
+    setState(() {
+      like = m.likeDate != null;
+      wish = m.wishDate != null;
+      path = m.path;
+      star = m.star;
+      title = m.title;
+    });
   }
 
   bool checkThumbnailExist() {
@@ -232,6 +236,10 @@ class VideoCardState extends State<VideoCard> {
           .push(MaterialPageRoute(
               builder: (context) => MovieDetailPage(
                     movieId: widget.movieId,
+                    onMetaUpdate: () {
+                      final movie = _service.getMovieById(widget.movieId);
+                      updateMeta(movie!);
+                    },
                   )))
           .then((data) {
         switch (data) {
