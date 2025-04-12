@@ -1,3 +1,4 @@
+import 'dart:core';
 import 'dart:io';
 import 'dart:math';
 
@@ -7,9 +8,11 @@ import 'package:next_movie/utils/app_path.dart';
 import 'package:next_movie/utils/size.dart';
 import 'package:next_movie/utils/time.dart';
 import 'package:path/path.dart';
+import 'package:provider/provider.dart';
 import 'package:tdesign_flutter/tdesign_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../service/movie_service/movie_service.dart';
+import '../../task/task_queue.dart';
 
 class MovieDetailPage extends StatefulWidget {
   const MovieDetailPage({super.key, required this.movieId});
@@ -61,7 +64,7 @@ class MovieDetailPageState extends State<MovieDetailPage> {
           children: [
             // 视频缩略图和元数据部分
             Padding(
-              padding: EdgeInsets.all(min(16.0, width*0.05)),
+              padding: EdgeInsets.all(min(16.0, width * 0.05)),
               child: Wrap(
                 runSpacing: 16.0,
                 children: [
@@ -76,7 +79,8 @@ class MovieDetailPageState extends State<MovieDetailPage> {
             SizedBox(height: 16),
             // 工具栏部分
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: min(16.0, width*0.05)),
+              padding:
+                  EdgeInsets.symmetric(horizontal: min(16.0, width * 0.05)),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -131,12 +135,12 @@ class MovieDetailPageState extends State<MovieDetailPage> {
                     ],
                   ),
                   if (MediaQuery.of(context).size.width >= 500)
-                    buildFunctionBtn(context,width),
+                    buildFunctionBtn(context, width),
                 ],
               ),
             ),
             if (MediaQuery.of(context).size.width <= 500)
-              buildFunctionBtn(context,width),
+              buildFunctionBtn(context, width),
           ],
         ),
       ),
@@ -206,7 +210,7 @@ class MovieDetailPageState extends State<MovieDetailPage> {
     );
   }
 
-  SizedBox buildFunctionBtn(BuildContext context,double width) {
+  SizedBox buildFunctionBtn(BuildContext context, double width) {
     return SizedBox(
       width: min(280, width * 0.9), // 设置一个固定宽度，例如屏幕宽度的40%
       child: Wrap(
@@ -251,13 +255,14 @@ class MovieDetailPageState extends State<MovieDetailPage> {
             tooltip: "Delete",
             icon: Icon(Icons.delete),
             onPressed: () {
-              // todo 删除功能
+              onDelete(context);
             },
           ),
         ],
       ),
     );
   }
+
   void _launchVideo(BuildContext context) {
     final uri = Uri.file(path);
     canLaunchUrl(uri).then((valid) {
@@ -277,6 +282,71 @@ class MovieDetailPageState extends State<MovieDetailPage> {
         );
       }
     });
+  }
+
+  onDelete(BuildContext parentContext) {
+    final movie = _service.getMovieById(widget.movieId);
+    if (movie != null) {
+      showDialog(
+        context: parentContext,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Delete movie'),
+            content: Text(
+                'You will delete ${movie.path}, please choose how to delete.\nDelete file means delete the file in file system.\nDelete in database means delete the record in database of this software.'),
+            actions: <Widget>[
+              TextButton(
+                child: Text('Cancel'),
+                onPressed: () {
+                  Navigator.of(context).pop(); // 关闭对话框
+                },
+              ),
+              TextButton(
+                child: Text('Delete file'),
+                onPressed: () {
+                  deleteMovieFile(parentContext, movie.path);
+                  Navigator.of(context).pop(); // 关闭对话框
+                },
+              ),
+              TextButton(
+                child: Text('Delete in database'),
+                onPressed: () {
+                  deleteMovieInDB(parentContext);
+                  Navigator.of(context).pop(); // 关闭对话框
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
+  deleteMovieInDB(BuildContext parentContext) {
+    MovieService(
+                taskQueue: Provider.of<TaskQueue>(parentContext, listen: false))
+            .deleteMovieAndThumbnail([widget.movieId]).contains(widget.movieId)
+        ? Navigator.of(parentContext).pop()
+        : null;
+  }
+
+  deleteMovieFile(BuildContext parentContext, String path) {
+    if (MovieService(
+            taskQueue: Provider.of<TaskQueue>(parentContext, listen: false))
+        .deleteMovieAndThumbnail([widget.movieId]).contains(widget.movieId)) {
+      Navigator.of(parentContext).pop();
+      try {
+        File file = File(path);
+        if (file.existsSync()) {
+          file.deleteSync();
+          TDToast.showSuccess(
+              context: parentContext, "The file has been deleted.");
+        }
+      } catch (e) {
+        TDToast.showWarning(
+            context: parentContext, "The file does not exist in file system.");
+      }
+    }
   }
 }
 
