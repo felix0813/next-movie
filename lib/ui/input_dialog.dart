@@ -30,31 +30,36 @@ class DoubleInputDialog {
       context: context,
       builder: (context) => AlertDialog(
         title: Text(title),
-        content: Column(
-          children: [
-            TextField(
-              controller: firstController,
-              autofocus: autoFocus,
-              decoration: InputDecoration(
-                hintText: hintText1,
-                border: OutlineInputBorder(),
-                contentPadding: const EdgeInsets.all(16),
-              ),
-              keyboardType: keyboardType,
-              maxLength: maxLength1,
+        content: SizedBox(
+          height: 300,
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                TextField(
+                  controller: firstController,
+                  autofocus: autoFocus,
+                  decoration: InputDecoration(
+                    hintText: hintText1,
+                    border: OutlineInputBorder(),
+                    contentPadding: const EdgeInsets.all(16),
+                  ),
+                  keyboardType: keyboardType,
+                  maxLength: maxLength1,
+                ),
+                TextField(
+                  controller: secondController,
+                  autofocus: autoFocus,
+                  decoration: InputDecoration(
+                    hintText: hintText2,
+                    border: OutlineInputBorder(),
+                    contentPadding: const EdgeInsets.all(16),
+                  ),
+                  keyboardType: keyboardType,
+                  maxLength: maxLength2,
+                ),
+              ],
             ),
-            TextField(
-              controller: secondController,
-              autofocus: autoFocus,
-              decoration: InputDecoration(
-                hintText: hintText2,
-                border: OutlineInputBorder(),
-                contentPadding: const EdgeInsets.all(16),
-              ),
-              keyboardType: keyboardType,
-              maxLength: maxLength2,
-            ),
-          ],
+          ),
         ),
         actions: [
           TextButton(
@@ -65,7 +70,11 @@ class DoubleInputDialog {
             onPressed: () {
               if (validator1 == null ||
                   validator1(firstController.text)!.isEmpty) {
-                Navigator.pop(context, StringPair(first: firstController.text,second: secondController.text));
+                Navigator.pop(
+                    context,
+                    StringPair(
+                        first: firstController.text,
+                        second: secondController.text));
               }
             },
             child: Text(confirmText),

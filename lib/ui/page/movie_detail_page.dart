@@ -323,15 +323,18 @@ class MovieDetailPageState extends State<MovieDetailPage> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('Rename Movie'),
-          content: Column(
-            children: [
-              Text("Rename movie will rename the source file of this movie."),
-              TextField(
-                controller: textController,
-                keyboardType: TextInputType.text,
-                decoration: InputDecoration(labelText: 'New name'),
-              )
-            ],
+          content: SizedBox(
+            height: 200,
+            child: Column(
+              children: [
+                Text("Rename movie will rename the source file of this movie."),
+                TextField(
+                  controller: textController,
+                  keyboardType: TextInputType.text,
+                  decoration: InputDecoration(labelText: 'New name'),
+                )
+              ],
+            ),
           ),
           actions: <Widget>[
             TextButton(
@@ -460,12 +463,16 @@ class MovieDetailPageState extends State<MovieDetailPage> {
         File file = File(path);
         if (file.existsSync()) {
           file.deleteSync();
-          TDToast.showSuccess(
-              context: parentContext, "The file has been deleted.");
+          TDToast.showText(
+              context: parentContext,
+              "The file has been deleted.",
+              constraints: BoxConstraints(maxWidth: 300));
         }
       } catch (e) {
-        TDToast.showWarning(
-            context: parentContext, "The file does not exist in file system.");
+        TDToast.showText(
+            context: parentContext,
+            "The file does not exist in file system.",
+            constraints: BoxConstraints(maxWidth: 300));
       }
       Navigator.pop(parentContext, "delete");
     }

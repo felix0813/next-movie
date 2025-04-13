@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:next_movie/service/category_service/category_service.dart';
 import 'package:next_movie/service/movie_service/movie_service.dart';
 import 'package:next_movie/task/task_queue.dart';
+import 'package:next_movie/ui/page/setting_page.dart';
 import 'package:provider/provider.dart';
 import 'package:tdesign_flutter/tdesign_flutter.dart';
 
@@ -13,11 +14,12 @@ class GlobalNavigationBar extends StatelessWidget
   final String title;
   final Function()? onMovieUpdate;
   final Function()? onCategoryUpdate;
+  final bool showSetting;
   const GlobalNavigationBar(
       {super.key,
       required this.title,
       this.onMovieUpdate,
-      this.onCategoryUpdate});
+      this.onCategoryUpdate, this.showSetting=true});
   Future<MovieExtraMeta?> getExtraMeta(BuildContext context) {
     return showModalBottomSheet<MovieExtraMeta>(
       context: context,
@@ -38,7 +40,8 @@ class GlobalNavigationBar extends StatelessWidget
           tooltip: 'import video',
           onPressed: () {
             final movieService = MovieService(
-                taskQueue: Provider.of<TaskQueue>(context, listen: false),updateUI: onMovieUpdate);
+                taskQueue: Provider.of<TaskQueue>(context, listen: false),
+                updateUI: onMovieUpdate);
             movieService.importMovie(getExtraMeta, context).then((_) {
               if (onMovieUpdate != null && context.mounted) {
                 onMovieUpdate!();
@@ -71,6 +74,15 @@ class GlobalNavigationBar extends StatelessWidget
           },
         ),
         buildTaskWarning(),
+        if(showSetting)
+        IconButton(
+          icon: Icon(TDIcons.setting),
+          tooltip: 'setting',
+          onPressed: () {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => SettingPage()));
+          },
+        ),
       ],
     );
   }
@@ -79,7 +91,6 @@ class GlobalNavigationBar extends StatelessWidget
     return Consumer<TaskQueue>(
       builder: (context, taskQueue, child) {
         final errorCount = taskQueue.errorCount;
-
         return Stack(
           children: [
             IconButton(

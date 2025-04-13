@@ -101,8 +101,8 @@ class SelectMovieNavigationBar extends StatelessWidget
           tooltip: 'Delete',
           onPressed: () {
             if (selectedMovies.isEmpty) {
-              TDToast.showWarning("Please select 1 movie at least",
-                  context: context);
+              TDToast.showText("Please select 1 movie at least",
+                  context: context, constraints: BoxConstraints(maxWidth: 300));
             } else {
               showDialog(
                 context: context,
@@ -171,13 +171,16 @@ class SelectMovieNavigationBar extends StatelessWidget
         File file = File(path);
         if (file.existsSync()) {
           file.deleteSync();
-          TDToast.showSuccess(
-              context: parentContext, "The file $path has been deleted.");
+          TDToast.showText(
+              context: parentContext,
+              "The file $path has been deleted.",
+              constraints: BoxConstraints(maxWidth: 300));
         }
       } catch (e) {
-        TDToast.showWarning(
+        TDToast.showText(
             context: parentContext,
-            "The file $path does not exist in file system.");
+            "The file $path does not exist in file system.",
+            constraints: BoxConstraints(maxWidth: 300));
       }
     }
     onDelete(deleteMovies);
@@ -224,8 +227,8 @@ class SelectCategoryNavigationBar extends StatelessWidget
           tooltip: 'Delete category',
           onPressed: () {
             if (selectedCategory.isEmpty) {
-              TDToast.showWarning("Please select 1 category at least",
-                  context: context);
+              TDToast.showText("Please select 1 category at least",
+                  context: context, constraints: BoxConstraints(maxWidth: 300));
             } else {
               showDialog(
                 context: context,
@@ -244,7 +247,7 @@ class SelectCategoryNavigationBar extends StatelessWidget
                       TextButton(
                         child: Text('Delete'),
                         onPressed: () {
-                            deleteCategory(selectedCategory);
+                          deleteCategory(selectedCategory);
                           Navigator.of(context).pop(); // 关闭对话框
                           quitSelecting();
                         },
