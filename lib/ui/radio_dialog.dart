@@ -171,7 +171,7 @@ class CheckMovieRadioDialogState extends State<CheckMovieRadioDialog> {
                     constraints: BoxConstraints(maxWidth: 300),
                     context: context);
               } else {
-                //todo
+                widget.onConfirm(checked);
                 Navigator.pop(context);
               }
             },

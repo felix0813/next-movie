@@ -92,21 +92,23 @@ class VideoCardState extends State<VideoCard> {
 
   void _launchVideo(BuildContext context) {
     final uri = Uri.file(path);
+    if (!File(path).existsSync()) {
+      TDToast.showText("Can't open file $path because it has been removed.",
+          context: context, constraints: BoxConstraints(maxWidth: 300));
+    }
     canLaunchUrl(uri).then((valid) {
       if (valid) {
         launchUrl(uri);
       } else {
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('无法打开视频')),
-          );
+          TDToast.showText("Can't open file $path.",
+              context: context, constraints: BoxConstraints(maxWidth: 300));
         }
       }
     }).catchError((e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('无法打开视频:$e')),
-        );
+        TDToast.showText("Can't open file $path.",
+            context: context, constraints: BoxConstraints(maxWidth: 300));
       }
     });
   }

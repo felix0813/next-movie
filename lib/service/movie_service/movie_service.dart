@@ -1,6 +1,8 @@
+import 'dart:collection';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:next_movie/model/movie.dart';
 import 'package:next_movie/model/sort_by.dart';
 import 'package:next_movie/repository/category_repository.dart';
@@ -10,6 +12,8 @@ import 'package:next_movie/service/movie_service/thumbnail_task.dart';
 import 'package:next_movie/task/task_queue.dart';
 import 'package:path/path.dart';
 
+import '../../utils/app_path.dart';
+import '../log_manager.dart';
 import 'importer/local_importer_impl.dart';
 
 class MovieService {
@@ -183,7 +187,60 @@ class MovieService {
     return false;
   }
 
+  checkFilesValid(bool delete, bool log) async {
+    final movies = _repository.getAllMovie();
+    List<String> paths = movies.map((movie) => movie.path).toList();
+    List<int> ids = movies.map((movie) => movie.id).toList();
+    await _performFileCheckInBackground(paths, ids, delete, log,
+        join(AppPaths.instance.appDocumentsDir, "next_movie", "log"));
+  }
 
+  // 2. 文件检查与处理逻辑
+  static Future<List<int>> _checkAndProcessFiles(HashMap params) async {
+    List<int> invalid = List.empty(growable: true);
+    final filePaths = params['filePaths'] as List<String>;
+    final delete = params['delete'] as bool;
+    final needLog = params['log'] as bool;
+    final logPath = params['logPath'] as String;
+    final logManager = LogManager(logPath);
+    final ids = params['ids'];
+    var taskId = 'check-${DateTime.now().toLocal()}';
+    for (int i = 0; i < filePaths.length; i++) {
+      final filePath = filePaths[i];
+      try {
+        final file = File(filePath);
+        // 检查文件是否存在（参考[6](@ref)）
+        final valid = await file.exists();
+
+        if (!valid) {
+          if (delete) {
+            invalid.add(ids[i]);
+          }
+          if (needLog) {
+            logManager.logToFile(taskId, '不可用路径：$filePath');
+          }
+        }
+      } catch (e) {
+        logManager.logToFile(taskId, '处理文件时出错：$filePath，错误：$e');
+      }
+    }
+    return invalid;
+  }
+
+  Future<void> _performFileCheckInBackground(List<String> filePaths,
+      List<int> ids, bool delete, bool log, logPath) async {
+    HashMap map = HashMap();
+    map['filePaths'] = filePaths;
+    map['delete'] = delete;
+    map['log'] = log;
+    map['ids'] = ids;
+    map['logPath'] = logPath;
+    List<int> result =
+        await compute<HashMap, List<int>>(_checkAndProcessFiles, map);
+    if (delete) {
+      deleteMovieAndThumbnail(result);
+    }
+  }
 }
 
 class MovieExtraMeta {

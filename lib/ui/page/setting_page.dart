@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:next_movie/ui/global_navigation_bar.dart';
 import 'package:next_movie/ui/radio_dialog.dart';
+import 'package:provider/provider.dart';
 import 'package:tdesign_flutter/tdesign_flutter.dart';
+
+import '../../service/movie_service/movie_service.dart';
+import '../../task/task_queue.dart';
 
 class SettingPage extends StatefulWidget {
   const SettingPage({
@@ -30,10 +34,20 @@ class SettingPageState extends State<SettingPage> {
                 showDialog(
                     context: context,
                     builder: (context) {
-                      return CheckMovieRadioDialog(onConfirm: (_) {}, options: [
-                        "Generate a report",
-                        "Remove invalid movies"
-                      ]);
+                      return CheckMovieRadioDialog(
+                          onConfirm: (checked) {
+                            final movieService = MovieService(
+                              taskQueue: Provider.of<TaskQueue>(context,
+                                  listen: false),
+                            );
+                            movieService.checkFilesValid(
+                                checked.contains("Remove invalid movies"),
+                                checked.contains("Generate a report"));
+                          },
+                          options: [
+                            "Generate a report",
+                            "Remove invalid movies"
+                          ]);
                     });
               },
             )

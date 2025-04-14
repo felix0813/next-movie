@@ -18,6 +18,8 @@ class MovieRepository {
     return fail;
   }
 
+  List<Movie> getAllMovie()=> _movieBox.getAll();
+
   List<Movie> getRecentAddMovie() =>
       (_movieBox.query().order(Movie_.recorded, flags: Order.descending).build()
             ..limit = 20)
