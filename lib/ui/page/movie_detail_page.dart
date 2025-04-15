@@ -164,19 +164,19 @@ class MovieDetailPageState extends State<MovieDetailPage> {
             ),
             if (MediaQuery.of(context).size.width <= 500)
               buildFunctionBtn(context, width),
-            Wrap(
-              spacing: 8,
-              children: [
-                SizedBox(
-                  width: 10,
-                ),
-                ...List.generate(tags.length, buildTag),
-                if (tags.isNotEmpty) SizedBox(width: 8), // 添加一些间距
-                ElevatedButton(
-                  onPressed: () => _addTag(context),
-                  child: Text('Add tag'),
-                ),
-              ],
+            Padding(
+              padding: EdgeInsets.only(left: 10),
+              child: Wrap(
+                spacing: 8,
+                children: [
+                  ...List.generate(tags.length, buildTag),
+                  if (tags.isNotEmpty) SizedBox(width: 8), // 添加一些间距
+                  ElevatedButton(
+                    onPressed: () => _addTag(context),
+                    child: Text('Add tag'),
+                  ),
+                ],
+              ),
             )
           ],
         ),
