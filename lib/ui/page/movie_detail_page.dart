@@ -25,6 +25,19 @@ class MovieDetailPage extends StatefulWidget {
   MovieDetailPageState createState() => MovieDetailPageState();
 }
 
+Color generateRandomColor() {
+  final Random random = Random();
+  Color newColor = Color.fromARGB(
+    255,
+    random.nextInt(256),
+    random.nextInt(256),
+    random.nextInt(256),
+  );
+  return newColor;
+}
+
+final colors = List.generate(10, (_) => generateRandomColor());
+
 class MovieDetailPageState extends State<MovieDetailPage> {
   String thumbnailPath = ""; // 替换为实际的缩略图路径
   final _service = MovieService();
@@ -37,6 +50,7 @@ class MovieDetailPageState extends State<MovieDetailPage> {
   String created = "";
   bool like = false;
   bool wish = false;
+  List<String> tags = [];
 
   @override
   void initState() {
@@ -51,6 +65,7 @@ class MovieDetailPageState extends State<MovieDetailPage> {
       created = movie.created ?? "";
       like = movie.likeDate != null;
       wish = movie.wishDate != null;
+      tags = movie.tags;
       thumbnailPath = checkThumbnailExist()
           ? join(AppPaths.instance.appDocumentsDir, "next_movie", "poster",
               "${widget.movieId}.jpg")
@@ -149,11 +164,45 @@ class MovieDetailPageState extends State<MovieDetailPage> {
             ),
             if (MediaQuery.of(context).size.width <= 500)
               buildFunctionBtn(context, width),
+            Wrap(
+              spacing: 8,
+              children: [
+                SizedBox(
+                  width: 10,
+                ),
+                ...List.generate(tags.length, buildTag),
+                if (tags.isNotEmpty) SizedBox(width: 8), // 添加一些间距
+                ElevatedButton(
+                  onPressed: () => _addTag(context),
+                  child: Text('Add tag'),
+                ),
+              ],
+            )
           ],
         ),
       ),
     );
   }
+
+  Widget buildTag(index) => TDTag(
+        key: Key(tags[index]),
+        tags[index],
+        style: TDTagStyle(borderRadius: BorderRadius.circular(10)),
+        padding: EdgeInsets.only(top: 8, left: 10),
+        forceVerticalCenter: true,
+        backgroundColor: colors[index % 10],
+        overflow: TextOverflow.ellipsis,
+        needCloseIcon: true,
+        shape: TDTagShape.round,
+        onCloseTap: () {
+          final newTags = tags.where((t) => t != tags[index]).toList();
+          if (_service.updateTags(widget.movieId, newTags)) {
+            setState(() {
+              tags.removeAt(index);
+            });
+          }
+        },
+      );
 
   TDRate buildRate(BuildContext context) {
     return TDRate(
@@ -309,6 +358,47 @@ class MovieDetailPageState extends State<MovieDetailPage> {
           ),
         ],
       ),
+    );
+  }
+
+  void _addTag(BuildContext context) {
+    final TextEditingController controller = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Add tag'),
+          content: TextField(
+            controller: controller,
+            decoration: InputDecoration(
+              hintText: 'input tag',
+            ),
+          ),
+          actions: [
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+            TextButton(
+              child: Text('Confirm'),
+              onPressed: () {
+                String newTag = controller.text.trim();
+                if (newTag.isNotEmpty && !tags.contains(newTag)) {
+                  if (_service.updateTags(widget.movieId, [...tags, newTag])) {
+                    setState(() {
+                      tags.add(newTag);
+                    });
+                  }
+                  controller.clear();
+                }
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 
