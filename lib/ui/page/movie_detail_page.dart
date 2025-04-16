@@ -4,6 +4,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:next_movie/ui/global_navigation_bar.dart';
+import 'package:next_movie/ui/input_dialog.dart';
 import 'package:next_movie/utils/app_path.dart';
 import 'package:next_movie/utils/size.dart';
 import 'package:next_movie/utils/time.dart';
@@ -50,6 +51,7 @@ class MovieDetailPageState extends State<MovieDetailPage> {
   String created = "";
   bool like = false;
   bool wish = false;
+  String source = "";
   List<String> tags = [];
 
   @override
@@ -66,6 +68,7 @@ class MovieDetailPageState extends State<MovieDetailPage> {
       like = movie.likeDate != null;
       wish = movie.wishDate != null;
       tags = movie.tags;
+      source = movie.source ?? '';
       thumbnailPath = checkThumbnailExist()
           ? join(AppPaths.instance.appDocumentsDir, "next_movie", "poster",
               "${widget.movieId}.jpg")
@@ -173,7 +176,7 @@ class MovieDetailPageState extends State<MovieDetailPage> {
                   if (tags.isNotEmpty) SizedBox(width: 8), // 添加一些间距
                   ElevatedButton(
                     onPressed: () => _addTag(context),
-                    child: Text('Add tag'),
+                    child: Text('Add'),
                   ),
                 ],
               ),
@@ -252,6 +255,17 @@ class MovieDetailPageState extends State<MovieDetailPage> {
           "Created at ${created.split(".")[0]}",
           style: TextStyle(fontSize: 14, color: Colors.grey),
         ),
+        if (source.isNotEmpty)
+          Container(
+            padding: EdgeInsets.only(top: 4),
+            child: SelectableText(
+              "Download from $source",
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey,
+              ),
+            ),
+          )
       ],
     );
   }
@@ -303,9 +317,26 @@ class MovieDetailPageState extends State<MovieDetailPage> {
             },
           ),
           IconButton(
-            icon: Icon(Icons.share),
+            icon: Icon(Icons.edit_road),
+            tooltip: "Edit source",
             onPressed: () {
-              // todo 分享功能
+              SingleInputDialog.show(
+                      context: context, title: "Edit source", maxLength: 200)
+                  .then((result) {
+                if (result != null) {
+                  if (_service.addSource(widget.movieId, result)) {
+                    setState(() {
+                      source = result;
+                    });
+                  } else {
+                    if (context.mounted) {
+                      TDToast.showText("Edit source error.",
+                          context: context,
+                          constraints: BoxConstraints(maxWidth: 150));
+                    }
+                  }
+                }
+              });
             },
           ),
           IconButton(
