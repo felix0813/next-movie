@@ -47,6 +47,7 @@ class HomePageState extends State<HomePage> {
     return Scaffold(
         appBar: GlobalNavigationBar(
           title: "NextMovie",
+          onRefresh: getAllStatus,
         ),
         body: SingleChildScrollView(
             padding: EdgeInsets.only(
@@ -54,21 +55,34 @@ class HomePageState extends State<HomePage> {
             child: Column(children: [
               // 头部导航栏
               _buildHeaderRow(context),
-              HomeContentRow(title: "New", movies: recentAdd,onMovieDelete: onMovieDelete,),
-              HomeContentRow(title: "ToWatch", movies: toWatch,onMovieDelete: onMovieDelete),
-              HomeContentRow(title: "Like", movies: favourite,onMovieDelete: onMovieDelete),
-              HomeContentRow(title: "History", movies: history,onMovieDelete: onMovieDelete),
+              HomeContentRow(
+                title: "New",
+                movies: recentAdd,
+                onMovieDelete: onMovieDelete,
+              ),
+              HomeContentRow(
+                  title: "ToWatch",
+                  movies: toWatch,
+                  onMovieDelete: onMovieDelete),
+              HomeContentRow(
+                  title: "Like",
+                  movies: favourite,
+                  onMovieDelete: onMovieDelete),
+              HomeContentRow(
+                  title: "History",
+                  movies: history,
+                  onMovieDelete: onMovieDelete),
             ])));
   }
 
   void onMovieDelete(id) {
-              setState(() {
-                recentAdd.remove(id);
-                toWatch.remove(id);
-                favourite.remove(id);
-                history.remove(id);
-              });
-            }
+    setState(() {
+      recentAdd.remove(id);
+      toWatch.remove(id);
+      favourite.remove(id);
+      history.remove(id);
+    });
+  }
 
   // 构建头部导航行
   Widget _buildHeaderRow(BuildContext context) {
@@ -86,7 +100,7 @@ class HomePageState extends State<HomePage> {
           buildMovieEntrance(context, singleWidth, singleHeight, latestId),
 
           // 右侧分类入口 - 保持相同比例
-          buildCategoryEntrance(context,singleWidth, singleHeight),
+          buildCategoryEntrance(context, singleWidth, singleHeight),
         ],
       ),
     );
@@ -154,17 +168,15 @@ class HomePageState extends State<HomePage> {
           image: latest != 0
               ? DecorationImage(
                   fit: BoxFit.cover,
-                  image: FileImage(File(join(
-                      AppPaths.instance.appDocumentsDir,
-                      "next_movie",
-                      "poster",
-                      "$latest.jpg"))),
+                  image: FileImage(File(join(AppPaths.instance.appDocumentsDir,
+                      "next_movie", "poster", "$latest.jpg"))),
                 )
               : null),
     );
   }
 
-  SizedBox buildCategoryEntrance(BuildContext context,double singleWidth, double singleHeight) {
+  SizedBox buildCategoryEntrance(
+      BuildContext context, double singleWidth, double singleHeight) {
     return SizedBox(
         width: singleWidth,
         height: singleHeight,

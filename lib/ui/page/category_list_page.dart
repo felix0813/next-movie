@@ -28,9 +28,7 @@ class CategoryListPageState extends State<CategoryListPage> {
 
   @override
   initState() {
-    setState(() {
-      ids = _categoryService.getOnePageCategories(page, orderBy, order);
-    });
+    getCurrentPageInfo();
     super.initState();
   }
 
@@ -57,19 +55,12 @@ class CategoryListPageState extends State<CategoryListPage> {
                 for (int i in categories) {
                   _categoryService.removeCategory(i);
                 }
-                setState(() {
-                  ids = _categoryService.getOnePageCategories(
-                      page, orderBy, order);
-                });
+                getCurrentPageInfo();
               })
           : GlobalNavigationBar(
               title: "Category",
-              onCategoryUpdate: () {
-                setState(() {
-                  ids = _categoryService.getOnePageCategories(
-                      page, orderBy, order);
-                });
-              },
+              onRefresh: getCurrentPageInfo,
+              onCategoryUpdate: getCurrentPageInfo,
             ),
       body: SingleChildScrollView(
         padding: EdgeInsets.only(left: 10),
@@ -116,6 +107,12 @@ class CategoryListPageState extends State<CategoryListPage> {
     );
   }
 
+  void getCurrentPageInfo() {
+    setState(() {
+      ids = _categoryService.getOnePageCategories(page, orderBy, order);
+    });
+  }
+
   onSortPressed() {
     showDialog(
       context: context,
@@ -158,13 +155,12 @@ class CategoryListPageState extends State<CategoryListPage> {
           categoryId: ids[index],
           isSelected: selectedCategory.contains(ids[index]),
           selecting: selecting,
-          onSelect: (bool isSelected){
+          onSelect: (bool isSelected) {
             setState(() {
               selecting = true;
-              if(isSelected) {
+              if (isSelected) {
                 selectedCategory.add(ids[index]);
-              }
-              else{
+              } else {
                 selectedCategory.remove(ids[index]);
               }
             });

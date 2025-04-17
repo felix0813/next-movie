@@ -56,6 +56,11 @@ class MovieDetailPageState extends State<MovieDetailPage> {
 
   @override
   void initState() {
+    getAllInfo();
+    super.initState();
+  }
+
+  void getAllInfo() {
     final movie = _service.getMovieById(widget.movieId)!;
     setState(() {
       title = movie.title;
@@ -74,14 +79,13 @@ class MovieDetailPageState extends State<MovieDetailPage> {
               "${widget.movieId}.jpg")
           : "";
     });
-    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     return Scaffold(
-      appBar: GlobalNavigationBar(title: "Movie Detail"),
+      appBar: GlobalNavigationBar(title: "Movie Detail",onRefresh: getAllInfo,),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

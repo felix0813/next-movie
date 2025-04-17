@@ -14,12 +14,15 @@ class GlobalNavigationBar extends StatelessWidget
   final String title;
   final Function()? onMovieUpdate;
   final Function()? onCategoryUpdate;
+  final Function()? onRefresh;
   final bool showSetting;
   const GlobalNavigationBar(
       {super.key,
       required this.title,
       this.onMovieUpdate,
-      this.onCategoryUpdate, this.showSetting=true});
+      this.onCategoryUpdate,
+      this.showSetting = true,
+      this.onRefresh});
   Future<MovieExtraMeta?> getExtraMeta(BuildContext context) {
     return showModalBottomSheet<MovieExtraMeta>(
       context: context,
@@ -35,6 +38,19 @@ class GlobalNavigationBar extends StatelessWidget
       title: Text(title),
       elevation: 0,
       actions: [
+        IconButton(
+          icon: Icon(TDIcons.search),
+          tooltip: 'Search',
+          onPressed: () {
+            //todo
+          },
+        ),
+        if (onRefresh != null)
+        IconButton(
+          icon: Icon(TDIcons.refresh),
+          tooltip: 'Refresh',
+          onPressed: onRefresh,
+        ),
         IconButton(
           icon: Icon(TDIcons.file_import),
           tooltip: 'import video',
@@ -74,15 +90,15 @@ class GlobalNavigationBar extends StatelessWidget
           },
         ),
         buildTaskWarning(),
-        if(showSetting)
-        IconButton(
-          icon: Icon(TDIcons.setting),
-          tooltip: 'setting',
-          onPressed: () {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => SettingPage()));
-          },
-        ),
+        if (showSetting)
+          IconButton(
+            icon: Icon(TDIcons.setting),
+            tooltip: 'setting',
+            onPressed: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => SettingPage()));
+            },
+          ),
       ],
     );
   }

@@ -58,6 +58,9 @@ class VideoListPageState extends State<VideoListPage> {
               )
             : GlobalNavigationBar(
                 title: "Movies",
+                onRefresh: () {
+                  updateCurrentPage(context);
+                },
                 onMovieUpdate: () {
                   updateCurrentPage(context);
                 },
