@@ -23,6 +23,7 @@ class SettingPageState extends State<SettingPage> {
       appBar: GlobalNavigationBar(
         title: "Setting",
         showSetting: false,
+        showSearch: false,
       ),
       body: SingleChildScrollView(
         child: Column(

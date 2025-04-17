@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:next_movie/service/category_service/category_service.dart';
 import 'package:next_movie/service/movie_service/movie_service.dart';
 import 'package:next_movie/task/task_queue.dart';
+import 'package:next_movie/ui/page/search_page.dart';
 import 'package:next_movie/ui/page/setting_page.dart';
 import 'package:provider/provider.dart';
 import 'package:tdesign_flutter/tdesign_flutter.dart';
@@ -15,6 +16,7 @@ class GlobalNavigationBar extends StatelessWidget
   final Function()? onMovieUpdate;
   final Function()? onCategoryUpdate;
   final Function()? onRefresh;
+  final bool showSearch;
   final bool showSetting;
   const GlobalNavigationBar(
       {super.key,
@@ -22,6 +24,7 @@ class GlobalNavigationBar extends StatelessWidget
       this.onMovieUpdate,
       this.onCategoryUpdate,
       this.showSetting = true,
+      this.showSearch = true,
       this.onRefresh});
   Future<MovieExtraMeta?> getExtraMeta(BuildContext context) {
     return showModalBottomSheet<MovieExtraMeta>(
@@ -38,19 +41,21 @@ class GlobalNavigationBar extends StatelessWidget
       title: Text(title),
       elevation: 0,
       actions: [
-        IconButton(
-          icon: Icon(TDIcons.search),
-          tooltip: 'Search',
-          onPressed: () {
-            //todo
-          },
-        ),
+        if (showSearch)
+          IconButton(
+            icon: Icon(TDIcons.search),
+            tooltip: 'Search',
+            onPressed: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => SearchPage()));
+            },
+          ),
         if (onRefresh != null)
-        IconButton(
-          icon: Icon(TDIcons.refresh),
-          tooltip: 'Refresh',
-          onPressed: onRefresh,
-        ),
+          IconButton(
+            icon: Icon(TDIcons.refresh),
+            tooltip: 'Refresh',
+            onPressed: onRefresh,
+          ),
         IconButton(
           icon: Icon(TDIcons.file_import),
           tooltip: 'import video',
