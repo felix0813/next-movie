@@ -36,6 +36,36 @@ class CategoryRepository {
     }
   }
 
+  List<int> search(String keyword, String sortBy, String order) {
+    int flag = order == SortOrder.descending ? Order.descending : 0;
+    switch (sortBy) {
+      case SortBy.created:
+        return (_box
+                .query(Category_.name
+                    .contains(keyword)
+                    .or(Category_.description.contains(keyword)))
+                .order(Category_.created, flags: flag)
+                .build())
+            .findIds();
+      case SortBy.title:
+        return (_box
+                .query(Category_.name
+                    .contains(keyword)
+                    .or(Category_.description.contains(keyword)))
+                .order(Category_.name, flags: flag)
+                .build())
+            .findIds();
+      default:
+        return (_box
+                .query(Category_.name
+                    .contains(keyword)
+                    .or(Category_.description.contains(keyword)))
+                .order(Category_.created, flags: flag)
+                .build())
+            .findIds();
+    }
+  }
+
   int getTotalCategories() => _box.count();
 
   List<Category> getAllCategories() => _box.getAll();

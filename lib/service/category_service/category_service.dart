@@ -7,7 +7,7 @@ import 'package:next_movie/task/task_queue.dart';
 class CategoryService {
   final _repository = CategoryRepository();
   final TaskQueue? _taskQueue;
-  static final _logger= Logger("CategoryService");
+  static final _logger = Logger("CategoryService");
 
   CategoryService({TaskQueue? taskQueue}) : _taskQueue = taskQueue;
 
@@ -38,8 +38,7 @@ class CategoryService {
       category.name = name;
       try {
         return _repository.updateCategory(category) == id;
-      }
-      catch (e) {
+      } catch (e) {
         _logger.severe("Rename fail:$e");
         return false;
       }
@@ -72,5 +71,9 @@ class CategoryService {
 
   List<Category> getAllCategories() => _repository.getAllCategories();
 
-  bool removeMovies(int category,List<int>movies)=>_repository.removeMovies(category,movies)==category;
+  bool removeMovies(int category, List<int> movies) =>
+      _repository.removeMovies(category, movies) == category;
+
+  List<int> searchCategory(String keyword, String sortBy, String order) =>
+      _repository.search(keyword, sortBy, order);
 }

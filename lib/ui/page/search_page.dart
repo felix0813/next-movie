@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:next_movie/service/category_service/category_service.dart';
 import 'package:next_movie/ui/global_navigation_bar.dart';
 import 'package:tdesign_flutter/tdesign_flutter.dart';
+
+import '../../model/sort_by.dart';
+import '../../service/movie_service/movie_service.dart';
+import '../radio_dialog.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({
@@ -14,6 +19,9 @@ class SearchPageState extends State<SearchPage> {
   final TextEditingController _searchController = TextEditingController();
   String _selectedType = 'Movie'; // 默认选择类型
   final FocusNode _focusNode = FocusNode();
+  String sortBy = SortBy.created;
+  String order = SortOrder.descending;
+  List<int> ids = [];
 
   @override
   Widget build(BuildContext context) {
@@ -53,9 +61,14 @@ class SearchPageState extends State<SearchPage> {
               onSubmitted: (value) {
                 search();
               },
-              rightBtn: TDButton(text: 'Search',theme: TDButtonTheme.primary, onTap: () {
-                search();
-              },padding: EdgeInsets.only(left: 10.0,right: 10,top:5),),
+              rightBtn: TDButton(
+                text: 'Search',
+                theme: TDButtonTheme.primary,
+                onTap: () {
+                  search();
+                },
+                padding: EdgeInsets.only(left: 10.0, right: 10, top: 5),
+              ),
             ),
           ),
           SizedBox(width: 16.0),
@@ -66,14 +79,14 @@ class SearchPageState extends State<SearchPage> {
               _buildTypeButton('Category', _selectedType == 'Category'),
             ],
           ),
+          IconButton(
+              tooltip: "sort", icon: Icon(Icons.sort), onPressed: onSortPressed)
         ],
       ),
     );
   }
-  void search() {
-    // todo 处理搜索逻辑
-    print('Searching for "${_searchController.text}" in $_selectedType');
-  }
+
+  void search() {}
 
   // 类型选择按钮
   Widget _buildTypeButton(String type, bool isSelected) {
@@ -81,6 +94,15 @@ class SearchPageState extends State<SearchPage> {
       onTap: () {
         setState(() {
           _selectedType = type;
+          sortBy = SortBy.created;
+          if (type == 'Movie') {
+            ids = MovieService()
+                .searchMovies(_searchController.text, SortBy.created, order);
+          }
+          if (type == 'Category') {
+            ids = CategoryService()
+                .searchCategory(_searchController.text, SortBy.created, order);
+          }
         });
       },
       child: Container(
@@ -97,6 +119,47 @@ class SearchPageState extends State<SearchPage> {
           ),
         ),
       ),
+    );
+  }
+
+  onSortPressed() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return SortMovieRadioDialog(
+          options: _selectedType == 'Movie'
+              ? [
+                  SortBy.recorded,
+                  SortBy.created,
+                  SortBy.star,
+                  SortBy.duration,
+                  SortBy.size,
+                  SortBy.wishDate,
+                  SortBy.likeDate,
+                ]
+              : [SortBy.created, SortBy.title],
+          initValue: sortBy,
+          order: order,
+          onConfirm: (String? result, String? sortOrder) {
+            if (result != null &&
+                sortOrder != null &&
+                (result != sortBy || order != sortOrder)) {
+              setState(() {
+                sortBy = result;
+                order = sortOrder;
+                if (_selectedType == 'Movie') {
+                  ids = MovieService()
+                      .searchMovies(_searchController.text, sortBy, order);
+                }
+                if (_selectedType == 'Category') {
+                  ids = CategoryService()
+                      .searchCategory(_searchController.text, sortBy, order);
+                }
+              });
+            }
+          },
+        );
+      },
     );
   }
 }

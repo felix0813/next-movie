@@ -241,6 +241,9 @@ class MovieService {
       deleteMovieAndThumbnail(result);
     }
   }
+
+  List<int> searchMovies(String keyword, String sortBy, String order) =>
+      _repository.searchMovie(keyword, sortBy, order);
 }
 
 class MovieExtraMeta {

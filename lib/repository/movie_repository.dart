@@ -18,7 +18,7 @@ class MovieRepository {
     return fail;
   }
 
-  List<Movie> getAllMovie()=> _movieBox.getAll();
+  List<Movie> getAllMovie() => _movieBox.getAll();
 
   List<Movie> getRecentAddMovie() =>
       (_movieBox.query().order(Movie_.recorded, flags: Order.descending).build()
@@ -223,11 +223,11 @@ class MovieRepository {
 
   Movie? getMovieById(int id) => _movieBox.get(id);
 
-  bool checkMovieNameValid (String name) {
-    final query = _movieBox.query(Movie_.title.equals(name)).build()..limit=1;
+  bool checkMovieNameValid(String name) {
+    final query = _movieBox.query(Movie_.title.equals(name)).build()..limit = 1;
     final result = query.count();
     query.close();
-    return result==0;
+    return result == 0;
   }
 
   int getTotalCount() => _movieBox.count();
@@ -239,4 +239,125 @@ class MovieRepository {
       .findFirst();
 
   int storeMovie(Movie movie) => _movieBox.put(movie, mode: PutMode.update);
+
+  List<int> searchMovie(String keyword, String sortBy, String order) {
+    final flag = order == SortOrder.descending ? Order.descending : 0;
+    switch (sortBy) {
+      case SortBy.recorded:
+        return (_movieBox
+                .query(Movie_.title
+                    .contains(keyword)
+                    .or(Movie_.source.contains(keyword)))
+                .order(Movie_.recorded, flags: flag)
+                .build())
+            .findIds();
+      case SortBy.size:
+        return (_movieBox
+                .query(Movie_.title
+                    .contains(keyword)
+                    .or(Movie_.source.contains(keyword)))
+                .order(Movie_.size, flags: flag)
+                .build())
+            .findIds();
+      case SortBy.duration:
+        return (_movieBox
+                .query(Movie_.title
+                    .contains(keyword)
+                    .or(Movie_.source.contains(keyword)))
+                .order(Movie_.duration, flags: flag)
+                .build())
+            .findIds();
+      case SortBy.likeDate:
+        if (flag == Order.descending) {
+          return [
+            ..._movieBox
+                .query(Movie_.likeDate.notNull().and(Movie_.title
+                    .contains(keyword)
+                    .or(Movie_.source.contains(keyword))))
+                .order(Movie_.likeDate, flags: flag)
+                .build()
+                .findIds(),
+            ..._movieBox
+                .query(Movie_.likeDate.isNull().and(Movie_.title
+                    .contains(keyword)
+                    .or(Movie_.source.contains(keyword))))
+                .build()
+                .findIds()
+          ];
+        } else {
+          return (_movieBox
+                  .query()
+                  .order(Movie_.likeDate, flags: Order.nullsLast)
+                  .build())
+              .findIds();
+        }
+
+      case SortBy.wishDate:
+        if (flag == Order.descending) {
+          return [
+            ..._movieBox
+                .query(Movie_.wishDate.notNull().and(Movie_.title
+                    .contains(keyword)
+                    .or(Movie_.source.contains(keyword))))
+                .order(Movie_.wishDate, flags: flag)
+                .build()
+                .findIds(),
+            ..._movieBox
+                .query(Movie_.wishDate.isNull().and(Movie_.title
+                    .contains(keyword)
+                    .or(Movie_.source.contains(keyword))))
+                .build()
+                .findIds()
+          ];
+        } else {
+          return (_movieBox
+                  .query()
+                  .order(Movie_.wishDate, flags: Order.nullsLast)
+                  .build())
+              .findIds();
+        }
+      case SortBy.star:
+        if (flag == Order.descending) {
+          return [
+            ..._movieBox
+                .query(Movie_.star.notNull().and(Movie_.title
+                    .contains(keyword)
+                    .or(Movie_.source.contains(keyword))))
+                .order(Movie_.star, flags: flag)
+                .build()
+                .findIds(),
+            ..._movieBox
+                .query(Movie_.star.isNull().and(Movie_.title
+                    .contains(keyword)
+                    .or(Movie_.source.contains(keyword))))
+                .build()
+                .findIds()
+          ];
+        } else {
+          return (_movieBox
+                  .query(Movie_.title
+                      .contains(keyword)
+                      .or(Movie_.source.contains(keyword)))
+                  .order(Movie_.star, flags: Order.nullsLast)
+                  .build())
+              .findIds();
+        }
+      case SortBy.created:
+        return (_movieBox
+                .query(Movie_.title
+                    .contains(keyword)
+                    .or(Movie_.source.contains(keyword)))
+                .order(Movie_.created, flags: flag | Order.nullsLast)
+                .build())
+            .findIds();
+      default:
+        return (_movieBox
+                .query(Movie_.title
+                    .contains(keyword)
+                    .or(Movie_.source.contains(keyword)))
+                .order(Movie_.recorded, flags: Order.descending)
+                .build())
+            .findIds();
+    }
+  }
 }
