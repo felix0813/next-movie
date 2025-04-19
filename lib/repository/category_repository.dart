@@ -41,25 +41,22 @@ class CategoryRepository {
     switch (sortBy) {
       case SortBy.created:
         return (_box
-                .query(Category_.name
-                    .contains(keyword)
-                    .or(Category_.description.contains(keyword)))
+                .query(Category_.name.contains(keyword).or(Category_.description
+                    .contains(keyword, caseSensitive: false)))
                 .order(Category_.created, flags: flag)
                 .build())
             .findIds();
       case SortBy.title:
         return (_box
-                .query(Category_.name
-                    .contains(keyword)
-                    .or(Category_.description.contains(keyword)))
+                .query(Category_.name.contains(keyword).or(Category_.description
+                    .contains(keyword, caseSensitive: false)))
                 .order(Category_.name, flags: flag)
                 .build())
             .findIds();
       default:
         return (_box
-                .query(Category_.name
-                    .contains(keyword)
-                    .or(Category_.description.contains(keyword)))
+                .query(Category_.name.contains(keyword).or(Category_.description
+                    .contains(keyword, caseSensitive: false)))
                 .order(Category_.created, flags: flag)
                 .build())
             .findIds();
