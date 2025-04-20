@@ -188,7 +188,6 @@ class CategoryCardState extends State<CategoryCard> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              buildAddBtn(),
               buildMoreBtn(context),
             ],
           ),
