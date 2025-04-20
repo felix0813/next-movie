@@ -224,6 +224,9 @@ class MovieService {
         logManager.logToFile(taskId, '处理文件时出错：$filePath，错误：$e');
       }
     }
+    if(needLog&&invalid.isEmpty){
+      await logManager.logToFile(taskId, '所有文件可用');
+    }
     return invalid;
   }
 
