@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 import 'package:tdesign_flutter/tdesign_flutter.dart';
 
 import '../../service/movie_service/movie_service.dart';
+import '../../service/movie_service/scan_folder_task.dart';
 import '../../task/task_queue.dart';
 
 class SettingPage extends StatefulWidget {
@@ -52,7 +53,13 @@ class SettingPageState extends State<SettingPage> {
                       text: "Scan folders",
                       icon: TDIcons.scan,
                       onTap: () => {
-                        //todo
+                        for(var path in _readPaths()){
+                          ScanFolderTask(
+                            path: path,
+                            taskQueue: Provider.of<TaskQueue>(context, listen: false),
+                            taskId: 'scan folder $path',
+                          ).run()
+                        }
                       },
                     )
                   ],
