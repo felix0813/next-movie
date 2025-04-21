@@ -33,6 +33,14 @@ Future<void> main() async {
   } else {
     logger.info('文件夹已存在: ${posterFolder.path}');
   }
+  Directory settingFolder = Directory(join(appDocPath, "next_movie", "setting"));
+  if (!await settingFolder.exists()) {
+    await settingFolder.create(recursive: true);
+    logger.info('文件夹创建成功: ${settingFolder.path}');
+    await settingFolder.create();
+  } else {
+    logger.info('文件夹已存在: ${settingFolder.path}');
+  }
   // 初始化 ObjectBoxProvider
   await ObjectBox.initialize();
 
