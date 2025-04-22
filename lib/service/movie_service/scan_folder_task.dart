@@ -1,8 +1,8 @@
-import 'dart:ffi';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:mime/mime.dart';
+import 'package:next_movie/service/movie_service/movie_service.dart';
 
 import '../../task/task_queue.dart';
 
@@ -12,18 +12,18 @@ class ScanFolderTask {
   late final TaskQueue taskQueue;
   ScanFolderTask(
       {required this.path, required this.taskQueue, required this.taskId});
-  static List<String> _scanDirectoryWithDepth(ScanParams params) {
+  static Set<String> _scanDirectoryWithDepth(ScanParams params) {
     return _scanDirectory(Directory(params.path), 1, params.maxDepth);
   }
 
   /// 递归扫描目录
-  static List<String> _scanDirectory(
+  static Set<String> _scanDirectory(
       Directory dir, int currentDepth, int maxDepth) {
     if (currentDepth > maxDepth) {
-      return [];
+      return {};
     }
 
-    List<String> videoFiles = [];
+    Set<String> videoFiles = {};
 
     try {
       // 获取目录下的所有文件和子目录
@@ -48,11 +48,9 @@ class ScanFolderTask {
   }
 
   /// 扫描完成回调
-  void _onScanComplete(List<String> videoFiles) {
+  void _onScanComplete(Set<String> videoFiles) {
     // 这里可以处理扫描结果，比如发送到主线程更新UI
-    print('Found ${videoFiles.length} video files');
-    //todo
-    // 实际项目中应该通过某种方式将结果传回主线程
+    MovieService(taskQueue: taskQueue).addScannedMovie(videoFiles);
   }
 
   /// 扫描错误回调

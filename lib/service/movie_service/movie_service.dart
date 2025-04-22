@@ -129,6 +129,27 @@ class MovieService {
     await importer.makeMeta();
   }
 
+  Future<void> addScannedMovie(Set<String> paths) async {
+    if (_taskQueue == null) {
+      throw Exception("Task queue is not initialized");
+    }
+    LocalImporterImpl importer =
+        LocalImporterImpl(taskQueue: _taskQueue);
+    final videos = paths
+        .map((e) => Movie(path: e, title: basename(e), size: _getFileSize(e)))
+        .toList();
+    importer.setVideos(videos);
+    importer.makeMeta();
+  }
+
+  int _getFileSize(String path) {
+    try {
+      return File(path).lengthSync();
+    } catch (e) {
+      return 0;
+    }
+  }
+
   List<Movie> getRecentAddMovie() => _repository.getRecentAddMovie();
 
   List<Movie> getFavoriteMovie() => _repository.getFavoriteMovie();
@@ -224,7 +245,7 @@ class MovieService {
         logManager.logToFile(taskId, '处理文件时出错：$filePath，错误：$e');
       }
     }
-    if(needLog&&invalid.isEmpty){
+    if (needLog && invalid.isEmpty) {
       await logManager.logToFile(taskId, '所有文件可用');
     }
     return invalid;

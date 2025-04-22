@@ -25,6 +25,10 @@ class LocalImporterImpl extends Importer {
     return 0;
   }
 
+  void setVideos(List<Movie> videos) {
+    _videos = videos;
+  }
+
   @override
   Future<List<Movie>> getVideos() async {
     var result = await FilePicker.platform.pickFiles(
@@ -37,7 +41,7 @@ class LocalImporterImpl extends Importer {
     return _videos;
   }
 
-  Future<int> getVideoDuration(String path) async {
+  Future<int> _getVideoDuration(String path) async {
     if (Platform.isIOS || Platform.isAndroid) {
       try {
         final mf = m.MediaInfo();
@@ -63,7 +67,7 @@ class LocalImporterImpl extends Importer {
     }
   }
 
-  Future<void> getVideoCreatedTime(Movie movie) async {
+  Future<void> _getVideoCreatedTime(Movie movie) async {
     try {
       File file = File(movie.path);
       FileStat fileStat = await file.stat();
@@ -87,8 +91,8 @@ class LocalImporterImpl extends Importer {
         continue;
       }
       video.recorded = DateTime.now().toLocal();
-      video.duration = await getVideoDuration(video.path);
-      await getVideoCreatedTime(video);
+      video.duration = await _getVideoDuration(video.path);
+      await _getVideoCreatedTime(video);
       storeMovie(video);
       count++;
       if (count % 10 == 0) {

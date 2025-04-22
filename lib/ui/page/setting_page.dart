@@ -79,6 +79,7 @@ class SettingPageState extends State<SettingPage> {
                                             taskId: 'scan folder $path',
                                           ).run();
                                         }
+                                        Navigator.pop(context);
                                       })
                                 ]);
                           },
