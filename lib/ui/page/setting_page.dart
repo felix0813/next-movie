@@ -53,13 +53,36 @@ class SettingPageState extends State<SettingPage> {
                       text: "Scan folders",
                       icon: TDIcons.scan,
                       onTap: () => {
-                        for(var path in _readPaths()){
-                          ScanFolderTask(
-                            path: path,
-                            taskQueue: Provider.of<TaskQueue>(context, listen: false),
-                            taskId: 'scan folder $path',
-                          ).run()
-                        }
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                                title: Text('Scan Folders'),
+                                content: SingleChildScrollView(
+                                    child: Text(
+                                        "This will scan videos and add them into database in the selected folders.\n Files nested in folders no more than five layers will be scanned.")),
+                                actions: [
+                                  TextButton(
+                                      child: Text('Cancel'),
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      }),
+                                  TextButton(
+                                      child: Text('Scan'),
+                                      onPressed: () {
+                                        for (var path in _readPaths()) {
+                                          ScanFolderTask(
+                                            path: path,
+                                            taskQueue: Provider.of<TaskQueue>(
+                                                context,
+                                                listen: false),
+                                            taskId: 'scan folder $path',
+                                          ).run();
+                                        }
+                                      })
+                                ]);
+                          },
+                        )
                       },
                     )
                   ],
